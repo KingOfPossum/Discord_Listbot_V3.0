@@ -3,29 +3,35 @@ import os
 import yaml
 import discord
 
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class Bot:
-    config_data: dict = None
-    intents: discord.Intents = discord.Intents.default()
-    bot: commands.bot = None
+    __config_data: dict = None
+    __intents: discord.Intents = discord.Intents.default()
+    __bot: commands.bot = None
+    _databases:DatabaseCollection = DatabaseCollection("../resources/databases/")
+
+    @property
+    def databases(self) -> DatabaseCollection:
+        return self._databases
 
     def __init__(self, command_prefix: str,config_path: str):
         self.create_resources_directory_if_not_exists()
-        self.config_data = self.load_config(config_path)
+        self.__config_data = self.load_config(config_path)
 
-        self.intents = self.set_intents()
-        self.bot = commands.Bot(command_prefix=self.config_data['bot']['command_prefix'],intents=self.intents)
+        self.__intents = self.set_intents()
+        self.__bot = commands.Bot(command_prefix=self.__config_data['bot']['command_prefix'], intents=self.__intents)
 
-        @self.bot.event
+        @self.__bot.event
         async def on_ready():
-            print(f"Bot is ready! Logged in as {self.bot.user.name} (ID: {self.bot.user.id})")
+            print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})")
 
     def run(self):
-        api_key = self.config_data["bot"]["api_key"]
+        api_key = self.__config_data["bot"]["api_key"]
 
         try:
-            self.bot.run(api_key)
+            self.__bot.run(api_key)
         finally:
             input("Press any key to exit...")
 
