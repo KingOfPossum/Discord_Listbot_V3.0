@@ -1,18 +1,17 @@
+import asyncio
 import os
-
 import yaml
 import discord
 
-from database.DatabaseCollection import DatabaseCollection
+from listbot.BotEvents import BotEvents
+from listbot.ListCommands import ListCommands
 from discord.ext import commands
+from database.DatabaseCollection import DatabaseCollection
 
 class Bot:
     """
     A Discord bot that manages a list of games.
     """
-    __config_data: dict = None
-    __intents: discord.Intents = discord.Intents.default()
-    __bot: commands.bot = None
     _databases:DatabaseCollection = None
 
     @property
@@ -38,9 +37,13 @@ class Bot:
         self.__intents = self.set_intents()
         self.__bot = commands.Bot(command_prefix=self.__config_data['bot']['command_prefix'], intents=self.__intents)
 
-        @self.__bot.event
-        async def on_ready():
-            print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})")
+        asyncio.run(self.async_init())
+
+    async def async_init(self):
+        await self.__bot.add_cog(BotEvents(self.__bot))
+        print("Registered BotEvents cog.")
+        await self.__bot.add_cog(ListCommands())
+        print("Registered ListCommands cog.")
 
     def run(self):
         """
