@@ -1,5 +1,6 @@
 import discord
 
+from common.GameEntry import GameEntry
 from common.TimeUtils import TimeUtils
 from database.Database import Database
 
@@ -40,6 +41,7 @@ class GameCreationModal(discord.ui.Modal):
         genre = self.children[3].value
         review = self.children[4].value
 
-        self.database.sql_execute(f"INSERT INTO {self.database.table_name} (name, user, date, console, rating, genre, review) VALUES (?, ?, ?, ?, ?, ?, ?)",(game_name, user, data, console, rating, genre, review))
+        game_entry = GameEntry(name=game_name,user=user,date=data,console=console,rating=int(rating),genre=genre,review=review,replayed=False,hundred_percent=False)
+        self.database.put_game(game_entry)
 
         await interaction.response.defer()

@@ -1,5 +1,6 @@
 import sqlite3
 
+from common.GameEntry import GameEntry
 from common.TimeUtils import TimeUtils
 
 class Database:
@@ -48,6 +49,50 @@ class Database:
         connection.close()
 
         return data
+
+    def game_already_in_database(self,entry: GameEntry) -> bool:
+        """
+        Checks if a game entry is already in the database.
+        This method will search for an entry with the same name and user in the database.
+        :param entry: The GameEntry object to be checked.
+        :return: True if the game entry is already in the database, False otherwise.
+        """
+        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND date = ? AND user = ?"
+        data = self.sql_execute_fetchall(query, (entry.name, entry.date, entry.user))
+        return len(data) > 0
+
+    def put_game(self, entry: GameEntry):
+        """
+        If entry is already in the database, it will update the entry.
+        Otherwise, it will insert the entry into the database.
+        :param entry: The GameEntry object to be added to the database.
+        """
+        if self.game_already_in_database(entry):
+            query = f"UPDATE {self.table_name} SET console = ?, rating = ?, genre = ?, review = ?, replay = ?, hundred_percent = ? WHERE name = ? AND date = ? AND user = ?"
+            params = (entry.console, entry.rating, entry.genre, entry.review, int(entry.replayed), int(entry.hundred_percent),entry.name, entry.date, entry.user)
+
+        else:
+            query = f"INSERT INTO {self.table_name} (name, user, date, console, rating, genre, review, replay, hundred_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            params = (entry.name, entry.user, entry.date, entry.console, entry.rating, entry.genre, entry.review, int(entry.replayed), int(entry.hundred_percent))
+
+        self.sql_execute(query, params)
+
+    def get_game_entry(self,name: str, user: str, date: str) -> GameEntry:
+        """
+        Retrieves a game entry from the database based on the name, user, and date.
+        :param name: The name of the game.
+        :param user: The user who added the game.
+        :param date: The date when the game was added.
+        :return: A GameEntry object containing the details of the game.
+        """
+        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND user = ? AND date = ?"
+        data = self.sql_execute_fetchall(query, (name, user, date))
+
+        if data:
+            row = data[0]
+            return GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], genre=row[5], review=row[6], replayed=bool(row[7]), hundred_percent=bool(row[8]))
+
+        return None
 
     def __init_database(self,table_name: str,params: list[tuple]):
         """
