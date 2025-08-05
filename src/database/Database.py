@@ -13,6 +13,7 @@ class Database:
         :param database_name: The name of the database to be created.
         :param params: A list of tuples where each tuple contains the column name and its data type for the database table.
         """
+        self.table_name = table_name
         self.__path = folder_path + database_name + TimeUtils.get_current_year_formated() + ".db"
         self.__init_database(table_name,params)
         self.print_database()

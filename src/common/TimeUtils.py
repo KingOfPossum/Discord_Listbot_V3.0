@@ -17,3 +17,11 @@ class TimeUtils:
         :return: the current year as a two-digit string (e.g., "23" for 2023).
         """
         return datetime.now().strftime("%y")
+
+    @staticmethod
+    def get_current_date_formated() -> str:
+        """
+        Returns the current date formatted as a string in the format "YYYY-MM-DD".
+        :return: the current date as a string.
+        """
+        return datetime.now().strftime("%d.%m.%y")

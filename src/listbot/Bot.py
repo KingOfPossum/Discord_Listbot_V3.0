@@ -1,12 +1,13 @@
 import asyncio
+import discord
 import os
 import yaml
-import discord
 
+from database.DatabaseCollection import DatabaseCollection
+from discord.ext import commands
 from listbot.BotEvents import BotEvents
 from listbot.ListCommands import ListCommands
-from discord.ext import commands
-from database.DatabaseCollection import DatabaseCollection
+from listbot.CommandHandler import CommandHandler
 
 class Bot:
     """
@@ -33,16 +34,22 @@ class Bot:
         self.create_resources_directory_if_not_exists()
         self.__config_data = self.load_config(config_path)
         self._databases = DatabaseCollection(self.__config_data['bot']['databases_folder_path'])
+        self._command_handler = CommandHandler(self.databases)
 
         self.__intents = self.set_intents()
         self.__bot = commands.Bot(command_prefix=self.__config_data['bot']['command_prefix'], intents=self.__intents)
 
-        asyncio.run(self.async_init())
+        asyncio.run(self.register_events())
+        asyncio.run(self.register_commands())
 
-    async def async_init(self):
+    async def register_events(self):
+        """Registers the bot events cog."""
         await self.__bot.add_cog(BotEvents(self.__bot))
         print("Registered BotEvents cog.")
-        await self.__bot.add_cog(ListCommands())
+
+    async def register_commands(self):
+        """Registers the list commands cog."""
+        await self.__bot.add_cog(ListCommands(self._command_handler))
         print("Registered ListCommands cog.")
 
     def run(self):

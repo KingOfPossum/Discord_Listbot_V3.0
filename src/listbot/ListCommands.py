@@ -9,6 +9,13 @@ class ListCommands(commands.Cog):
     This cog provides commands to add games.
     """
 
+    def __init__(self,command_handler: CommandHandler):
+        """
+        Initializes the ListCommands cog.
+        :param command_handler: An instance of CommandHandler to handle commands.
+        """
+        self.command_handler = command_handler
+
     @commands.command(name="add")
     async def add_game(self,ctx):
         """
@@ -18,7 +25,7 @@ class ListCommands(commands.Cog):
         :param ctx: The context in which the command was invoked
         """
         add_button = discord.ui.Button(label="Add Game", style=discord.ButtonStyle.green)
-        add_button.callback = CommandHandler.add_command
+        add_button.callback = self.command_handler.add_command
 
         view = discord.ui.View()
         view.add_item(add_button)
