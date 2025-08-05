@@ -1,5 +1,9 @@
+
 from listbot.Bot import Bot
 
-if __name__ == "__main__":
+def main():
     bot = Bot(command_prefix="%", config_path="../resources/config.yaml")
     bot.run()
+
+if __name__ == "__main__":
+    main()

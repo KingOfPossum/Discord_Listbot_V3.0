@@ -6,8 +6,6 @@ class DatabaseCollection:
     A collection of databases.
     """
 
-    listDatabase: Database = None
-
     def __init__(self,database_folder_path: str):
         """
         Initializes the DatabaseCollection with a specified folder path where the databases should be created.
@@ -18,7 +16,7 @@ class DatabaseCollection:
         self.create_database_folder_if_not_exists(database_folder_path)
 
         self.__database_folder_path = database_folder_path
-        self.listDatabase: Database = Database(self.__database_folder_path,"list",[("name","TEXT"), ("user","TEXT"),("date","DATE"),("console","TEXT"),("rating","INT"),("genre","TEXT"),("review","TEXT"),("cover","TEXT"),("replay","INTEGER DEFAULT 0"),("hundred_percent","INTEGER DEFAULT 0")])
+        self.list_database: Database = Database(self.__database_folder_path,"list","games",[("name","TEXT"), ("user","TEXT"),("date","DATE"),("console","TEXT"),("rating","INT"),("genre","TEXT"),("review","TEXT"),("cover","TEXT"),("replay","INTEGER DEFAULT 0"),("hundred_percent","INTEGER DEFAULT 0")])
 
     @staticmethod
     def create_database_folder_if_not_exists(database_folder_path: str):

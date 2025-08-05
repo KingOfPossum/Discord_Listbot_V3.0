@@ -1,18 +1,18 @@
-import os
-
-import yaml
+import asyncio
 import discord
+import os
+import yaml
 
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
+from listbot.BotEvents import BotEvents
+from listbot.ListCommands import ListCommands
+from listbot.CommandHandler import CommandHandler
 
 class Bot:
     """
     A Discord bot that manages a list of games.
     """
-    __config_data: dict = None
-    __intents: discord.Intents = discord.Intents.default()
-    __bot: commands.bot = None
     _databases:DatabaseCollection = None
 
     @property
@@ -34,13 +34,23 @@ class Bot:
         self.create_resources_directory_if_not_exists()
         self.__config_data = self.load_config(config_path)
         self._databases = DatabaseCollection(self.__config_data['bot']['databases_folder_path'])
+        self._command_handler = CommandHandler(self.databases)
 
         self.__intents = self.set_intents()
         self.__bot = commands.Bot(command_prefix=self.__config_data['bot']['command_prefix'], intents=self.__intents)
 
-        @self.__bot.event
-        async def on_ready():
-            print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})")
+        asyncio.run(self.register_events())
+        asyncio.run(self.register_commands())
+
+    async def register_events(self):
+        """Registers the bot events cog."""
+        await self.__bot.add_cog(BotEvents(self.__bot))
+        print("Registered BotEvents cog.")
+
+    async def register_commands(self):
+        """Registers the list commands cog."""
+        await self.__bot.add_cog(ListCommands(self._command_handler))
+        print("Registered ListCommands cog.")
 
     def run(self):
         """
