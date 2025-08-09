@@ -1,8 +1,8 @@
 import asyncio
 import discord
 import os
-import yaml
 
+from common.ConfigLoader import ConfigLoader
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from listbot.BotEvents import BotEvents
@@ -14,6 +14,7 @@ class Bot:
     A Discord bot that manages a list of games.
     """
     _databases:DatabaseCollection = None
+    command_prefix: str = None
 
     @property
     def databases(self) -> DatabaseCollection:
@@ -23,21 +24,24 @@ class Bot:
         """
         return self._databases
 
-    def __init__(self, command_prefix: str,config_path: str):
+    def __init__(self):
         """
         Initializes the bot.
         The bot will create a resources directory if it does not exist,
         and will load the configuration from the specified path.
-        :param command_prefix: The prefix used for bot commands.
-        :param config_path: The path to the configuration file for the bot.
         """
         self.create_resources_directory_if_not_exists()
-        self.__config_data = self.load_config(config_path)
-        self._databases = DatabaseCollection(self.__config_data['bot']['databases_folder_path'])
+
+        self.__config_data = ConfigLoader.load()
+        print(self.__config_data)
+
+        self._databases = DatabaseCollection(self.__config_data.database_folder_path)
         self._command_handler = CommandHandler(self.databases)
 
+        self.command_prefix = self.__config_data.command_prefix
+
         self.__intents = self.set_intents()
-        self.__bot = commands.Bot(command_prefix=self.__config_data['bot']['command_prefix'], intents=self.__intents)
+        self.__bot = commands.Bot(command_prefix=self.command_prefix, intents=self.__intents)
 
         asyncio.run(self.register_events())
         asyncio.run(self.register_commands())
@@ -57,7 +61,7 @@ class Bot:
         Runs the bot using the API key from the configuration file.
         This method will block until the bot is stopped.
         """
-        api_key = self.__config_data["bot"]["api_key"]
+        api_key = self.__config_data.api_key
 
         try:
             self.__bot.run(api_key)
@@ -77,19 +81,6 @@ class Bot:
         return intents
 
     @staticmethod
-    def load_config(config_path: str) -> dict:
-        """
-        Loads the configuration from the specified path.
-        If the configuration file does not exist, it will be created with default values.
-        :param config_path: The path to the configuration file.
-        :return: The data loaded from the configuration file as a dictionary.
-        """
-        Bot.create_config_if_not_exists(config_path=config_path)
-
-        with open(config_path,'r') as file:
-            return yaml.safe_load(file)
-
-    @staticmethod
     def create_resources_directory_if_not_exists():
         """
         Creates the resources directory if it does not exist.
@@ -98,22 +89,3 @@ class Bot:
         if not os.path.exists("../resources/"):
             print("Creating resources directory at: ../resources/")
             os.mkdir("../resources/")
-
-    @staticmethod
-    def create_config_if_not_exists(config_path: str):
-        """
-        Creates a configuration file at the specified path if it does not exist.
-        The configuration file will contain default values.
-        :param config_path: The path where the configuration file should be created.
-        """
-        if not os.path.exists(config_path):
-            print(f"Creating configuration file at: {config_path}")
-            with open(config_path, "w") as file:
-                file.write("# Configuration file for the Discord bot\n")
-                file.write("\n")
-                file.write("# Discord bot configuration\n")
-                file.write("bot:\n")
-                file.write("  api_key:\n")
-                file.write("  command_prefix: '%'\n")
-                file.write("  databases_folder_path: '../resources/databases/'\n")
-                file.write("  accepted_users:\n")

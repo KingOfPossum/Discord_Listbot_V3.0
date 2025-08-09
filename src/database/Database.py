@@ -61,32 +61,43 @@ class Database:
         data = self.sql_execute_fetchall(query, (entry.name, entry.date, entry.user))
         return len(data) > 0
 
-    def put_game(self, entry: GameEntry):
+    def put_game(self, entry: GameEntry,old_entry: GameEntry = None):
         """
         If entry is already in the database, it will update the entry.
         Otherwise, it will insert the entry into the database.
         :param entry: The GameEntry object to be added to the database.
+        :param old_entry : The old GameEntry object of a game that is being updated.
+        If this is None, the entry will be inserted as a new game.
         """
-        if self.game_already_in_database(entry):
-            query = f"UPDATE {self.table_name} SET console = ?, rating = ?, genre = ?, review = ?, replay = ?, hundred_percent = ? WHERE name = ? AND date = ? AND user = ?"
-            params = (entry.console, entry.rating, entry.genre, entry.review, int(entry.replayed), int(entry.hundred_percent),entry.name, entry.date, entry.user)
+        if old_entry is not None and self.game_already_in_database(old_entry):
+            self.remove_entry(old_entry.name, old_entry.user, old_entry.date)
 
-        else:
-            query = f"INSERT INTO {self.table_name} (name, user, date, console, rating, genre, review, replay, hundred_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            params = (entry.name, entry.user, entry.date, entry.console, entry.rating, entry.genre, entry.review, int(entry.replayed), int(entry.hundred_percent))
+        query = f"INSERT INTO {self.table_name} (name, user, date, console, rating, genre, review, replay, hundred_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        params = (entry.name, entry.user, old_entry.date if old_entry else entry.date, entry.console, entry.rating, entry.genre, entry.review, int(entry.replayed), int(entry.hundred_percent))
 
         self.sql_execute(query, params)
 
-    def get_game_entry(self,name: str, user: str, date: str) -> GameEntry:
+    def remove_entry(self,name: str, user: str, date: str):
+        """
+        Removes a game entry from the database based on the name, user, and date.
+        :param name: The name of the game to be removed.
+        :param user: The user who added the game.
+        :param date: The date when the game was added.
+        """
+        query = f"DELETE FROM {self.table_name} WHERE name = ? AND user = ? AND date = ?"
+        self.sql_execute(query, (name, user, date))
+
+    def get_game_entry(self,name: str, user: str) -> GameEntry:
         """
         Retrieves a game entry from the database based on the name, user, and date.
         :param name: The name of the game.
         :param user: The user who added the game.
-        :param date: The date when the game was added.
         :return: A GameEntry object containing the details of the game.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND user = ? AND date = ?"
-        data = self.sql_execute_fetchall(query, (name, user, date))
+        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND user = ?"
+        data = self.sql_execute_fetchall(query, (name, user))
+
+        print(data)
 
         if data:
             row = data[0]
