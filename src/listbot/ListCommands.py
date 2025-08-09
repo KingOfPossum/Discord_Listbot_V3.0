@@ -1,5 +1,6 @@
 import discord
 
+from common.BotUtils import BotUtils
 from listbot.CommandHandler import CommandHandler
 from discord.ext import commands
 
@@ -31,3 +32,12 @@ class ListCommands(commands.Cog):
         view.add_item(add_button)
 
         await ctx.send(view=view)
+
+    @commands.command(name="update",)
+    async def update_game(self,ctx):
+        """
+        Command to update a game in the list.
+        This command will create a button that, when clicked, will open a GameUpdateModal to update the existing game details.
+        :param ctx: The context in which the command was invoked
+        """
+        await self.command_handler.update_command(ctx)

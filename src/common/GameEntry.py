@@ -15,3 +15,15 @@ class GameEntry:
     review: str
     replayed: bool = False
     hundred_percent: bool = False
+
+    def __str__(self) -> str:
+        return f"GameEntry:\n" \
+               f"  Name: {self.name}\n" \
+               f"  User: {self.user}\n" \
+               f"  Date: {self.date}\n" \
+               f"  Console: {self.console}\n" \
+               f"  Rating: {self.rating}\n" \
+               f"  Genre: {self.genre}\n" \
+               f"  Review: {self.review}\n" \
+               f"  Replayed: {self.replayed}\n" \
+               f"  Hundred Percent: {self.hundred_percent}"
