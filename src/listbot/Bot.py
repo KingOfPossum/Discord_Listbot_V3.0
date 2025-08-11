@@ -43,6 +43,7 @@ class Bot:
         self.__intents = self.set_intents()
         self.__bot = commands.Bot(command_prefix=self.command_prefix, intents=self.__intents)
 
+        self.__bot.remove_command('help')
         asyncio.run(self.register_events())
         asyncio.run(self.register_commands())
 
