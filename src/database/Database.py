@@ -89,7 +89,7 @@ class Database:
 
     def get_game_entry(self,name: str, user: str) -> GameEntry:
         """
-        Retrieves a game entry from the database based on the name, user, and date.
+        Retrieves a game entry from the database based on the name and user.
         :param name: The name of the game.
         :param user: The user who added the game.
         :return: A GameEntry object containing the details of the game.
@@ -101,7 +101,8 @@ class Database:
 
         if data:
             row = data[0]
-            return GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], genre=row[5], review=row[6], replayed=bool(row[7]), hundred_percent=bool(row[8]))
+            print(row[7], row[8])
+            return GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], genre=row[5], review=row[6], replayed=bool(row[8]), hundred_percent=bool(row[9]))
 
         return None
 
