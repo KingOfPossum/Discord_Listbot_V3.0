@@ -55,3 +55,12 @@ class ListCommands(commands.Cog):
         :param ctx: The context in which the command was invoked
         """
         await self.command_handler.replayed_hundred_percent_command(ctx, replay=False, hundred_percent=True)
+
+    @commands.command(name="help")
+    async def help_command(self, ctx):
+        """
+        Command to display the help message.
+        This command will send a message with the available commands with their descriptions and syntax.
+        :param ctx: The context in which the command was invoked
+        """
+        await self.command_handler.help_command(ctx)

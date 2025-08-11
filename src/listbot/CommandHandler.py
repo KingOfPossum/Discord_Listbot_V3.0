@@ -1,6 +1,7 @@
 import discord
 
 from common.BotUtils import BotUtils
+from common.ConfigLoader import ConfigLoader
 from common.Emojis import Emojis
 from common.GameCreationModal import GameCreationModal
 from common.GameEntry import GameEntry
@@ -102,3 +103,12 @@ class CommandHandler:
         changed_var = "replayed" if replay else "completed"
         changed_var_value = new_game_entry.replayed if replay else new_game_entry.hundred_percent
         await ctx.send(f"**Changed {changed_var} status of {game_name} to: {emojis[changed_var_value]}**")
+
+    async def help_command(self, ctx: discord.Interaction):
+        command_prefix = ConfigLoader.load().command_prefix
+
+        await ctx.send("**Available Commands:**\n"
+                        f"`{command_prefix}add` - Add a new game to the list\n"
+                        f"`{command_prefix}update` `gameName` - Update an existing game in the list\n"
+                        f"`{command_prefix}replayed` `gameName` - Mark a game as replayed\n"
+                        f"`{command_prefix}completed` `gameName` - Mark a game as completed (100%)\n")
