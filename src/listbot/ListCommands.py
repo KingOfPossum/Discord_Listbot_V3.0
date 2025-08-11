@@ -25,15 +25,9 @@ class ListCommands(commands.Cog):
         the game details. The actual game adding will be handled by the GameCreationModal class.
         :param ctx: The context in which the command was invoked
         """
-        add_button = discord.ui.Button(label="Add Game", style=discord.ButtonStyle.green)
-        add_button.callback = self.command_handler.add_command
+        await self.command_handler.add_command(ctx)
 
-        view = discord.ui.View()
-        view.add_item(add_button)
-
-        await ctx.send(view=view)
-
-    @commands.command(name="update",)
+    @commands.command(name="update")
     async def update_game(self,ctx):
         """
         Command to update a game in the list.
@@ -41,3 +35,23 @@ class ListCommands(commands.Cog):
         :param ctx: The context in which the command was invoked
         """
         await self.command_handler.update_command(ctx)
+
+    @commands.command(name="replayed")
+    async def replayed_game(self,ctx):
+        """
+        Command to mark a game as replayed.
+        This command will check if the game exists in the database and if it does, it will
+        mark the game as replayed.
+        :param ctx: The context in which the command was invoked
+        """
+        await self.command_handler.replayed_hundred_percent_command(ctx, replay=True, hundred_percent=False)
+
+    @commands.command(name="completed")
+    async def hundred_percent_game(self,ctx):
+        """
+        Command to mark a game as completed (100%).
+        This command will check if the game exists in the database and if it does, it will
+        mark the game as completed.
+        :param ctx: The context in which the command was invoked
+        """
+        await self.command_handler.replayed_hundred_percent_command(ctx, replay=False, hundred_percent=True)

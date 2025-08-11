@@ -27,3 +27,16 @@ class GameEntry:
                f"  Review: {self.review}\n" \
                f"  Replayed: {self.replayed}\n" \
                f"  Hundred Percent: {self.hundred_percent}"
+
+    def __copy__(self) -> "GameEntry":
+        return GameEntry(
+            name=self.name,
+            user=self.user,
+            date=self.date,
+            console=self.console,
+            rating=self.rating,
+            genre=self.genre,
+            review=self.review,
+            replayed=self.replayed,
+            hundred_percent=self.hundred_percent
+        )

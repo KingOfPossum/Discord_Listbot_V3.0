@@ -36,15 +36,16 @@ class GameCreationModal(discord.ui.Modal):
         """
         game_name = self.children[0].value
         user = interaction.user.name
-        data = self.game_entry.date if self.game_entry else TimeUtils.get_current_date_formated()
+        date = self.game_entry.date if self.game_entry else TimeUtils.get_current_date_formated()
         console = self.children[1].value
         rating = self.children[2].value
         genre = self.children[3].value
         review = self.children[4].value
 
-        game_entry = GameEntry(name=game_name,user=user,date=data,console=console,rating=int(rating),genre=genre,review=review,replayed=False,hundred_percent=False)
+        game_entry = GameEntry(name=game_name,user=user,date=date,console=console,rating=int(rating),genre=genre,review=review,replayed=False,hundred_percent=False)
         self.database.put_game(game_entry,self.game_entry)
 
         print(game_entry)
 
-        await interaction.response.defer()
+        command_txt = "Updated" if self.game_entry else "Added"
+        await interaction.response.send_message(f"**{command_txt} game : {game_name}**")
