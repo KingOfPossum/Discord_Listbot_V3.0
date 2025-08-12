@@ -7,7 +7,6 @@ from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from listbot.BotEvents import BotEvents
 from listbot.ListCommands import ListCommands
-from listbot.CommandHandler import CommandHandler
 
 class Bot:
     """
@@ -32,11 +31,10 @@ class Bot:
         """
         self.create_resources_directory_if_not_exists()
 
-        self.__config_data = ConfigLoader.load()
+        self.__config_data = ConfigLoader.get_config()
         print(self.__config_data)
 
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
-        self._command_handler = CommandHandler(self.databases)
 
         self.command_prefix = self.__config_data.command_prefix
 
@@ -44,6 +42,8 @@ class Bot:
         self.__bot = commands.Bot(command_prefix=self.command_prefix, intents=self.__intents)
 
         self.__bot.remove_command('help')
+        self.list_commands = ListCommands(self._databases)
+
         asyncio.run(self.register_events())
         asyncio.run(self.register_commands())
 
@@ -53,9 +53,9 @@ class Bot:
         print("Registered BotEvents cog.")
 
     async def register_commands(self):
-        """Registers the list commands cog."""
-        await self.__bot.add_cog(ListCommands(self._command_handler))
-        print("Registered ListCommands cog.")
+        """Registers the list commands cogs."""
+        await self.list_commands.register(self.__bot)
+        print("Registered ListCommands cogs.")
 
     def run(self):
         """

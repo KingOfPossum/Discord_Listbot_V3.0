@@ -4,12 +4,18 @@ import re
 
 from common.Config import Config
 
-
 class ConfigLoader:
     """
     A class to load configuration settings from a file.
     """
     config_path = "../resources/config.yaml"
+    config = None
+
+    @staticmethod
+    def get_config():
+        if not ConfigLoader.config:
+            ConfigLoader.config = ConfigLoader.load()
+        return ConfigLoader.config
 
     def __init__(self, config_path: str = None):
         """
