@@ -1,0 +1,51 @@
+import discord
+
+from common.BotUtils import BotUtils
+from common.Command import Command
+from common.ConfigLoader import ConfigLoader
+from common.GameCreationModal import GameCreationModal
+from database.Database import Database
+from discord.ext import commands
+
+class UpdateCommand(Command):
+    """
+    Command to update an existing game in the list.
+    """
+    def __init__(self,database: Database):
+        self.__command_prefix = ConfigLoader.get_config().command_prefix
+        self.database = database
+
+    @commands.command(name="update")
+    async def execute(self, ctx):
+        """
+        Handles the 'update' command to update an existing game in the list.
+        This command will check if the game exists in the database and if it does, it will
+        create a button that, when clicked, will open a GameCreationModal to update the game details.
+        If the game does not exist, it will send a message indicating that the game was not found.
+        :param ctx: The context in which the command was invoked
+        """
+
+        game = await BotUtils.game_exists(ctx,self.database)
+        if game is None:
+            return
+
+        game_name, game_entry = game
+
+        async def update_button_callback(interaction: discord.Interaction):
+            modal = GameCreationModal(self.database, game_entry)
+            await interaction.response.send_modal(modal)
+
+        update_button = discord.ui.Button(label="Update Game",style=discord.ButtonStyle.blurple)
+        update_button.callback = update_button_callback
+
+        view = discord.ui.View()
+        view.add_item(update_button)
+
+        await ctx.send(view=view)
+
+    def help(self) -> str:
+        """
+        Returns a string that describes the command and how to use it.
+        :return: The help string for the command
+        """
+        return f"`{self.__command_prefix}update` `gameName` - Update an existing Game\n"
