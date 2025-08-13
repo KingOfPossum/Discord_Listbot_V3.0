@@ -70,22 +70,20 @@ class Database:
         If this is None, the entry will be inserted as a new game.
         """
         if old_entry is not None and self.game_already_in_database(old_entry):
-            self.remove_entry(old_entry.name, old_entry.user, old_entry.date)
+            self.remove_entry(old_entry)
 
         query = f"INSERT INTO {self.table_name} (name, user, date, console, rating, genre, review, replay, hundred_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         params = (entry.name, entry.user, old_entry.date if old_entry else entry.date, entry.console, entry.rating, entry.genre, entry.review, int(entry.replayed), int(entry.hundred_percent))
 
         self.sql_execute(query, params)
 
-    def remove_entry(self,name: str, user: str, date: str):
+    def remove_entry(self,entry: GameEntry):
         """
         Removes a game entry from the database based on the name, user, and date.
-        :param name: The name of the game to be removed.
-        :param user: The user who added the game.
-        :param date: The date when the game was added.
+        :param entry: The GameEntry object to be removed from the database.
         """
         query = f"DELETE FROM {self.table_name} WHERE name = ? AND user = ? AND date = ?"
-        self.sql_execute(query, (name, user, date))
+        self.sql_execute(query, (entry.name, entry.user, entry.date))
 
     def get_game_entry(self,name: str, user: str) -> GameEntry:
         """
