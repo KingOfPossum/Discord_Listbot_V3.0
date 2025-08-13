@@ -12,7 +12,6 @@ class RemoveCommand(Command):
     """
 
     def __init__(self, database: Database):
-        self.command_prefix = ConfigLoader.get_config().command_prefix
         self.database = database
 
     @commands.command(name="remove")
@@ -36,4 +35,4 @@ class RemoveCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return f"`{self.command_prefix}remove` `gameName` - Removes a game from the list.\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}remove` `gameName` - Removes a game from the list.\n"

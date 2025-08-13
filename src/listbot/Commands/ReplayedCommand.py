@@ -11,7 +11,6 @@ class ReplayedCommand(Command):
     """
 
     def __init__(self, database: Database):
-        self.__command_prefix = ConfigLoader.get_config().command_prefix
         self.database = database
 
     @commands.command(name="replayed")
@@ -42,4 +41,4 @@ class ReplayedCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return f"`{self.__command_prefix}replayed` `gameName` - Mark a game as replayed\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}replayed` `gameName` - Mark a game as replayed\n"

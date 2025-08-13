@@ -6,6 +6,7 @@ from listbot.Commands.HelpCommand import HelpCommand
 from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.UpdateCommand import UpdateCommand
+from listbot.Commands.ViewCommand import ViewCommand
 
 class ListCommands:
     """
@@ -24,11 +25,14 @@ class ListCommands:
         Registers the commands in this cog with the provided bot.
         :param bot: The Discord bot instance to register commands with.
         """
-        await bot.add_cog(AddCommand(self.databases.list_database))
-        await bot.add_cog(UpdateCommand(self.databases.list_database))
-        await bot.add_cog(RemoveCommand(self.databases.list_database))
-        await bot.add_cog(ReplayedCommand(self.databases.list_database))
-        await bot.add_cog(CompletedCommand(self.databases.list_database))
+        list_database = self.databases.list_database
+
+        await bot.add_cog(AddCommand(list_database))
+        await bot.add_cog(UpdateCommand(list_database))
+        await bot.add_cog(RemoveCommand(list_database))
+        await bot.add_cog(ReplayedCommand(list_database))
+        await bot.add_cog(CompletedCommand(list_database))
+        await bot.add_cog(ViewCommand(list_database))
         await bot.add_cog(HelpCommand())
         print("Cogs:", list(bot.cogs.keys()))
         print("Commands:", [c.name for c in bot.commands])

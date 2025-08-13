@@ -12,7 +12,6 @@ class UpdateCommand(Command):
     Command to update an existing game in the list.
     """
     def __init__(self,database: Database):
-        self.__command_prefix = ConfigLoader.get_config().command_prefix
         self.database = database
 
     @commands.command(name="update")
@@ -48,4 +47,4 @@ class UpdateCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return f"`{self.__command_prefix}update` `gameName` - Update an existing Game\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}update` `gameName` - Update an existing Game\n"
