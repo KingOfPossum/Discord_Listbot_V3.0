@@ -6,7 +6,7 @@ from common.ConfigLoader import ConfigLoader
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from listbot.BotEvents import BotEvents
-from listbot.ListCommands import ListCommands
+from listbot.Commands.ListCommands import ListCommands
 
 class Bot:
     """

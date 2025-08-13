@@ -1,10 +1,12 @@
 from common.Command import Command
-from common.ConfigLoader import ConfigLoader
 from discord.ext import commands
 from listbot.Commands.AddCommand import AddCommand
 from listbot.Commands.CompletedCommand import CompletedCommand
+from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.UpdateCommand import UpdateCommand
+from listbot.Commands.ViewCommand import ViewCommand
+
 
 class HelpCommand(Command):
     """
@@ -12,8 +14,7 @@ class HelpCommand(Command):
     """
 
     def __init__(self):
-        self.__command_prefix = ConfigLoader.get_config().command_prefix
-        self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None)]
+        self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None)]
 
     @commands.command(name="help")
     async def execute(self, ctx):
@@ -29,4 +30,4 @@ class HelpCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return "".join([command.help() for command in self.list_commands])
+        return "**List Commands:**\n" + "".join([command.help() for command in self.list_commands])

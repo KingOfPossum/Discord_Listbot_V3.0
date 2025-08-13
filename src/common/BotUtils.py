@@ -35,7 +35,7 @@ class BotUtils:
         game_entry = database.get_game_entry(game_name, ctx.author.name)
 
         if game_entry is None:
-            await ctx.send("**Game not found!**")
+            await ctx.send(f"**{game_name} not found!**")
             return None
         else:
             print(f"\nFound GameEntry:\n {game_entry}\n")
