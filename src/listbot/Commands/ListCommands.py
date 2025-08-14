@@ -34,5 +34,4 @@ class ListCommands:
         await bot.add_cog(CompletedCommand(list_database))
         await bot.add_cog(ViewCommand(list_database))
         await bot.add_cog(HelpCommand())
-        print("Cogs:", list(bot.cogs.keys()))
-        print("Commands:", [c.name for c in bot.commands])
+        print("Registered ListCommands cogs.")

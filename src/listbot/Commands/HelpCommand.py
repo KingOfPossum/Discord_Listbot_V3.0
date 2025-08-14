@@ -1,5 +1,8 @@
 from common.Command import Command
 from discord.ext import commands
+
+from general.Commands.RandomizeCommand import RandomizeCommand
+from general.Commands.RandomizeNumCommand import RandomizeNumCommand
 from listbot.Commands.AddCommand import AddCommand
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.RemoveCommand import RemoveCommand
@@ -14,6 +17,7 @@ class HelpCommand(Command):
     """
 
     def __init__(self):
+        self.general_commands = [RandomizeNumCommand(),RandomizeCommand()]
         self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None)]
 
     @commands.command(name="help")
@@ -30,4 +34,6 @@ class HelpCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return "**List Commands:**\n" + "".join([command.help() for command in self.list_commands])
+        general_commands_help = "**General Commands:**\n" + "".join([command.help() for command in self.general_commands])
+        list_commands_help = "**List Commands:**\n" + "".join([command.help() for command in self.list_commands])
+        return general_commands_help + "\n" + list_commands_help

@@ -5,6 +5,8 @@ import os
 from common.ConfigLoader import ConfigLoader
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
+
+from general.Commands.GeneralCommands import GeneralCommands
 from listbot.BotEvents import BotEvents
 from listbot.Commands.ListCommands import ListCommands
 
@@ -43,6 +45,7 @@ class Bot:
 
         self.__bot.remove_command('help')
         self.list_commands = ListCommands(self._databases)
+        self.general_commands = GeneralCommands()
 
         asyncio.run(self.register_events())
         asyncio.run(self.register_commands())
@@ -55,7 +58,10 @@ class Bot:
     async def register_commands(self):
         """Registers the list commands cogs."""
         await self.list_commands.register(self.__bot)
-        print("Registered ListCommands cogs.")
+        await self.general_commands.register(self.__bot)
+        print("Cogs:", list(self.__bot.cogs.keys()))
+        print("Commands:", [c.name for c in self.__bot.commands])
+        print()
 
     def run(self):
         """
