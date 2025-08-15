@@ -1,4 +1,6 @@
 import os
+from zoneinfo import available_timezones
+
 import yaml
 import re
 
@@ -10,6 +12,33 @@ class ConfigLoader:
     """
     config_path = "../resources/config.yaml"
     config = None
+    available_consoles =    {'PC':'<:PC:1218171109145575535>',
+                            'NES':'<:NES:1218170822305382470>',
+                            'SNES':'<:SNES:1218171067395211324>',
+                            'GameBoy':'<:GameBoy:1218170693254905926>',
+                            'GameBoy Advance':'<:GameBoyAdvance:1218170726582845591>',
+                            'N64':'<:N64:1218170791120601159>',
+                            'GameCube':'<:GameCube:1218170761861267537>',
+                            'DS':'<:DS:1218170876860829707>',
+                            '3DS':'<:3DS:1280970046272831549>',
+                            'Wii':'<:Wii:1218171432756842587>',
+                            'WiiU':'<:WiiU:1218171456639340614>',
+                            'Switch':'<:Switch:1218171017512616016>',
+                            'Switch 2':'<:Switch2:1369050664948203580>',
+                            'Dreamcast':'<:Dreamcast:1218172336725823518>',
+                            'Genesis':'<:Genesis:1218171327861489775>',
+                            'MasterSystem':'<:MasterSystem:1218171369473183815>',
+                            'Saturn':'<:Saturn:1218171402033827872>',
+                            'XBOX':'<:XBOX:1218172368879358042>',
+                            'XBOX 360':'<:XBOX360:1218171484951019622>',
+                            'XBOX ONE':'<:XBOXONE:1218171506836639784>',
+                            'PS1':'<:PS1:1218171162131959808>',
+                            'PS2':'<:PS2:1218171210978820166>',
+                            'PS3':'<:PS3:1218171132667232346>',
+                            'PS4':'<:PS4:1218171295104110623>',
+                            'PS5':'<:PS5:1227527850710536212>',
+                            'PSP':'<:PSP:1286032971907993701>',
+                            'PS Vita':'<:PSVita:1286032764201599077>'}
 
     @staticmethod
     def get_config():
@@ -64,6 +93,9 @@ class ConfigLoader:
                 file.write("  command_prefix: '%'\n")
                 file.write("  databases_folder_path: '../resources/databases/'\n")
                 file.write("  accepted_users:\n")
+                file.write("  consoles:\n")
+                for console in ConfigLoader.available_consoles.keys():
+                    file.write(f"    {console}: '{ConfigLoader.available_consoles[console]}'\n")
 
     @staticmethod
     def load() -> Config:
@@ -75,4 +107,4 @@ class ConfigLoader:
         with open(ConfigLoader.config_path, "r") as file:
             config_dict = yaml.safe_load(file)
 
-            return Config(config_dict["bot"]["api_key"],config_dict["bot"]["command_prefix"],config_dict["bot"]["databases_folder_path"],config_dict["bot"]["accepted_users"])
+            return Config(config_dict["bot"]["api_key"],config_dict["bot"]["command_prefix"],config_dict["bot"]["databases_folder_path"],config_dict["bot"]["accepted_users"],config_dict["bot"]["consoles"])

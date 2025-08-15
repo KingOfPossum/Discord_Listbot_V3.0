@@ -1,3 +1,4 @@
+from common.ConfigLoader import ConfigLoader
 
 class Emojis:
     """
@@ -5,3 +6,4 @@ class Emojis:
     """
     CHECK_MARK = "✅"
     CROSS_MARK = "❌"
+    CONSOLES = ConfigLoader.get_config().consoles
