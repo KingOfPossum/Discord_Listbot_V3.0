@@ -1,5 +1,6 @@
 import discord
 
+from common.ConfigLoader import ConfigLoader
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
@@ -47,7 +48,10 @@ class GameCreationModal(discord.ui.Modal):
             await interaction.response.defer()
             await MessageManager.send_error_message(interaction.channel,"please Provide a rating between 0 and 100")
             return
-        #ToDo Check if console is valid (needs list of valid consoles for the bot)
+        if console not in ConfigLoader.get_config().consoles.keys():
+            await interaction.response.defer()
+            await MessageManager.send_error_message(interaction.channel,f"Console \"{console}\" is not valid, please provide a valid console")
+            return
 
         game_entry = GameEntry(name=game_name,user=user,date=date,console=console,rating=rating,genre=genre,review=review,replayed=False,hundred_percent=False)
         self.database.put_game(game_entry,self.game_entry)

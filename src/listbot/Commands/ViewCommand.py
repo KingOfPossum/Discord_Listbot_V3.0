@@ -19,7 +19,9 @@ class ViewCommand(Command):
 
         game_name, game_entry = game
 
-        view_game_details = f"**Console:** {game_entry.console}\n" \
+        console_emoji = Emojis.CONSOLES[game_entry.console] if Emojis.CONSOLES[game_entry.console] != "" else game_entry.console
+
+        view_game_details = f"**Console:** {console_emoji}\n" \
                             f"**Rating:** {game_entry.replayed}\n" \
                             f"**Genre:** {game_entry.genre}\n" \
                             f"**Review:** {game_entry.review}\n\n" \
