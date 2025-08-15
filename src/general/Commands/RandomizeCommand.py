@@ -3,6 +3,7 @@ import random
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
+from common.MessageManager import MessageManager
 from discord.ext import commands
 
 class RandomizeCommand(Command):
@@ -18,8 +19,8 @@ class RandomizeCommand(Command):
         command_data = BotUtils.get_message_content(ctx.message)
         items = command_data.split(",")
 
-        if len(items) == 0:
-            await ctx.send("Please provide a list of items separated by commas.")
+        if len(items) == 0 or items[0] == "":
+            await MessageManager.send_error_message(ctx.channel,"please Provide a List of Items separated by Commas")
             return
 
         await ctx.send(random.choice(items))

@@ -4,6 +4,7 @@ from common.Command import Command
 from discord.ext import commands
 from common.BotUtils import BotUtils
 from common.ConfigLoader import ConfigLoader
+from common.MessageManager import MessageManager
 
 class RandomizeNumCommand(Command):
     """
@@ -19,22 +20,23 @@ class RandomizeNumCommand(Command):
         command_data = BotUtils.get_message_content(ctx.message)
 
         nums = command_data.split(",")
-        if 0 > len(nums) > 2:
-            await ctx.send("Please provide only one or two numbers separated by a comma.")
+
+        if len(nums) <= 0 or len(nums) > 2:
+            await MessageManager.send_error_message(ctx.channel,"please provide only One or Two numbers separated by a comma")
             return
 
         try:
-            num1 = 1 if len(nums) == 1 else int(nums[1])
+            num1 = 1 if len(nums) == 1 else int(nums[0])
             num2 = int(nums[0]) if len(nums) == 1 else int(nums[1])
 
             if num1 > num2:
-                await ctx.send("The first number must be less than or equal to the second number.")
+                await MessageManager.send_error_message(ctx.channel,"the First number must be Less Than or Equal to the Second number")
                 return
 
             random_num = random.randint(num1,num2)
             await ctx.send(random_num)
         except ValueError:
-            await ctx.send("Please provide valid numbers.")
+            await MessageManager.send_error_message(ctx.channel,"please provide Valid Numbers")
 
     def help(self) -> str:
         """

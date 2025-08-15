@@ -1,6 +1,7 @@
 import discord
 
 from common.GameEntry import GameEntry
+from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from database.Database import Database
 
@@ -38,11 +39,17 @@ class GameCreationModal(discord.ui.Modal):
         user = interaction.user.name
         date = self.game_entry.date if self.game_entry else TimeUtils.get_current_date_formated()
         console = self.children[1].value
-        rating = self.children[2].value
+        rating = int(self.children[2].value)
         genre = self.children[3].value
         review = self.children[4].value
 
-        game_entry = GameEntry(name=game_name,user=user,date=date,console=console,rating=int(rating),genre=genre,review=review,replayed=False,hundred_percent=False)
+        if rating < 0 or rating > 100:
+            await interaction.response.defer()
+            await MessageManager.send_error_message(interaction.channel,"please Provide a rating between 0 and 100")
+            return
+        #ToDo Check if console is valid (needs list of valid consoles for the bot)
+
+        game_entry = GameEntry(name=game_name,user=user,date=date,console=console,rating=rating,genre=genre,review=review,replayed=False,hundred_percent=False)
         self.database.put_game(game_entry,self.game_entry)
 
         print(game_entry)
