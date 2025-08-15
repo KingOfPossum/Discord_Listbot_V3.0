@@ -2,6 +2,7 @@ import discord
 
 from common.ConfigLoader import ConfigLoader
 from common.GameEntry import GameEntry
+from common.MessageManager import MessageManager
 from database.Database import Database
 
 class BotUtils:
@@ -35,7 +36,7 @@ class BotUtils:
         game_entry = database.get_game_entry(game_name, ctx.author.name)
 
         if game_entry is None:
-            await ctx.send(f"**{game_name} not found!**")
+            await MessageManager.send_error_message(ctx.channel, f"Game \"{game_name}\" not found, please provide a Valid Game Name")
             return None
         else:
             print(f"\nFound GameEntry:\n {game_entry}\n")

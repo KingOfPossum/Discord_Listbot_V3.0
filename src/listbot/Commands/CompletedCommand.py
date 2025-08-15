@@ -2,8 +2,8 @@ from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.Emojis import Emojis
-from discord.ext import commands
 from database.Database import Database
+from discord.ext import commands
 
 class CompletedCommand(Command):
     def __init__(self,database: Database):

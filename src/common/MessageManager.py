@@ -15,5 +15,15 @@ class MessageManager:
         :param color: The color of the embedded message (default is green).
         """
         embed = discord.Embed(title=title, description=description, color=color)
+        #ToDo: if bot_message is True, set the author to the bot's user with its avatar
         embed.set_author(name=ctx.author, icon_url=ctx.author.avatar.url)
         await ctx.send(embed=embed)
+
+    @staticmethod
+    async def send_error_message(channel: discord.TextChannel, error_message: str):
+        """
+        Sends a formatted error message to the specified channel.
+        :param channel: The channel where the error message will be sent.
+        :param error_message: The error message to be sent.
+        """
+        await channel.send(f"```ml\nError:\n{error_message}```")
