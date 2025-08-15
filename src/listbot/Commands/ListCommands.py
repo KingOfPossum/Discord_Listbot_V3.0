@@ -2,6 +2,7 @@ from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from listbot.Commands.AddCommand import AddCommand
 from listbot.Commands.CompletedCommand import CompletedCommand
+from listbot.Commands.ConsolesCommand import ConsolesCommand
 from listbot.Commands.HelpCommand import HelpCommand
 from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
@@ -33,5 +34,6 @@ class ListCommands:
         await bot.add_cog(ReplayedCommand(list_database))
         await bot.add_cog(CompletedCommand(list_database))
         await bot.add_cog(ViewCommand(list_database))
+        await bot.add_cog(ConsolesCommand())
         await bot.add_cog(HelpCommand())
         print("Registered ListCommands cogs.")
