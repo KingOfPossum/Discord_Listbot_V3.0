@@ -1,7 +1,10 @@
+import discord
+
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.Emojis import Emojis
+from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from database.Database import Database
 from discord.ext import commands
@@ -11,15 +14,16 @@ class ViewCommand(Command):
     def __init__(self,database: Database):
         self.database = database
 
-    @commands.command(name="view")
-    async def execute(self, ctx):
-        game = await BotUtils.game_exists(ctx,self.database)
-        if not game:
-            return
-
-        game_name, game_entry = game
-
-        console_emoji = Emojis.CONSOLES[game_entry.console] if Emojis.CONSOLES[game_entry.console] != "" else game_entry.console
+    @staticmethod
+    def get_game_view_txt(game_entry: GameEntry) -> str:
+        """
+        Creates an embed for the game view command.
+        Contains all information about the game entry.
+        :param game_entry: The GameEntry containing the game details.
+        :return : A formatted string with the game details.
+        """
+        console_emoji = Emojis.CONSOLES[game_entry.console] if Emojis.CONSOLES[
+                                                                   game_entry.console] != "" else game_entry.console
 
         view_game_details = f"**Console:** {console_emoji}\n" \
                             f"**Rating:** {game_entry.replayed}\n" \
@@ -27,7 +31,26 @@ class ViewCommand(Command):
                             f"**Review:** {game_entry.review}\n\n" \
                             f"**Replay:** {[Emojis.CROSS_MARK, Emojis.CHECK_MARK][game_entry.replayed]}\n\n" \
                             f"Added on **{game_entry.date}**"
-        await MessageManager.send_embed_message(ctx, f"**{game_name} {"(100%)" * game_entry.hundred_percent}**", view_game_details)
+
+        return view_game_details
+
+
+    @commands.command(name="view")
+    async def execute(self, ctx):
+        """
+        Handles the 'view' command to view the game details of a specific game.
+        This command will check if the game exists in the database and then display its details.
+        If the game does not exist, it will send an error message.
+        :param ctx: Tghe context in which the command was invoked
+        """
+        game = await BotUtils.game_exists(ctx,self.database)
+        if not game:
+            return
+
+        game_name, game_entry = game
+
+        embed = MessageManager.get_embed(title=f"**{game_name} {"(100%)" * game_entry.hundred_percent}**",description=self.get_game_view_txt(game_entry))
+        await MessageManager.send_message(ctx,embed=embed)
 
     def help(self) -> str:
         return f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` - View the details of a game in the list\n"

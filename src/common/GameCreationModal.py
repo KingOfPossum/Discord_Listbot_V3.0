@@ -5,6 +5,8 @@ from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from database.Database import Database
+from listbot.Commands.ViewCommand import ViewCommand
+
 
 class GameCreationModal(discord.ui.Modal):
     """
@@ -29,6 +31,43 @@ class GameCreationModal(discord.ui.Modal):
         self.add_item(discord.ui.TextInput(label="Genre", default=game_entry.genre if game_entry else "", placeholder="What Genre is the Game", required=False,style=discord.TextStyle.short))
         self.add_item(discord.ui.TextInput(label="Review", default=game_entry.review if game_entry else "", placeholder="Your review", required=False,style=discord.TextStyle.paragraph))
 
+    async def __isvalid(self,interaction: discord.Interaction):
+        """
+        Checks if the input provided in the modal is valid.
+        If the input is not valid, it will send an error message to the channel of the interaction.
+        :param interaction: The interaction in which the modal was submitted.
+        :return: True if the input is valid, False otherwise.
+        """
+        console = self.children[1].value
+        rating = int(self.children[2].value)
+
+        if rating < 0 or rating > 100:
+            await interaction.response.defer()
+            await MessageManager.send_error_message(interaction.channel,"please Provide a rating between 0 and 100")
+            return False
+        if console not in ConfigLoader.get_config().consoles.keys():
+            await interaction.response.defer()
+            await MessageManager.send_error_message(interaction.channel,f"Console \"{console}\" is not valid, please provide a valid console")
+            return False
+        return True
+
+    def __to_game_entry(self,user:str):
+        """
+        Converts the modal input fields into a GameEntry object.
+        This method will create a new GameEntry object with the values provided in the modal fields.
+        :param user: The username of the user who is creating the game entry.
+        :return: The created GameEntry object with the provided values.
+        """
+        game_name = self.children[0].value
+        date = self.game_entry.date if self.game_entry else TimeUtils.get_current_date_formated()
+        console = self.children[1].value
+        rating = int(self.children[2].value)
+        genre = self.children[3].value
+        review = self.children[4].value
+
+        return GameEntry(name=game_name, user=user, date=date, console=console, rating=rating, genre=genre,
+                               review=review, replayed=False, hundred_percent=False)
+
     async def on_submit(self, interaction: discord.Interaction):
         """
         Called when the modal is submitted.
@@ -36,27 +75,15 @@ class GameCreationModal(discord.ui.Modal):
         it will create a new game entry in the database.
         :param interaction: the interaction in which the modal was submitted
         """
-        game_name = self.children[0].value
-        user = interaction.user.name
-        date = self.game_entry.date if self.game_entry else TimeUtils.get_current_date_formated()
-        console = self.children[1].value
-        rating = int(self.children[2].value)
-        genre = self.children[3].value
-        review = self.children[4].value
-
-        if rating < 0 or rating > 100:
-            await interaction.response.defer()
-            await MessageManager.send_error_message(interaction.channel,"please Provide a rating between 0 and 100")
-            return
-        if console not in ConfigLoader.get_config().consoles.keys():
-            await interaction.response.defer()
-            await MessageManager.send_error_message(interaction.channel,f"Console \"{console}\" is not valid, please provide a valid console")
+        if not await self.__isvalid(interaction):
             return
 
-        game_entry = GameEntry(name=game_name,user=user,date=date,console=console,rating=rating,genre=genre,review=review,replayed=False,hundred_percent=False)
-        self.database.put_game(game_entry,self.game_entry)
+        game_entry = self.__to_game_entry(interaction.user.name)
+        self.database.put_game(game_entry, self.game_entry)
 
         print(game_entry)
 
-        command_txt = "Updated" if self.game_entry else "Added"
-        await interaction.response.send_message(f"**{command_txt} game : {game_name}**")
+        game_view_txt = ViewCommand.get_game_view_txt(game_entry)
+        embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
+
+        await MessageManager.send_message(interaction=interaction,embed=embed)
