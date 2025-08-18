@@ -1,3 +1,5 @@
+import discord
+
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
@@ -13,15 +15,19 @@ class ReplayedCommand(Command):
     def __init__(self, database: Database):
         self.database = database
 
-    @commands.command(name="replayed")
-    async def execute(self,ctx):
+    @staticmethod
+    async def change_replayed_status(game_name: str, database: Database, ctx: discord.Interaction = None, interaction: discord.Interaction = None):
         """
-        Handles the 'replayed' command to change the replay status of a game.
-        This command will check if the game exists in the database and if it does, it will
+        Changes the replay status of a game.
+        This function will check if the game exists in the database and if it does, it will
         toggle the replayed status of the game.
-        :param ctx: the context in which the command was invoked
+        :param game_name: The name of the game to change the replay status for
+        :param database: The database instance to use
+        :param ctx: The context in which the command was invoked (optional)
+        :param interaction: The interaction that triggered the command (optional)
+        :return: The new game entry with updated replay status
         """
-        game = await BotUtils.game_exists(ctx,self.database)
+        game = await BotUtils.game_exists(game_name,database,ctx=ctx,interaction=interaction)
         if game is None:
             return
 
@@ -31,7 +37,20 @@ class ReplayedCommand(Command):
         new_game_entry.replayed = not old_game_entry.replayed
         print(f"Replayed status changed to: {new_game_entry.replayed}\n")
 
-        self.database.put_game(new_game_entry, old_game_entry)
+        database.put_game(new_game_entry,old_game_entry)
+
+        return new_game_entry
+
+    @commands.command(name="replayed")
+    async def execute(self,ctx):
+        """
+        Handles the 'replayed' command to change the replay status of a game.
+        This command will check if the game exists in the database and if it does, it will
+        toggle the replayed status of the game.
+        :param ctx: the context in which the command was invoked
+        """
+        game_name = BotUtils.get_message_content(ctx.message)
+        new_game_entry = await self.change_replayed_status(game_name=game_name,database=self.database,ctx=ctx)
 
         emojis = [Emojis.CROSS_MARK, Emojis.CHECK_MARK]
         await ctx.send(f"**Changed replay status of {game_name} to: {emojis[new_game_entry.replayed]}**")

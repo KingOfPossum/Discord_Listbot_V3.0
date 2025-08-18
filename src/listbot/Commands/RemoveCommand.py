@@ -22,7 +22,8 @@ class RemoveCommand(Command):
         remove the game entry from the database.
         :param ctx: the context in which the command was invoked
         """
-        game = await BotUtils.game_exists(ctx,self.database)
+        game_name = BotUtils.get_message_content(ctx.message)
+        game = await BotUtils.game_exists(game_name,self.database,ctx=ctx)
         if not game:
             return
 

@@ -21,33 +21,23 @@ class MessageManager:
         return embed
 
     @staticmethod
-    async def send_message(ctx: discord.Interaction = None, interaction: discord.Interaction = None,message: str = "", embed: discord.Embed = None, view: discord.ui.View = None):
+    async def send_message(channel: discord.TextChannel,message: str = "", embed: discord.Embed = None, view: discord.ui.View = None):
         """
-        Sends a message to either a contexts or an interactions channel.
+        Sends a message to a Text Channel
         If an embed is provided, it will be sent with the message.
         If an view is provided, it will be added to the message.
-        :param ctx: The context in which the command was invoked.
-        :param interaction: The interaction in which the command was invoked.
+        :param channel: The channel where the message will be sent.
         :param message: The message to be sent.
         :param embed: An optional embed to be sent with the message.
         :param view: An optional view to be added to the message.
         """
-        if not (ctx or interaction):
-            raise ValueError("Either ctx or interaction must be provided to send a message.")
-
         kwargs = {"content": message}
         if embed:
             kwargs["embed"] = embed
         if view:
             kwargs["view"] = view
 
-        if ctx:
-            await ctx.send(**kwargs)
-        else:
-            if interaction.response.is_done():
-                await interaction.followup.send(**kwargs)
-            else:
-                await interaction.response.send_message(**kwargs)
+        await channel.send(**kwargs)
 
     @staticmethod
     async def send_error_message(channel: discord.TextChannel, error_message: str):
@@ -56,4 +46,4 @@ class MessageManager:
         :param channel: The channel where the error message will be sent.
         :param error_message: The error message to be sent.
         """
-        await channel.send(f"```ml\nError:\n{error_message}```")
+        await MessageManager.send_message(channel,f"```ml\nError:\n{error_message}```")
