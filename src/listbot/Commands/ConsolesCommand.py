@@ -3,6 +3,8 @@ from common.ConfigLoader import ConfigLoader
 from discord.ext import commands
 
 from common.Emojis import Emojis
+from common.MessageManager import MessageManager
+from common.UserManager import UserManager
 
 
 class ConsolesCommand(Command):
@@ -15,6 +17,10 @@ class ConsolesCommand(Command):
         This command will send a message with the names of all supported consoles.
         :param ctx: The context in which the command was invoked
         """
+        if not UserManager.is_user_accepted(ctx.author.name):
+            await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
+            return
+
         consoles_txt = "\n".join([f"- {console} : {Emojis.CONSOLES[console]}" for console in ConfigLoader.get_config().consoles.keys()])
         await ctx.send(consoles_txt)
 

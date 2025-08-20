@@ -6,6 +6,7 @@ from common.ConfigLoader import ConfigLoader
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
+from common.UserManager import UserManager
 from database.Database import Database
 from discord.ext import commands
 
@@ -43,6 +44,10 @@ class ViewCommand(Command):
         If the game does not exist, it will send an error message.
         :param ctx: The context in which the command was invoked
         """
+        if not UserManager.is_user_accepted(ctx.author.name):
+            await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
+            return
+
         game_name=  BotUtils.get_message_content(ctx.message)
         game = await BotUtils.game_exists(game_name,self.database,ctx=ctx)
         if not game:

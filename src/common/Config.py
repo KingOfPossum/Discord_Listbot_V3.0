@@ -9,7 +9,7 @@ class Config:
     api_key: str
     command_prefix: str
     database_folder_path: str
-    accepted_users: list[str]
+    accepted_users: set[str]
     consoles: dict[str, str]
 
     def __str__(self):
