@@ -4,6 +4,8 @@ from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.Emojis import Emojis
+from common.MessageManager import MessageManager
+from common.UserManager import UserManager
 from database.Database import Database
 from discord.ext import commands
 
@@ -49,6 +51,10 @@ class ReplayedCommand(Command):
         toggle the replayed status of the game.
         :param ctx: the context in which the command was invoked
         """
+        if not UserManager.is_user_accepted(ctx.author.name):
+            await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
+            return
+
         game_name = BotUtils.get_message_content(ctx.message)
         new_game_entry = await self.change_replayed_status(game_name=game_name,database=self.database,ctx=ctx)
 

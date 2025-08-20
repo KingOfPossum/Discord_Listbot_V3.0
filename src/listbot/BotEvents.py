@@ -1,6 +1,9 @@
 
 from discord.ext import commands
 
+from common.UserManager import UserManager
+
+
 class BotEvents(commands.Cog):
     """
     A Discord cog that handles bot events.
@@ -21,3 +24,4 @@ class BotEvents(commands.Cog):
         This will print a message to the console indicating that the bot is ready.
         """
         print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})")
+        UserManager.init(self.__bot)

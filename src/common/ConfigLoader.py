@@ -106,5 +106,4 @@ class ConfigLoader:
 
         with open(ConfigLoader.config_path, "r") as file:
             config_dict = yaml.safe_load(file)
-
-            return Config(config_dict["bot"]["api_key"],config_dict["bot"]["command_prefix"],config_dict["bot"]["databases_folder_path"],config_dict["bot"]["accepted_users"],config_dict["bot"]["consoles"])
+            return Config(config_dict["bot"]["api_key"],config_dict["bot"]["command_prefix"],config_dict["bot"]["databases_folder_path"],set(config_dict["bot"]["accepted_users"]) if config_dict["bot"]["accepted_users"] else set(),config_dict["bot"]["consoles"])
