@@ -7,3 +7,4 @@ class Emojis:
     CHECK_MARK = "✅"
     CROSS_MARK = "❌"
     CONSOLES = ConfigLoader.get_config().consoles
+    REVIEW = "📜"
