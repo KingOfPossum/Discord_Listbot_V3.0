@@ -6,6 +6,7 @@ from general.Commands.RandomizeNumCommand import RandomizeNumCommand
 from listbot.Commands.AddCommand import AddCommand
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ConsolesCommand import ConsolesCommand
+from listbot.Commands.ListCommand import ListCommand
 from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.UpdateCommand import UpdateCommand
@@ -19,7 +20,7 @@ class HelpCommand(Command):
 
     def __init__(self):
         self.general_commands = [RandomizeNumCommand(),RandomizeCommand()]
-        self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),
+        self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
                               ConsolesCommand()]
 
     @commands.command(name="help")

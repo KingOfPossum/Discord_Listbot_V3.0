@@ -104,6 +104,17 @@ class Database:
 
         return None
 
+    def get_all_game_entries(self, user_name:str) -> list[GameEntry]:
+        """
+        Retrieves all game entries for a specific user from the database.
+        :param user_name: The name of the user whose game entries are to be retrieved.
+        :return: A list of GameEntry objects containing the details of all games added by the user.
+        """
+        query = f"SELECT * FROM {self.table_name} WHERE user = ?"
+        data = self.sql_execute_fetchall(query, (user_name,))
+
+        return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], genre=row[5], review=row[6], replayed=bool(row[8]), hundred_percent=bool(row[9])) for row in data]
+
     def __init_database(self,table_name: str,params: list[tuple]):
         """
         Initializes the database by creating a table with the specified name and parameters if it does not already exist.
