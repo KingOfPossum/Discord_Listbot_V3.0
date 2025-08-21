@@ -12,7 +12,6 @@ class RemoveCommand(Command):
     """
     Command that will remove a game from the list.
     """
-
     def __init__(self, database: Database):
         self.database = database
 

@@ -9,13 +9,13 @@ class GameList:
     """
     This class represents a list of games for a user.
     """
-
-    def __init__(self,database: Database,ctx: discord.Interaction):
+    def __init__(self,database: Database,ctx: discord.Interaction,user: str = None):
         self.ctx = ctx
+        self.user = user if user is not None else ctx.author.name
         self.database = database
-        self.games = self.database.get_all_game_entries(self.ctx.author.name)
         self.page = 1
         self.max_entries_per_page = 5
+        self.games = self.database.get_all_game_entries(self.user)
 
     @staticmethod
     def game_entry_to_list_entry(game_entry: GameEntry) -> str:
@@ -26,13 +26,15 @@ class GameList:
         :return: The string representation for the list
         """
         game_name = f"**{game_entry.name}**"
+        replay_txt = "**(REPLAY)**" if game_entry.replayed else ""
+        completion_txt = "**(100%)**" if game_entry.hundred_percent else ""
         console_txt = f"({Emojis.CONSOLES[game_entry.console]})"
         rating_txt = f"Rating: **{game_entry.rating}**"
         genre_txt = f"Genre: **{game_entry.genre}**"
         date_txt = f"added on **{game_entry.date}**"
         review_txt = Emojis.REVIEW if len(game_entry.review) > 0 else ""
 
-        return " ".join([game_name,console_txt,rating_txt,genre_txt,date_txt,review_txt])
+        return " ".join([game_name,replay_txt,completion_txt,console_txt,rating_txt,genre_txt,date_txt,review_txt])
 
     def get_list_txt(self) -> str:
         """
@@ -83,6 +85,9 @@ class GameList:
         Sends the game list to the lists ctx channel.
         Will add two buttons for navigating through the pages.
         """
+        if len(self.games) == 0:
+            await MessageManager.send_error_message(self.ctx.channel,"you have No Games in your List")
+
         embed_title = f"**{self.ctx.author.display_name}'games**"
         embed_description = self.get_list_txt()
         embed = MessageManager.get_embed(title=embed_title,description=embed_description,user=self.ctx.author)
@@ -106,11 +111,11 @@ class GameList:
             await interaction.response.edit_message(embed=embed,view=view)
 
         view = discord.ui.View()
-        next_button = discord.ui.Button(label="->",style=discord.ButtonStyle.blurple)
-        previous_button = discord.ui.Button(label="<-",style=discord.ButtonStyle.green)
+        previous_button = discord.ui.Button(label="<",style=discord.ButtonStyle.green)
+        next_button = discord.ui.Button(label=">",style=discord.ButtonStyle.blurple)
 
-        next_button.callback = next_callback
         previous_button.callback = previous_callback
+        next_button.callback = next_callback
 
         view.add_item(previous_button)
         view.add_item(next_button)

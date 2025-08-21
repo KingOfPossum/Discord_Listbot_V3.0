@@ -30,4 +30,4 @@ class RandomizeCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return f"-  `{ConfigLoader.get_config().command_prefix}randomize` `item1`,`item2`,... - Randomizes an item from the provided list of items.\n"
+        return f"-  `{ConfigLoader.get_config().command_prefix}randomize` `item1`,`item2`,... - Returns a random item from the provided list of items.\n"

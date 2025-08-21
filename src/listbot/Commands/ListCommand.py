@@ -1,3 +1,4 @@
+from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
@@ -5,7 +6,7 @@ from common.UserManager import UserManager
 from discord.ext import commands
 
 from database.Database import Database
-from listbot.Commands.GameList import GameList
+from listbot.GameList import GameList
 
 class ListCommand(Command):
     """
@@ -19,14 +20,24 @@ class ListCommand(Command):
         """
         Handles the 'list' command to list all games of a specific user.
         This command will check if the user is accepted and if they are, it will
-        retrieve and display the list of games for that user.
+        retrieve and display the list of games for that user if no other user is provided.
+        If there is another user provided, it will list the games for that user instead if this user itself is also accepted by the bot.
         :param ctx: the context in which the command was invoked
         """
         if not UserManager.is_user_accepted(ctx.author.name):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        game_list = GameList(self.database,ctx)
+        user = BotUtils.get_message_content(ctx.message)
+        if user == "":
+            game_list = GameList(self.database,ctx)
+        else:
+            if user not in UserManager.accepted_users:
+                await MessageManager.send_error_message(ctx.channel,"the Provided User is Not an Legal User")
+                return
+
+            game_list = GameList(self.database,ctx,user=user)
+
         await game_list.send_list()
 
     def help(self) -> str:
@@ -34,4 +45,5 @@ class ListCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}list` - List all games from the list.\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}list` - List all games from your list.\n" \
+                f"- `{ConfigLoader.get_config().command_prefix}list` `user` - List all games from the users list.\n"
