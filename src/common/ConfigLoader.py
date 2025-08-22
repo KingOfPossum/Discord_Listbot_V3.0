@@ -115,3 +115,26 @@ class ConfigLoader:
                           bot_replies_to_links=config_dict["bot"]["bot_replies_to_links"],
                           accepted_users=set(config_dict["bot"]["accepted_users"]) if config_dict["bot"]["accepted_users"] else set(),
                           consoles=config_dict["bot"]["consoles"])
+
+    @staticmethod
+    def update(variable: str, value):
+        """
+        Updates the variable in the configuration file with the given value.
+        :param: variable: The variable to update.
+        :param: value: The new value for the variable.
+        """
+        ConfigLoader.create_config_file_if_not_exists()
+
+        config_dict = dict()
+
+        with open(ConfigLoader.config_path, "r") as file:
+            config_dict = yaml.safe_load(file)
+
+        if variable not in config_dict["bot"].keys():
+            raise KeyError(f"Variable '{variable}' not found in the configuration file.")
+        config_dict["bot"][variable] = value
+
+        with open(ConfigLoader.config_path, "w") as file:
+            yaml.safe_dump(config_dict, file, default_flow_style=False, sort_keys=False)
+
+        ConfigLoader.config = ConfigLoader.load()

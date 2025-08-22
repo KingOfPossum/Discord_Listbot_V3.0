@@ -3,9 +3,11 @@ from discord.ext import commands
 
 from general.Commands.RandomizeCommand import RandomizeCommand
 from general.Commands.RandomizeNumCommand import RandomizeNumCommand
+from general.Commands.ActivateBotRepliesCommand import ActivateBotRepliesCommand
 from listbot.Commands.AddCommand import AddCommand
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ConsolesCommand import ConsolesCommand
+from general.Commands.DeactivateBotRepliesCommand import DeactivateBotRepliesCommand
 from listbot.Commands.ListCommand import ListCommand
 from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
@@ -19,7 +21,7 @@ class HelpCommand(Command):
     """
 
     def __init__(self):
-        self.general_commands = [RandomizeNumCommand(),RandomizeCommand()]
+        self.general_commands = [RandomizeNumCommand(),RandomizeCommand(),ActivateBotRepliesCommand(),DeactivateBotRepliesCommand()]
         self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
                               ConsolesCommand()]
 

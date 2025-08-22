@@ -1,5 +1,6 @@
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
+
 from listbot.Commands.AddCommand import AddCommand
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ConsolesCommand import ConsolesCommand
