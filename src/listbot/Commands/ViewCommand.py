@@ -48,8 +48,22 @@ class ViewCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        game_name=  BotUtils.get_message_content(ctx.message)
-        game = await BotUtils.game_exists(game_name,self.database,ctx=ctx)
+        args = BotUtils.get_message_content(ctx.message).split()
+        if not args:
+            await MessageManager.send_error_message(ctx.channel,"Please Provide a Game Name")
+            return
+
+        if len(args) > 1 and UserManager.is_user_accepted(args[-1]):
+            user = args[-1]
+            game_name = " ".join(args[:-1])
+        else:
+            user = None
+            game_name = " ".join(args)
+
+        print(f"User : {user}")
+        print(f"Game Name : {game_name}")
+
+        game = await BotUtils.game_exists(game_name,self.database,user=user,ctx=ctx)
         if not game:
             return
 
@@ -59,4 +73,5 @@ class ViewCommand(Command):
         await MessageManager.send_message(ctx.channel,embed=embed)
 
     def help(self) -> str:
-        return f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` - View the details of a game in the list\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` - View the details of a game your list\n" \
+               f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` `user` - View the details of a game from another user's list\n"

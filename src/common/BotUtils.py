@@ -25,19 +25,23 @@ class BotUtils:
         return ""
 
     @staticmethod
-    async def game_exists(game_name: str,database: Database,ctx: discord.Interaction = None,interaction: discord.Interaction = None) -> tuple[str,GameEntry]:
+    async def game_exists(game_name: str,database: Database,user: str = None,ctx: discord.Interaction = None,interaction: discord.Interaction = None) -> tuple[str,GameEntry]:
         """
         Checks if a game exists in the database.
         :param ctx: The context in which the command was invoked
         :param interaction: The interaction object if the command was invoked through an interaction.
         :param game_name: The name of the game to check.
         :param database: The database instance to check for the game entry.
+        :param user: The username of the user who owns the game entry, if applicable.
         :return: Tuple containing the game name and the GameEntry object if it exists, otherwise None.
         """
+        if user is None:
+            user = ctx.author.name
+
         if ctx:
-            game_entry = database.get_game_entry(game_name, ctx.author.name)
+            game_entry = database.get_game_entry(game_name, user)
         elif interaction:
-            game_entry = database.get_game_entry(game_name, interaction.user.name)
+            game_entry = database.get_game_entry(game_name, user)
 
         if game_entry is None:
             channel = ctx.channel if ctx else interaction.channel
