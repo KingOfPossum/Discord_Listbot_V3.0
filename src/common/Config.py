@@ -9,6 +9,8 @@ class Config:
     api_key: str
     command_prefix: str
     database_folder_path: str
+    bot_replies: bool
+    bot_replies_to_links: bool
     accepted_users: set[str]
     consoles: dict[str, str]
 
