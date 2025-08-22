@@ -60,9 +60,6 @@ class ViewCommand(Command):
             user = None
             game_name = " ".join(args)
 
-        print(f"User : {user}")
-        print(f"Game Name : {game_name}")
-
         game = await BotUtils.game_exists(game_name,self.database,user=user,ctx=ctx)
         if not game:
             return
