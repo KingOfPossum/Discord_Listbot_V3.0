@@ -1,3 +1,5 @@
+from general.Commands.ActivateBotRepliesCommand import ActivateBotRepliesCommand
+from general.Commands.DeactivateBotRepliesCommand import DeactivateBotRepliesCommand
 from general.Commands.RandomizeCommand import RandomizeCommand
 from general.Commands.RandomizeNumCommand import RandomizeNumCommand
 from discord.ext import commands
@@ -14,4 +16,6 @@ class GeneralCommands:
         """
         await bot.add_cog(RandomizeNumCommand())
         await bot.add_cog(RandomizeCommand())
+        await bot.add_cog(ActivateBotRepliesCommand())
+        await bot.add_cog(DeactivateBotRepliesCommand())
         print("Registered General cogs.")
