@@ -8,14 +8,18 @@ from common.UserManager import UserManager
 from database.ListDatabase import ListDatabase
 from discord.ext import commands
 
+from database.TokensDatabase import TokensDatabase
+
+
 class AddCommand(Command):
     """
     Command to add a new game to the list.
     This command will create a button that, when clicked, will open a GameCreationModal to
     fill in the game details.
     """
-    def __init__(self,database: ListDatabase):
-        self.database = database
+    def __init__(self,list_database: ListDatabase,token_database: TokensDatabase):
+        self.list_database = list_database
+        self.tokens_database = token_database
 
     @commands.command(name="add")
     async def execute(self, ctx):
@@ -30,7 +34,7 @@ class AddCommand(Command):
 
         add_button = discord.ui.Button(label="Add Game", style=discord.ButtonStyle.green)
         add_button.callback = lambda interaction: interaction.response.send_modal(
-            GameCreationModal(self.database))
+            GameCreationModal(self.list_database,self.tokens_database))
 
         view = discord.ui.View()
         view.add_item(add_button)

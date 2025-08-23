@@ -59,7 +59,7 @@ class TokensDatabase(Database):
         params = (entry.user, entry.tokens, entry.coins, entry.needed_tokens)
         self.sql_execute(query, params)
 
-    async def add_token(self,user:str,ctx:discord.interactions = None):
+    async def add_token(self,user:str,ctx:discord.interactions = None,interaction: discord.Interaction = None):
         """
         Adds a token to the specified user in the database.
         If the user reaches the required number of tokens, they will be awarded a coin.
@@ -72,6 +72,11 @@ class TokensDatabase(Database):
             entry.coins += 1
             if ctx:
                 await ctx.send(f"Congratulations {user}, you have earned a coin! You now have {entry.coins} coins.")
+            if interaction:
+                if interaction.response.is_done():
+                    await interaction.followup.send(f"Congratulations {user}, you have earned a coin! You now have {entry.coins} coins.")
+                else:
+                    await interaction.response.send_message(f"Congratulations {user}, you have earned a coin! You now have {entry.coins} coins.")
 
         self.put_tokens_entry(entry)
 
@@ -90,7 +95,7 @@ class TokensDatabase(Database):
 
     def remove_entry(self, entry: TokensEntry):
         """
-        Removes an entry from the tokens database.
+        Removes an entry from the tokens' database.
         :param entry: The TokensEntry object to be removed from the database.
         """
         query = f"DELETE FROM {self.table_name} WHERE user = ?"

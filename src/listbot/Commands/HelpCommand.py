@@ -23,7 +23,7 @@ class HelpCommand(Command):
     """
     def __init__(self):
         self.general_commands = [RandomizeNumCommand(),RandomizeCommand(),ActivateBotRepliesCommand(),DeactivateBotRepliesCommand()]
-        self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
+        self.list_commands = [AddCommand(list_database=None,token_database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
                               ConsolesCommand()]
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
 

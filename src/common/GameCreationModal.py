@@ -5,6 +5,7 @@ from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from database.ListDatabase import ListDatabase
+from database.TokensDatabase import TokensDatabase
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.ViewCommand import ViewCommand
@@ -15,13 +16,16 @@ class GameCreationModal(discord.ui.Modal):
     This modal will prompt the user to enter details about the game they want to add,
     including the name, console, rating, genre, and a review.
     """
-    def __init__(self,database: ListDatabase, game_entry: GameEntry = None):
+    def __init__(self,list_database: ListDatabase,token_database: TokensDatabase = None, game_entry: GameEntry = None):
         """
         Initializes the GameCreationModal with fields for game details.
         @param database: The database instance where the new gameEntry will be stored.
         """
-        self.database = database
+        self.list_database = list_database
+        self.token_database = token_database
         self.game_entry = game_entry
+
+        self.added_token = False
 
         super().__init__(title="Add Game",timeout=None)
 
@@ -101,20 +105,33 @@ class GameCreationModal(discord.ui.Modal):
 
         replayed_button = discord.ui.Button(label="Replay", style=discord.ButtonStyle.blurple)
         completed_button = discord.ui.Button(label="100%", style=discord.ButtonStyle.green)
+        add_token_button = discord.ui.Button(label="Add Token", style=discord.ButtonStyle.red)
 
         async def replayed_callback(i: discord.Interaction):
-            new_game_entry = await ReplayedCommand.change_replayed_status(game_name=game_entry.name,database=self.database,interaction=interaction)
+            new_game_entry = await ReplayedCommand.change_replayed_status(game_name=game_entry.name,database=self.list_database,interaction=interaction)
             await self._edit_message(i, new_game_entry, interaction.user, view)
 
         async def completed_callback(i: discord.Interaction):
-            new_game_entry = await CompletedCommand.change_completed_status(game_name=game_entry.name,database=self.database,interaction=interaction)
+            new_game_entry = await CompletedCommand.change_completed_status(game_name=game_entry.name,database=self.list_database,interaction=interaction)
             await self._edit_message(i, new_game_entry, interaction.user, view)
+
+        async def add_token_callback(i: discord.Interaction):
+            if self.added_token:
+                await i.response.defer()
+                return
+
+            await self.token_database.add_token(i.user.name,interaction=i)
+            await MessageManager.send_message(i.channel,"Added Token")
+            self.added_token = True
+            i.response.defer()
 
         replayed_button.callback = replayed_callback
         completed_button.callback = completed_callback
+        add_token_button.callback = add_token_callback
 
         view.add_item(replayed_button)
         view.add_item(completed_button)
+        view.add_item(add_token_button)
 
         return view
 
@@ -129,7 +146,7 @@ class GameCreationModal(discord.ui.Modal):
             return
 
         game_entry = self._to_game_entry(interaction.user.name)
-        self.database.put_game(game_entry, self.game_entry)
+        self.list_database.put_game(game_entry, self.game_entry)
 
         print(game_entry)
 
