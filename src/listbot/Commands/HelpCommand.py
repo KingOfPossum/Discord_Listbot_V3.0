@@ -12,6 +12,7 @@ from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.UpdateCommand import UpdateCommand
 from listbot.Commands.ViewCommand import ViewCommand
+from tokenSystem.commands.AddTokenCommand import AddTokenCommand
 
 class HelpCommand(Command):
     """
@@ -21,6 +22,7 @@ class HelpCommand(Command):
         self.general_commands = [RandomizeNumCommand(),RandomizeCommand(),ActivateBotRepliesCommand(),DeactivateBotRepliesCommand()]
         self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
                               ConsolesCommand()]
+        self.token_commands = [AddTokenCommand(database=None)]
 
     @commands.command(name="help")
     async def execute(self, ctx):
@@ -38,4 +40,5 @@ class HelpCommand(Command):
         """
         general_commands_help = "**General Commands:**\n" + "".join([command.help() for command in self.general_commands])
         list_commands_help = "**List Commands:**\n" + "".join([command.help() for command in self.list_commands])
-        return general_commands_help + "\n" + list_commands_help
+        tokens_command_help = "**Token Commands:**\n" + "".join(command.help() for command in self.token_commands)
+        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help

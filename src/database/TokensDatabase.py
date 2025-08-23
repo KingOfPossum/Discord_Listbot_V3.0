@@ -1,3 +1,5 @@
+import discord
+
 from common.TokensEntry import TokensEntry
 from common.UserManager import UserManager
 from database.Database import Database
@@ -56,6 +58,22 @@ class TokensDatabase(Database):
         query = f"INSERT INTO {self.table_name} (user, tokens, coins, needed_tokens) VALUES (?,?,?,?)"
         params = (entry.user, entry.tokens, entry.coins, entry.needed_tokens)
         self.sql_execute(query, params)
+
+    async def add_token(self,user:str,ctx:discord.interactions = None):
+        """
+        Adds a token to the specified user in the database.
+        If the user reaches the required number of tokens, they will be awarded a coin.
+        :param user: The user to whom the token will be added.
+        :param ctx: The interactions context
+        """
+        entry = self.get_tokens_entry(user)
+        entry.tokens += 1
+        if entry.tokens % entry.needed_tokens == 0:
+            entry.coins += 1
+            if ctx:
+                await ctx.send(f"Congratulations {user}, you have earned a coin! You now have {entry.coins} coins.")
+
+        self.put_tokens_entry(entry)
 
     def remove_entry(self, entry: TokensEntry):
         """

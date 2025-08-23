@@ -18,7 +18,7 @@ class DatabaseCollection:
         self.__database_folder_path = database_folder_path
 
         self.list_database: ListDatabase = None
-        self.tokes_database: TokensDatabase = None
+        self.tokens_database: TokensDatabase = None
 
     def init_list_database(self):
         """
@@ -30,7 +30,7 @@ class DatabaseCollection:
         """
         Initializes the tokens database.
         """
-        self.tokes_database: TokensDatabase = TokensDatabase(self.__database_folder_path)
+        self.tokens_database: TokensDatabase = TokensDatabase(self.__database_folder_path)
 
     @staticmethod
     def create_database_folder_if_not_exists(database_folder_path: str):

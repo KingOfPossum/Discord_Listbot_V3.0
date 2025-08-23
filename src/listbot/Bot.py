@@ -5,10 +5,10 @@ import os
 from common.ConfigLoader import ConfigLoader
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
-
 from general.Commands.GeneralCommands import GeneralCommands
 from listbot.BotEvents import BotEvents
 from listbot.Commands.ListCommands import ListCommands
+from tokenSystem.commands.TokenCommands import TokenCommands
 
 class Bot:
     """
@@ -38,6 +38,7 @@ class Bot:
 
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
         self._databases.init_list_database()
+        self._databases.init_tokens_database()
 
         self.command_prefix = self.__config_data.command_prefix
 
@@ -47,6 +48,7 @@ class Bot:
         self.__bot.remove_command('help')
         self.list_commands = ListCommands(self._databases)
         self.general_commands = GeneralCommands()
+        self.tokens_commands = TokenCommands(self._databases)
 
         asyncio.run(self.register_events())
         asyncio.run(self.register_commands())
@@ -60,6 +62,7 @@ class Bot:
         """Registers the list commands cogs."""
         await self.list_commands.register(self.__bot)
         await self.general_commands.register(self.__bot)
+        await self.tokens_commands.register(self.__bot)
         print("Cogs:", list(self.__bot.cogs.keys()))
         print("Commands:", [c.name for c in self.__bot.commands])
         print()
