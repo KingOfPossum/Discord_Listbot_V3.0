@@ -22,7 +22,7 @@ class ListDatabase(Database):
         data = self.sql_execute_fetchall(query, (entry.name, entry.date, entry.user))
         return len(data) > 0
 
-    def get_game_entry(self,name: str, user: str) -> GameEntry:
+    def get_game_entry(self,name: str, user: str) -> GameEntry | None:
         """
         Retrieves a game entry from the database based on the name and user.
         :param name: The name of the game.
@@ -36,7 +36,6 @@ class ListDatabase(Database):
 
         if data:
             row = data[0]
-            print(row[7], row[8])
             return GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], genre=row[5], review=row[6], replayed=bool(row[8]), hundred_percent=bool(row[9]))
 
         return None
@@ -82,7 +81,7 @@ class ListDatabase(Database):
 
         data = self.sql_execute_fetchall("SELECT * FROM games")
 
-        print("Database contains " + str(len(data)) + " entries:\n")
+        print("Database contains " + str(len(data)) + " entries:")
 
         for row in data:
             print(" - " + str(row))

@@ -15,7 +15,7 @@ class Database:
         :param params: A list of tuples where each tuple contains the column name and its data type for the database table.
         """
         self.table_name = table_name
-        self._path = folder_path + database_name + TimeUtils.get_current_year_formated() + ".db"
+        self._path = folder_path + database_name + ".db"
         self._init_database(table_name,params)
         self.print_database()
 

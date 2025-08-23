@@ -1,6 +1,7 @@
 from common.ConfigLoader import ConfigLoader
 from common.Replies import Replies
 from common.UserManager import UserManager
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class BotEvents(commands.Cog):
@@ -8,13 +9,14 @@ class BotEvents(commands.Cog):
     A Discord cog that handles bot events.
     This cog listens for the `on_ready` event.
     """
-    def __init__(self,bot: commands.Bot):
+    def __init__(self,bot: commands.Bot, databases: DatabaseCollection):
         """
         Initializes the BotEvents cog.
         :param bot: The bot instance to which this cog will be added.
         """
         self.__bot = bot
         self.replies = Replies("../resources/replies.yaml")
+        self.databases = databases
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -22,8 +24,9 @@ class BotEvents(commands.Cog):
         Event listener that is called when the bot is ready.
         This will print a message to the console indicating that the bot is ready.
         """
-        print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})")
+        print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})\n")
         UserManager.init(self.__bot)
+        self.databases.init_tokens_database()
 
     @commands.Cog.listener()
     async def on_message(self, message):

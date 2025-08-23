@@ -4,7 +4,7 @@ from common.ConfigLoader import ConfigLoader
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
-from database.Database import Database
+from database.ListDatabase import ListDatabase
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.ViewCommand import ViewCommand
@@ -15,8 +15,7 @@ class GameCreationModal(discord.ui.Modal):
     This modal will prompt the user to enter details about the game they want to add,
     including the name, console, rating, genre, and a review.
     """
-
-    def __init__(self,database: Database, game_entry: GameEntry = None):
+    def __init__(self,database: ListDatabase, game_entry: GameEntry = None):
         """
         Initializes the GameCreationModal with fields for game details.
         @param database: The database instance where the new gameEntry will be stored.

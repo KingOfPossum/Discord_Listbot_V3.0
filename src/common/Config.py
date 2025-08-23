@@ -19,6 +19,8 @@ class Config:
                 f"Config:\n" \
                 f"  Command Prefix: {self.command_prefix}\n" \
                 f"  Database Folder Path: {self.database_folder_path}\n" \
+                f"  Bot Replies: {self.bot_replies}\n" \
+                f"  Bot Replies to Links: {self.bot_replies_to_links}\n" \
                 f"  Accepted Users: {self.accepted_users}\n" \
                 f"  Consoles: {self.consoles}\n" \
                 + "-" * 100 + "\n"

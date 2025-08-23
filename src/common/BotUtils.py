@@ -5,7 +5,6 @@ from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from database.ListDatabase import ListDatabase
 
-
 class BotUtils:
     @staticmethod
     def get_message_content(message: discord.Message) -> str:
@@ -36,12 +35,13 @@ class BotUtils:
         :param user: The username of the user who owns the game entry, if applicable.
         :return: Tuple containing the game name and the GameEntry object if it exists, otherwise None.
         """
-        if user is None:
-            user = ctx.author.name
-
         if ctx:
+            if user is None:
+                user = ctx.author.name
             game_entry = database.get_game_entry(game_name, user)
         elif interaction:
+            if user is None:
+                user = interaction.user.name
             game_entry = database.get_game_entry(game_name, user)
         else:
             raise ValueError("Either ctx or interaction must be provided")

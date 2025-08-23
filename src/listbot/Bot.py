@@ -37,6 +37,7 @@ class Bot:
         print(self.__config_data)
 
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
+        self._databases.init_list_database()
 
         self.command_prefix = self.__config_data.command_prefix
 
@@ -52,7 +53,7 @@ class Bot:
 
     async def register_events(self):
         """Registers the bot events cog."""
-        await self.__bot.add_cog(BotEvents(self.__bot))
+        await self.__bot.add_cog(BotEvents(self.__bot,self._databases))
         print("Registered BotEvents cog.")
 
     async def register_commands(self):

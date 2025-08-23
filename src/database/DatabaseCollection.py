@@ -1,13 +1,12 @@
 import os
-from database.Database import Database
-from database.ListDatabase import ListDatabase
 
+from database.ListDatabase import ListDatabase
+from database.TokensDatabase import TokensDatabase
 
 class DatabaseCollection:
     """
     A collection of databases.
     """
-
     def __init__(self,database_folder_path: str):
         """
         Initializes the DatabaseCollection with a specified folder path where the databases should be created.
@@ -16,9 +15,22 @@ class DatabaseCollection:
         :param database_folder_path: The path to the folder where the databases will be stored.
         """
         self.create_database_folder_if_not_exists(database_folder_path)
-
         self.__database_folder_path = database_folder_path
+
+        self.list_database: ListDatabase = None
+        self.tokes_database: TokensDatabase = None
+
+    def init_list_database(self):
+        """
+        Initializes the list database.
+        """
         self.list_database: ListDatabase = ListDatabase(self.__database_folder_path)
+
+    def init_tokens_database(self):
+        """
+        Initializes the tokens database.
+        """
+        self.tokes_database: TokensDatabase = TokensDatabase(self.__database_folder_path)
 
     @staticmethod
     def create_database_folder_if_not_exists(database_folder_path: str):
