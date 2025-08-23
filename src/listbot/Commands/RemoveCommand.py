@@ -1,18 +1,16 @@
-from discord.ext import commands
-
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.Database import Database
-
+from database.ListDatabase import ListDatabase
+from discord.ext import commands
 
 class RemoveCommand(Command):
     """
     Command that will remove a game from the list.
     """
-    def __init__(self, database: Database):
+    def __init__(self, database: ListDatabase):
         self.database = database
 
     @commands.command(name="remove")

@@ -3,6 +3,7 @@ from discord.ext import commands
 
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
+from common.UserManager import UserManager
 
 
 class ActivateBotRepliesCommand(Command):
@@ -14,6 +15,10 @@ class ActivateBotRepliesCommand(Command):
         """
         Execute the command to activate bot replies.
         """
+        if not UserManager.is_user_accepted(ctx.author.name):
+            await MessageManager.send_error_message(ctx.channel, "You are Not Allowed to use this command")
+            return
+
         ConfigLoader.update("bot_replies", True)
         await MessageManager.send_message(ctx.channel,"Bot replies have been activated successfully!")
 

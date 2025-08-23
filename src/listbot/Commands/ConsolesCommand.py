@@ -1,11 +1,9 @@
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
-from discord.ext import commands
-
 from common.Emojis import Emojis
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-
+from discord.ext import commands
 
 class ConsolesCommand(Command):
     """Command that will display the list of supported consoles."""

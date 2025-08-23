@@ -3,16 +3,15 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
+from database.ListDatabase import ListDatabase
 from discord.ext import commands
-
-from database.Database import Database
 from listbot.GameList import GameList
 
 class ListCommand(Command):
     """
     Command that will list all games of a specific user from the database.
     """
-    def __init__(self,database: Database):
+    def __init__(self,database: ListDatabase):
         self.database = database
 
     @commands.command(name="list")

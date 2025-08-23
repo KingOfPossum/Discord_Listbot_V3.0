@@ -6,15 +6,15 @@ from common.ConfigLoader import ConfigLoader
 from common.Emojis import Emojis
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.Database import Database
+from database.ListDatabase import ListDatabase
 from discord.ext import commands
 
 class CompletedCommand(Command):
-    def __init__(self,database: Database):
+    def __init__(self,database: ListDatabase):
         self.database = database
 
     @staticmethod
-    async def change_completed_status(game_name: str,database: Database,ctx: discord.Interaction = None,interaction: discord.Interaction = None):
+    async def change_completed_status(game_name: str,database: ListDatabase,ctx: discord.Interaction = None,interaction: discord.Interaction = None):
         """
         Changes the completion status of a game in the database.
         This function will check if the game exists in the database and if it does, it will

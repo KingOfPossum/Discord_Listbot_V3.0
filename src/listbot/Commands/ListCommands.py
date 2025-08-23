@@ -1,6 +1,5 @@
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
-
 from listbot.Commands.AddCommand import AddCommand
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ConsolesCommand import ConsolesCommand
@@ -29,8 +28,9 @@ class ListCommands:
         :param bot: The Discord bot instance to register commands with.
         """
         list_database = self.databases.list_database
+        tokens_database = self.databases.tokens_database
 
-        await bot.add_cog(AddCommand(list_database))
+        await bot.add_cog(AddCommand(list_database,tokens_database))
         await bot.add_cog(UpdateCommand(list_database))
         await bot.add_cog(RemoveCommand(list_database))
         await bot.add_cog(ReplayedCommand(list_database))
