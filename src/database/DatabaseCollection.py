@@ -1,5 +1,7 @@
 import os
 from database.Database import Database
+from database.ListDatabase import ListDatabase
+
 
 class DatabaseCollection:
     """
@@ -16,7 +18,7 @@ class DatabaseCollection:
         self.create_database_folder_if_not_exists(database_folder_path)
 
         self.__database_folder_path = database_folder_path
-        self.list_database: Database = Database(self.__database_folder_path,"list","games",[("name","TEXT"), ("user","TEXT"),("date","DATE"),("console","TEXT"),("rating","INT"),("genre","TEXT"),("review","TEXT"),("cover","TEXT"),("replay","INTEGER DEFAULT 0"),("hundred_percent","INTEGER DEFAULT 0")])
+        self.list_database: ListDatabase = ListDatabase(self.__database_folder_path)
 
     @staticmethod
     def create_database_folder_if_not_exists(database_folder_path: str):

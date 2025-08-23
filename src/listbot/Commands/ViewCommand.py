@@ -1,5 +1,3 @@
-import discord
-
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
@@ -7,12 +5,15 @@ from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.Database import Database
+from database.ListDatabase import ListDatabase
 from discord.ext import commands
 
 class ViewCommand(Command):
-
-    def __init__(self,database: Database):
+    """
+    Command to view game details from a specific game
+    Supports both own user and other users
+    """
+    def __init__(self,database: ListDatabase):
         self.database = database
 
     @staticmethod

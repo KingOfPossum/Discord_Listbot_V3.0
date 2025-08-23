@@ -8,7 +8,6 @@ class UserManager:
     A class to manage user-related operations in the Discord bot.
     This class is responsible for handling things like if a user is even able to do something or if he is ignored by the bot.
     """
-
     accepted_users: set[str] = set()
 
     @staticmethod
@@ -24,7 +23,6 @@ class UserManager:
         if accepted_users_config is None:
             UserManager.accepted_users = set()
         elif accepted_users_config == {"all"}:
-            print(f"Bot guilds: {bot.guilds}")
             UserManager.accepted_users = {member.name for guild in bot.guilds for member in guild.members}
         else:
             UserManager.accepted_users = set(accepted_users_config)

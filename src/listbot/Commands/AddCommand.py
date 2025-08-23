@@ -5,7 +5,7 @@ from common.ConfigLoader import ConfigLoader
 from common.GameCreationModal import GameCreationModal
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.Database import Database
+from database.ListDatabase import ListDatabase
 from discord.ext import commands
 
 class AddCommand(Command):
@@ -14,7 +14,7 @@ class AddCommand(Command):
     This command will create a button that, when clicked, will open a GameCreationModal to
     fill in the game details.
     """
-    def __init__(self,database: Database):
+    def __init__(self,database: ListDatabase):
         self.database = database
 
     @commands.command(name="add")

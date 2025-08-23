@@ -3,7 +3,8 @@ import discord
 from common.ConfigLoader import ConfigLoader
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
-from database.Database import Database
+from database.ListDatabase import ListDatabase
+
 
 class BotUtils:
     @staticmethod
@@ -25,7 +26,7 @@ class BotUtils:
         return ""
 
     @staticmethod
-    async def game_exists(game_name: str,database: Database,user: str = None,ctx: discord.Interaction = None,interaction: discord.Interaction = None) -> tuple[str,GameEntry]:
+    async def game_exists(game_name: str,database: ListDatabase,user: str = None,ctx: discord.Interaction = None,interaction: discord.Interaction = None) -> tuple[str,GameEntry]:
         """
         Checks if a game exists in the database.
         :param ctx: The context in which the command was invoked
@@ -42,6 +43,8 @@ class BotUtils:
             game_entry = database.get_game_entry(game_name, user)
         elif interaction:
             game_entry = database.get_game_entry(game_name, user)
+        else:
+            raise ValueError("Either ctx or interaction must be provided")
 
         if game_entry is None:
             channel = ctx.channel if ctx else interaction.channel

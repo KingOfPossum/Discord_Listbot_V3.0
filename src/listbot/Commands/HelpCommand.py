@@ -1,25 +1,22 @@
 from common.Command import Command
 from discord.ext import commands
-
 from general.Commands.RandomizeCommand import RandomizeCommand
 from general.Commands.RandomizeNumCommand import RandomizeNumCommand
 from general.Commands.ActivateBotRepliesCommand import ActivateBotRepliesCommand
+from general.Commands.DeactivateBotRepliesCommand import DeactivateBotRepliesCommand
 from listbot.Commands.AddCommand import AddCommand
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ConsolesCommand import ConsolesCommand
-from general.Commands.DeactivateBotRepliesCommand import DeactivateBotRepliesCommand
 from listbot.Commands.ListCommand import ListCommand
 from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.UpdateCommand import UpdateCommand
 from listbot.Commands.ViewCommand import ViewCommand
 
-
 class HelpCommand(Command):
     """
     Command that will display the help message for all commands.
     """
-
     def __init__(self):
         self.general_commands = [RandomizeNumCommand(),RandomizeCommand(),ActivateBotRepliesCommand(),DeactivateBotRepliesCommand()]
         self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),

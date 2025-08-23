@@ -6,14 +6,14 @@ from common.ConfigLoader import ConfigLoader
 from common.GameCreationModal import GameCreationModal
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.Database import Database
+from database.ListDatabase import ListDatabase
 from discord.ext import commands
 
 class UpdateCommand(Command):
     """
     Command to update an existing game in the list.
     """
-    def __init__(self,database: Database):
+    def __init__(self,database: ListDatabase):
         self.database = database
 
     @commands.command(name="update")
