@@ -22,7 +22,7 @@ class HelpCommand(Command):
         self.general_commands = [RandomizeNumCommand(),RandomizeCommand(),ActivateBotRepliesCommand(),DeactivateBotRepliesCommand()]
         self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
                               ConsolesCommand()]
-        self.token_commands = [AddTokenCommand(database=None)]
+        self.token_commands = [AddTokenCommand(database=None),RemoveCommand(database=None)]
 
     @commands.command(name="help")
     async def execute(self, ctx):

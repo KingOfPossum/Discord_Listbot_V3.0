@@ -75,6 +75,19 @@ class TokensDatabase(Database):
 
         self.put_tokens_entry(entry)
 
+    def remove_coin(self,user:str) -> TokensEntry | None:
+        """
+        Removes a coin from the specified user in the database.
+        :param user: The user from whom the coin will be removed.
+        :return: The TokensEntry with updated coin value if the user had a coin else None.
+        """
+        entry = self.get_tokens_entry(user)
+        if entry.coins > 0:
+            entry.coins -= 1
+            self.put_tokens_entry(entry)
+            return entry
+        return None
+
     def remove_entry(self, entry: TokensEntry):
         """
         Removes an entry from the tokens database.
