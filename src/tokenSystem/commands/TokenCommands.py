@@ -1,6 +1,8 @@
 from database.DatabaseCollection import DatabaseCollection
 from tokenSystem.commands.AddTokenCommand import AddTokenCommand
 from tokenSystem.commands.RemoveCoinCommand import RemoveCoinCommand
+from tokenSystem.commands.SetNeededCoinsCommand import SetNeededCoinsCommand
+
 
 class TokenCommands:
     """
@@ -18,4 +20,5 @@ class TokenCommands:
 
         await bot.add_cog(AddTokenCommand(database))
         await bot.add_cog(RemoveCoinCommand(database))
+        await bot.add_cog(SetNeededCoinsCommand(database))
         print("Registered TokenCommands cogs.")

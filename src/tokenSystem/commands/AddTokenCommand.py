@@ -21,7 +21,7 @@ class AddTokenCommand(Command):
         This command will check if the user is authorized to use this command.
         :param ctx: The context in which the command was invoked
         """
-        if not ctx.author.name in UserManager.accepted_users:
+        if not UserManager.is_user_accepted(ctx.author.name):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 

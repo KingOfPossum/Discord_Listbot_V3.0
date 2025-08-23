@@ -21,7 +21,7 @@ class RemoveCoinCommand(Command):
         Handles the 'removeCoin' command to remove a coin from a user's account.
         :param ctx: The context in which the command was invoked
         """
-        if ctx.author.name not in UserManager.accepted_users:
+        if not UserManager.is_user_accepted(ctx.author.name):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 

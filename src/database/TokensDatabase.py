@@ -97,6 +97,16 @@ class TokensDatabase(Database):
         params = (entry.user,)
         self.sql_execute(query, params)
 
+    def set_needed_tokens(self,user:str, needed_tokens:int):
+        """
+        Set the number of tokens needed to earn a coin for a specific user.
+        :param user: The user for whom to set the needed tokens.
+        :param needed_tokens: The new amount of tokens needed to earn a coin.
+        """
+        entry = self.get_tokens_entry(user)
+        entry.needed_tokens = needed_tokens
+        self.put_tokens_entry(entry)
+
     def print_database(self):
         """
         Prints the entire tokens database to the console.
