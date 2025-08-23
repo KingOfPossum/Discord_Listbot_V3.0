@@ -39,4 +39,4 @@ class SetNeededCoinsCommand(Command):
         Provides help information for the command.
         :return: A string containing the help information.
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}setNeededTokens` `number` - Sets the number of tokens needed for you to earn a coin to `number`."
+        return f"- `{ConfigLoader.get_config().command_prefix}setNeededTokens` `number` - Sets the number of tokens needed for you to earn a coin to `number`.\n"

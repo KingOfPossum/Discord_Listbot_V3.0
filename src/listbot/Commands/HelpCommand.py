@@ -15,7 +15,7 @@ from listbot.Commands.ViewCommand import ViewCommand
 from tokenSystem.commands.AddTokenCommand import AddTokenCommand
 from tokenSystem.commands.RemoveCoinCommand import RemoveCoinCommand
 from tokenSystem.commands.SetNeededCoinsCommand import SetNeededCoinsCommand
-
+from tokenSystem.commands.ViewTokensCommand import ViewTokensCommand
 
 class HelpCommand(Command):
     """
@@ -25,7 +25,7 @@ class HelpCommand(Command):
         self.general_commands = [RandomizeNumCommand(),RandomizeCommand(),ActivateBotRepliesCommand(),DeactivateBotRepliesCommand()]
         self.list_commands = [AddCommand(database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
                               ConsolesCommand()]
-        self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None)]
+        self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
 
     @commands.command(name="help")
     async def execute(self, ctx):
