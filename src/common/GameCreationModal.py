@@ -6,9 +6,11 @@ from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from database.ListDatabase import ListDatabase
 from database.TokensDatabase import TokensDatabase
+from Game import Game
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.ViewCommand import ViewCommand
+from wrapper import IGDBWrapper
 
 class GameCreationModal(discord.ui.Modal):
     """
@@ -24,6 +26,9 @@ class GameCreationModal(discord.ui.Modal):
         self.list_database = list_database
         self.token_database = token_database
         self.game_entry = game_entry
+
+        self.wrapper = IGDBWrapper("vhxxz4jvptvoj99f6arnjii3wgzq47",
+                              "ydclz2x5k42rru95bzgr6kqvxfmum9")
 
         self.added_token = False
 
@@ -150,8 +155,12 @@ class GameCreationModal(discord.ui.Modal):
 
         print(game_entry)
 
+        game = Game.from_igdb(self.wrapper, game_entry.name, game_entry.console)
+
         game_view_txt = ViewCommand.get_game_view_txt(game_entry)
         embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
+        if game and game.cover:
+            embed.set_thumbnail(url=game.cover)
 
         view = self._get_game_view(interaction,game_entry)
 

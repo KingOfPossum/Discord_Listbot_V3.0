@@ -1,0 +1,3 @@
+[submodule "IGDB-PythonWrapper"]
+	path = IGDB-PythonWrapper
+	url = https://github.com/KingOfPossum/IGDB-PythonWrapper.git
