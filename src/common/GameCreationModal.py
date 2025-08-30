@@ -32,7 +32,11 @@ class GameCreationModal(discord.ui.Modal):
 
         self.added_token = False
 
-        super().__init__(title="Add Game",timeout=None)
+        if game_entry:
+            super().__init__(title="Update Game",timeout=None)
+            print(game_entry)
+        else:
+            super().__init__(title="Add Game",timeout=None)
 
         self.add_item(discord.ui.TextInput(label="Name", default=game_entry.name if game_entry else "", placeholder="Enter the name of the game", required=True,style=discord.TextStyle.short))
         self.add_item(discord.ui.TextInput(label="Console", default=game_entry.console if game_entry else "", placeholder="What console did you play on?", required=True,style=discord.TextStyle.short))
@@ -132,11 +136,13 @@ class GameCreationModal(discord.ui.Modal):
 
         replayed_button.callback = replayed_callback
         completed_button.callback = completed_callback
-        add_token_button.callback = add_token_callback
+
+        if self.game_entry is None:
+            add_token_button.callback = add_token_callback
+            view.add_item(add_token_button)
 
         view.add_item(replayed_button)
         view.add_item(completed_button)
-        view.add_item(add_token_button)
 
         return view
 
