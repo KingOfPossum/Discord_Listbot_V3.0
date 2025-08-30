@@ -7,6 +7,8 @@ from common.MessageManager import MessageManager
 from common.UserManager import UserManager
 from database.ListDatabase import ListDatabase
 from discord.ext import commands
+from Game import Game
+from wrapper import IGDBWrapper
 
 class ViewCommand(Command):
     """
@@ -15,6 +17,9 @@ class ViewCommand(Command):
     """
     def __init__(self,database: ListDatabase):
         self.database = database
+
+        self.wrapper = IGDBWrapper("vhxxz4jvptvoj99f6arnjii3wgzq47",
+                                   "ydclz2x5k42rru95bzgr6kqvxfmum9")
 
     @staticmethod
     def get_game_view_txt(game_entry: GameEntry) -> str:
@@ -67,7 +72,11 @@ class ViewCommand(Command):
 
         game_name, game_entry = game
 
+        game_infos = Game.from_igdb(self.wrapper,game_name,game_entry.console)
+
         embed = MessageManager.get_embed(title=f"**{game_name} {"(100%)" * game_entry.hundred_percent}**",description=self.get_game_view_txt(game_entry))
+        embed.set_thumbnail(url=game_infos.cover)
+
         await MessageManager.send_message(ctx.channel,embed=embed)
 
     def help(self) -> str:
