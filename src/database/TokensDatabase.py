@@ -43,7 +43,7 @@ class TokensDatabase(Database):
         :return: A list containing all TokensEntry objects
         """
         users = UserManager.accepted_users
-        return [self.get_tokens_entry(user) for user in users]
+        return [self.get_tokens_entry(user.name) for user in users]
 
     def put_tokens_entry(self, entry: TokensEntry):
         """
