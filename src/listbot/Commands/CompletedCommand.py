@@ -40,7 +40,7 @@ class CompletedCommand(Command):
 
         return new_game_entry
 
-    @commands.command(name="completed")
+    @commands.command(name="completed",aliases=["Completed","completedGame","CompletedGame","COMPLETED","COMPLETEDGAME","completed_game","Completed_Game","100%","hundred_percent","Hundred_Percent","HundredPercent","hundredpercent","hundredPercent","c"])
     async def execute(self, ctx):
         """
         Handles the 'completed' command to change the completed status of a game.

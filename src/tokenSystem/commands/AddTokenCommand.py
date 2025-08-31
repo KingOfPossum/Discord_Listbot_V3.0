@@ -14,7 +14,7 @@ class AddTokenCommand(Command):
     def __init__(self,database: TokensDatabase):
         self.database = database
 
-    @commands.command(name="addToken")
+    @commands.command(name="addToken",aliases=["AddToken","addtoken","ADDTOKEN","add_token","Add_Token"])
     async def execute(self,ctx: discord.Interaction):
         """
         Handles the 'addToken' command to add a token to the database.

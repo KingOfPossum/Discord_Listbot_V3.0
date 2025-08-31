@@ -15,7 +15,7 @@ class RemoveCoinCommand(Command):
     def __init__(self,database: TokensDatabase):
         self.database = database
 
-    @commands.command(name="removeCoin")
+    @commands.command(name="removeCoin",aliases=["RemoveCoin","REMOVECOIN","remove_coin","Remove_Coin","removecoin","REMOVE_COIN"])
     async def execute(self,ctx:discord.Interaction):
         """
         Handles the 'removeCoin' command to remove a coin from a user's account.

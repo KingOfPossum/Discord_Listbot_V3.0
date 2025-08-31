@@ -15,7 +15,7 @@ class SetNeededCoinsCommand(Command):
     def __init__(self,database: TokensDatabase):
         self.database = database
 
-    @commands.command(name="setNeededTokens",aliases=["neededTokens"])
+    @commands.command(name="setNeededTokens",aliases=["neededTokens","setneededtokens","SETNEEDEDTOKENS","SetNeededTokens","set_needed_tokens","Set_Needed_Tokens","SET_NEEDED_TOKENS"])
     async def execute(self,ctx:discord.Interaction):
         """
         Handles the 'setNeededTokens' command to set the number of tokens needed to earn a coin for a user.

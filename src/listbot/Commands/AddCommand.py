@@ -21,7 +21,7 @@ class AddCommand(Command):
         self.list_database = list_database
         self.tokens_database = token_database
 
-    @commands.command(name="add")
+    @commands.command(name="add",aliases=["Add","addGame","AddGame","ADD","ADDGAME","add_game","Add_Game","a"])
     async def execute(self, ctx):
         """
         Handles the 'add' command to add a game to the list.
