@@ -16,7 +16,7 @@ class UpdateCommand(Command):
     def __init__(self,database: ListDatabase):
         self.database = database
 
-    @commands.command(name="update")
+    @commands.command(name="update",aliases=["Update","UPDATE","u","updateGame","UpdateGame","UPDATEGAME","update_game","Update_Game","UPDATE_GAME"])
     async def execute(self, ctx):
         """
         Handles the 'update' command to update an existing game in the list.

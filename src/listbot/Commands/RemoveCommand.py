@@ -13,7 +13,7 @@ class RemoveCommand(Command):
     def __init__(self, database: ListDatabase):
         self.database = database
 
-    @commands.command(name="remove")
+    @commands.command(name="remove",aliases=["Remove","removeGame","RemoveGame","REMOVE","REMOVEGAME","r","delete","Delete","deleteGame","DeleteGame","DELETEGAME"])
     async def execute(self, ctx):
         """
         Handles the 'remove' command to remove a game from the list.

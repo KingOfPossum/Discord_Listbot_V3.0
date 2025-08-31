@@ -42,7 +42,7 @@ class ReplayedCommand(Command):
 
         return new_game_entry
 
-    @commands.command(name="replayed")
+    @commands.command(name="replayed",aliases=["Replayed","rp","replayedGame","ReplayedGame","REPLAYED","REPLAYEDGAME","replayed_game","Replayed_Game","REPLAYED_GAME","Replayedgame","replayedgame"])
     async def execute(self,ctx):
         """
         Handles the 'replayed' command to change the replay status of a game.

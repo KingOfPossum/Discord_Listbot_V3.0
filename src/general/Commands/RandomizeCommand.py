@@ -11,7 +11,7 @@ class RandomizeCommand(Command):
     Command to randomize an item from a provided list of items.
     """
 
-    @commands.command(name="randomize")
+    @commands.command(name="randomize",aliases=["Randomize","RANDOMIZE","rand","Rand","RAND","random","Random","RANDOM"])
     async def execute(self,ctx):
         """
         Randomizes an element from a provided list of items.

@@ -11,7 +11,7 @@ class RandomizeNumCommand(Command):
     Command to randomize a number.
     """
 
-    @commands.command(name="randomizeNum")
+    @commands.command(name="randomizeNum",aliases=["RandomizeNum","RANDOMIZENUM","randNum","RandNum","RANDNUM","randomNum","RandomNum","RANDOMNUM","randomizeNumber","RandomizeNumber","RANDOMIZENUMBER"])
     async def execute(self,ctx):
         """
         Randomizes a number between two provided numbers.

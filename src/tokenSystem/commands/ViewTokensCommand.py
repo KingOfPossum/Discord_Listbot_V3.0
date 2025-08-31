@@ -14,7 +14,7 @@ class ViewTokensCommand(Command):
     def __init__(self,database: TokensDatabase):
         self.database = database
 
-    @commands.command(name="viewTokens",aliases=["tokens"])
+    @commands.command(name="viewTokens",aliases=["tokens","viewtokens","VIEWTOKENS","view_tokens","View_Tokens","VIEW_TOKENS"])
     async def execute(self,ctx:discord.Interaction):
         """
         Handles the 'viewTokens' command to view infos about your tokens and coins.

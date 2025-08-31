@@ -42,7 +42,7 @@ class ViewCommand(Command):
         return view_game_details
 
 
-    @commands.command(name="view")
+    @commands.command(name="view",aliases=["View","v","viewGame","ViewGame","VIEW","VIEWGAME","view_game","View_Game","VIEW_GAME","viewgame","Viewgame"])
     async def execute(self, ctx):
         """
         Handles the 'view' command to view the game details of a specific game.

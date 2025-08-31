@@ -27,7 +27,7 @@ class HelpCommand(Command):
                               ConsolesCommand()]
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
 
-    @commands.command(name="help")
+    @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])
     async def execute(self, ctx):
         """
         Handles the 'help' command to display the help message.

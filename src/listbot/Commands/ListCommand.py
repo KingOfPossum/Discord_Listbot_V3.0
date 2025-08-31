@@ -14,7 +14,7 @@ class ListCommand(Command):
     def __init__(self,database: ListDatabase):
         self.database = database
 
-    @commands.command(name="list")
+    @commands.command(name="list",aliases=["List","LIST","ls","LS","listGames","ListGames","LISTGAMES","list_games","List_Games","LIST_GAMES"])
     async def execute(self,ctx):
         """
         Handles the 'list' command to list all games of a specific user.
