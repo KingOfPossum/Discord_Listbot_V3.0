@@ -41,6 +41,10 @@ class BotEvents(commands.Cog):
             return
         if not ConfigLoader.get_config().bot_replies_to_links and message.content.startswith("https://"):
             return
+        if message.content.startswith(ConfigLoader.get_config().command_prefix):
+            return
+        if message.author not in UserManager.bot_replies_users:
+            return
 
         reply = self.replies.handle_message(message)
         if reply is not None:

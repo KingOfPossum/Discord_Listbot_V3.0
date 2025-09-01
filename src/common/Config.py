@@ -11,6 +11,7 @@ class Config:
     database_folder_path: str
     bot_replies: bool
     bot_replies_to_links: bool
+    bot_replies_users: set[str]
     accepted_users: set[str]
     consoles: dict[str, str]
 
@@ -21,6 +22,7 @@ class Config:
                 f"  Database Folder Path: {self.database_folder_path}\n" \
                 f"  Bot Replies: {self.bot_replies}\n" \
                 f"  Bot Replies to Links: {self.bot_replies_to_links}\n" \
+                f"  Bot Replies Users: {self.bot_replies_users}\n" \
                 f"  Accepted Users: {self.accepted_users}\n" \
                 f"  Consoles: {self.consoles}\n" \
                 + "-" * 100 + "\n"
