@@ -94,7 +94,10 @@ class ConfigLoader:
                 file.write("  databases_folder_path: '../resources/databases/'\n")
                 file.write("  bot_replies: True\n")
                 file.write("  bot_replies_to_links: False\n")
+                file.write("  bot_replies_users:\n")
+                file.write("     - all\n")
                 file.write("  accepted_users:\n")
+                file.write("     - all\n")
                 file.write("  consoles:\n")
                 for console in ConfigLoader.available_consoles.keys():
                     file.write(f"    {console}: '{ConfigLoader.available_consoles[console]}'\n")
@@ -113,6 +116,7 @@ class ConfigLoader:
                           database_folder_path=config_dict["bot"]["databases_folder_path"],
                           bot_replies=config_dict["bot"]["bot_replies"],
                           bot_replies_to_links=config_dict["bot"]["bot_replies_to_links"],
+                          bot_replies_users=set(config_dict["bot"]["bot_replies_users"]) if config_dict["bot"]["bot_replies_users"] else set(),
                           accepted_users=set(config_dict["bot"]["accepted_users"]) if config_dict["bot"]["accepted_users"] else set(),
                           consoles=config_dict["bot"]["consoles"])
 
