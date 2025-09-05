@@ -4,6 +4,9 @@ from general.Commands.RandomizeCommand import RandomizeCommand
 from general.Commands.RandomizeNumCommand import RandomizeNumCommand
 from discord.ext import commands
 
+from general.Commands.ToggleBotRepliesCommand import ToggleBotRepliesCommand
+
+
 class GeneralCommands:
     """
     This class contains general commands that are not specific to any particular functionality.
@@ -18,4 +21,5 @@ class GeneralCommands:
         await bot.add_cog(RandomizeCommand())
         await bot.add_cog(ActivateBotRepliesCommand())
         await bot.add_cog(DeactivateBotRepliesCommand())
+        await bot.add_cog(ToggleBotRepliesCommand())
         print("Registered General cogs.")

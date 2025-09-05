@@ -96,6 +96,8 @@ class ConfigLoader:
                 file.write("  bot_replies_to_links: False\n")
                 file.write("  bot_replies_users:\n")
                 file.write("     - all\n")
+                file.write("  bot_replies_channels:\n")
+                file.write("     - all\n")
                 file.write("  accepted_users:\n")
                 file.write("     - all\n")
                 file.write("  consoles:\n")
@@ -117,6 +119,7 @@ class ConfigLoader:
                           bot_replies=config_dict["bot"]["bot_replies"],
                           bot_replies_to_links=config_dict["bot"]["bot_replies_to_links"],
                           bot_replies_users=set(config_dict["bot"]["bot_replies_users"]) if config_dict["bot"]["bot_replies_users"] else set(),
+                          bot_replies_channels=set(config_dict["bot"]["bot_replies_channels"]) if config_dict["bot"]["bot_replies_channels"] else set(),
                           accepted_users=set(config_dict["bot"]["accepted_users"]) if config_dict["bot"]["accepted_users"] else set(),
                           consoles=config_dict["bot"]["consoles"])
 
