@@ -29,6 +29,7 @@ class GameCreationModal(discord.ui.Modal):
 
         self.wrapper = IGDBWrapper("vhxxz4jvptvoj99f6arnjii3wgzq47",
                               "ydclz2x5k42rru95bzgr6kqvxfmum9")
+        self.game: Game | None = None
 
         self.added_token = False
 
@@ -41,7 +42,6 @@ class GameCreationModal(discord.ui.Modal):
         self.add_item(discord.ui.TextInput(label="Name", default=game_entry.name if game_entry else "", placeholder="Enter the name of the game", required=True,style=discord.TextStyle.short))
         self.add_item(discord.ui.TextInput(label="Console", default=game_entry.console if game_entry else "", placeholder="What console did you play on?", required=True,style=discord.TextStyle.short))
         self.add_item(discord.ui.TextInput(label="Rating", default=str(game_entry.rating) if game_entry else "", placeholder="Put your rating here (0-100)", required=True,style=discord.TextStyle.short))
-        self.add_item(discord.ui.TextInput(label="Genre", default=game_entry.genre if game_entry else "", placeholder="What Genre is the Game", required=False,style=discord.TextStyle.short))
         self.add_item(discord.ui.TextInput(label="Review", default=game_entry.review if game_entry else "", placeholder="Your review", required=False,style=discord.TextStyle.paragraph))
 
     async def _isvalid(self, interaction: discord.Interaction):
@@ -51,8 +51,6 @@ class GameCreationModal(discord.ui.Modal):
         :param interaction: The interaction in which the modal was submitted.
         :return: True if the input is valid, False otherwise.
         """
-        console = self.children[1].value
-
         try:
             rating = int(self.children[2].value)
         except ValueError:
@@ -63,10 +61,6 @@ class GameCreationModal(discord.ui.Modal):
         if rating < 0 or rating > 100:
             await interaction.response.defer()
             await MessageManager.send_error_message(interaction.channel,"please Provide a rating between 0 and 100")
-            return False
-        if console not in ConfigLoader.get_config().consoles.keys():
-            await interaction.response.defer()
-            await MessageManager.send_error_message(interaction.channel,f"Console \"{console}\" is not valid, please provide a valid console")
             return False
         return True
 
@@ -81,10 +75,9 @@ class GameCreationModal(discord.ui.Modal):
         date = self.game_entry.date if self.game_entry else TimeUtils.get_current_date_formated()
         console = self.children[1].value
         rating = int(self.children[2].value)
-        genre = self.children[3].value
-        review = self.children[4].value
+        review = self.children[3].value
 
-        return GameEntry(name=game_name, user=user, date=date, console=console, rating=rating, genre=genre,
+        return GameEntry(name=game_name, user=user, date=date, console=console, rating=rating,
                                review=review, replayed=False, hundred_percent=False)
 
     async def _edit_message(self, interaction:discord.Interaction, new_game_entry:GameEntry, user:discord.User, view:discord.ui.View):
@@ -96,9 +89,10 @@ class GameCreationModal(discord.ui.Modal):
         :param user: The user who initiated the interaction, used to update the embed with their information.
         :param view: The view that contains the buttons for replayed and completed status.
         """
-        changed_game_view_txt = ViewCommand.get_game_view_txt(new_game_entry)
+        changed_game_view_txt = ViewCommand.get_game_view_txt(new_game_entry,self.game)
         new_embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * new_game_entry.hundred_percent}**",
                                              description=changed_game_view_txt, user=user)
+        new_embed.set_thumbnail(url=self.game.cover)
 
         if interaction.response.is_done():
             await interaction.followup.edit_message(embed=new_embed, view=view)
@@ -132,7 +126,11 @@ class GameCreationModal(discord.ui.Modal):
             await self.token_database.add_token(i.user.name,interaction=i)
             await MessageManager.send_message(i.channel,"Added Token")
             self.added_token = True
-            i.response.defer()
+
+            if i.response.is_done():
+                await i.followup.defer()
+            else:
+                await i.response.defer()
 
         replayed_button.callback = replayed_callback
         completed_button.callback = completed_callback
@@ -161,14 +159,18 @@ class GameCreationModal(discord.ui.Modal):
 
         print(game_entry)
 
-        game = Game.from_igdb(self.wrapper, game_entry.name, game_entry.console)
+        self.game = Game.from_igdb(self.wrapper, game_entry.name, game_entry.console)
 
-        game_view_txt = ViewCommand.get_game_view_txt(game_entry)
+        game_view_txt = ViewCommand.get_game_view_txt(game_entry,self.game)
         embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
-        if game and game.cover:
-            embed.set_thumbnail(url=game.cover)
+        if self.game and self.game.cover:
+            embed.set_thumbnail(url=self.game.cover)
 
         view = self._get_game_view(interaction,game_entry)
 
         await MessageManager.send_message(channel=interaction.channel,embed=embed,view=view)
-        await interaction.response.defer()
+
+        if interaction.response.is_done():
+            await interaction.followup.defer()
+        else:
+            await interaction.response.defer()

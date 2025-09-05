@@ -9,7 +9,7 @@ class ListDatabase(Database):
         super().__init__(folder_path=folder_path,
                          database_name="list",
                          table_name="games",
-                         params=[("name","TEXT"), ("user","TEXT"),("date","DATE"),("console","TEXT"),("rating","INT"),("genre","TEXT"),("review","TEXT"),("cover","TEXT"),("replay","INTEGER DEFAULT 0"),("hundred_percent","INTEGER DEFAULT 0")])
+                         params=[("name","TEXT"), ("user","TEXT"),("date","DATE"),("console","TEXT"),("rating","INT"),("review","TEXT"),("cover","TEXT"),("replay","INTEGER DEFAULT 0"),("hundred_percent","INTEGER DEFAULT 0")])
 
     def game_already_in_database(self,entry: GameEntry) -> bool:
         """
@@ -36,7 +36,7 @@ class ListDatabase(Database):
 
         if data:
             row = data[0]
-            return GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], genre=row[5], review=row[6], replayed=bool(row[8]), hundred_percent=bool(row[9]))
+            return GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4],review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8]))
 
         return None
 
@@ -49,7 +49,7 @@ class ListDatabase(Database):
         query = f"SELECT * FROM {self.table_name} WHERE user = ?"
         data = self.sql_execute_fetchall(query, (user_name,))
 
-        return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], genre=row[5], review=row[6], replayed=bool(row[8]), hundred_percent=bool(row[9])) for row in data]
+        return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
 
     def put_game(self, entry: GameEntry,old_entry: GameEntry = None):
         """
@@ -62,8 +62,8 @@ class ListDatabase(Database):
         if old_entry is not None and self.game_already_in_database(old_entry):
             self.remove_entry(old_entry)
 
-        query = f"INSERT INTO {self.table_name} (name, user, date, console, rating, genre, review, replay, hundred_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        params = (entry.name, entry.user, old_entry.date if old_entry else entry.date, entry.console, entry.rating, entry.genre, entry.review, int(entry.replayed), int(entry.hundred_percent))
+        query = f"INSERT INTO {self.table_name} (name, user, date, console, rating, review, replay, hundred_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        params = (entry.name, entry.user, old_entry.date if old_entry else entry.date, entry.console, entry.rating, entry.review, int(entry.replayed), int(entry.hundred_percent))
 
         self.sql_execute(query, params)
 
