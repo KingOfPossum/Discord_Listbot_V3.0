@@ -1,3 +1,4 @@
+from common.ChannelManager import ChannelManager
 from common.ConfigLoader import ConfigLoader
 from common.Replies import Replies
 from common.UserManager import UserManager
@@ -26,6 +27,7 @@ class BotEvents(commands.Cog):
         """
         print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})\n")
         UserManager.init(self.__bot)
+        await ChannelManager.init(self.__bot)
         self.databases.init_tokens_database()
 
     @commands.Cog.listener()
@@ -37,6 +39,8 @@ class BotEvents(commands.Cog):
         if not ConfigLoader.get_config().bot_replies:
             return
 
+        if not ChannelManager.is_channel_accepted(message.channel):
+            return
         if message.author == self.__bot.user:
             return
         if not ConfigLoader.get_config().bot_replies_to_links and message.content.startswith("https://"):

@@ -5,7 +5,6 @@ from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
 
-
 class DeactivateBotRepliesCommand(Command):
     """
     Command to activate bot replies.
