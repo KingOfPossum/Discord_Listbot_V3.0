@@ -22,10 +22,11 @@ class ViewCommand(Command):
                                    "ydclz2x5k42rru95bzgr6kqvxfmum9")
 
     @staticmethod
-    def get_game_view_txt(game_entry: GameEntry) -> str:
+    def get_game_view_txt(game_entry: GameEntry, game_data: Game) -> str:
         """
         Creates an embed for the game view command.
         Contains all information about the game entry.
+        :param game_data: The IGDB Game object containing additional game details.
         :param game_entry: The GameEntry containing the game details.
         :return : A formatted string with the game details.
         """
@@ -34,7 +35,7 @@ class ViewCommand(Command):
 
         view_game_details = f"**Console:** {console_emoji}\n" \
                             f"**Rating:** {game_entry.rating}\n" \
-                            f"**Genre:** {game_entry.genre}\n" \
+                            f"**Genre:** {", ".join([genre for genre in game_data.genres[0]])}\n" \
                             f"**Review:** {game_entry.review}\n\n" \
                             f"**Replay:** {[Emojis.CROSS_MARK, Emojis.CHECK_MARK][game_entry.replayed]}\n\n" \
                             f"Added on **{game_entry.date}**"
@@ -74,7 +75,7 @@ class ViewCommand(Command):
 
         game_infos = Game.from_igdb(self.wrapper,game_name,game_entry.console)
 
-        embed = MessageManager.get_embed(title=f"**{game_name} {"(100%)" * game_entry.hundred_percent}**",description=self.get_game_view_txt(game_entry))
+        embed = MessageManager.get_embed(title=f"**{game_name} {"(100%)" * game_entry.hundred_percent}**",description=self.get_game_view_txt(game_entry,game_infos))
         embed.set_thumbnail(url=game_infos.cover)
 
         await MessageManager.send_message(ctx.channel,embed=embed)

@@ -30,11 +30,10 @@ class GameList:
         completion_txt = "**(100%)**" if game_entry.hundred_percent else ""
         console_txt = f"({Emojis.CONSOLES[game_entry.console]})"
         rating_txt = f"Rating: **{game_entry.rating}**"
-        genre_txt = f"Genre: **{game_entry.genre}**"
         date_txt = f"added on **{game_entry.date}**"
         review_txt = Emojis.REVIEW if len(game_entry.review) > 0 else ""
 
-        return " ".join([game_name,replay_txt,completion_txt,console_txt,rating_txt,genre_txt,date_txt,review_txt])
+        return " ".join([game_name,replay_txt,completion_txt,console_txt,rating_txt,date_txt,review_txt])
 
     def get_list_txt(self) -> str:
         """
