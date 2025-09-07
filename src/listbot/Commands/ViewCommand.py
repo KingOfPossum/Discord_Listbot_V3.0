@@ -35,7 +35,7 @@ class ViewCommand(Command):
 
         view_game_details = f"**Console:** {console_emoji}\n" \
                             f"**Rating:** {game_entry.rating}\n" \
-                            f"**Genre:** {", ".join([genre for genre in game_data.genres[0]])}\n" \
+                            f"**Genre:** {", ".join([genre for genre in game_data.genres[0]] if game_data else "IDK")}\n" \
                             f"**Review:** {game_entry.review}\n\n" \
                             f"**Replay:** {[Emojis.CROSS_MARK, Emojis.CHECK_MARK][game_entry.replayed]}\n\n" \
                             f"Added on **{game_entry.date}**"

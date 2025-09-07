@@ -1,6 +1,5 @@
 import discord
 
-from common.ConfigLoader import ConfigLoader
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
