@@ -1,14 +1,15 @@
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
+from common.EmojiCreator import EmojiCreator
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
+from common.Wrapper import Wrapper
 from database.ListDatabase import ListDatabase
 from discord.ext import commands
 from Game import Game
-from wrapper import IGDBWrapper
 
 class ViewCommand(Command):
     """
@@ -17,9 +18,6 @@ class ViewCommand(Command):
     """
     def __init__(self,database: ListDatabase):
         self.database = database
-
-        self.wrapper = IGDBWrapper("vhxxz4jvptvoj99f6arnjii3wgzq47",
-                                   "ydclz2x5k42rru95bzgr6kqvxfmum9")
 
     @staticmethod
     def get_game_view_txt(game_entry: GameEntry, game_data: Game) -> str:
@@ -30,8 +28,10 @@ class ViewCommand(Command):
         :param game_entry: The GameEntry containing the game details.
         :return : A formatted string with the game details.
         """
-        console_emoji = Emojis.CONSOLES[game_entry.console] if Emojis.CONSOLES[
-                                                                   game_entry.console] != "" else game_entry.console
+        if game_entry.console in Emojis.CONSOLES:
+            console_emoji = Emojis.CONSOLES[game_entry.console]
+        else:
+            console_emoji = game_entry.console
 
         view_game_details = f"**Console:** {console_emoji}\n" \
                             f"**Rating:** {game_entry.rating}\n" \
@@ -73,7 +73,9 @@ class ViewCommand(Command):
 
         game_name, game_entry = game
 
-        game_infos = Game.from_igdb(self.wrapper,game_name,game_entry.console)
+        game_infos = Game.from_igdb(Wrapper.wrapper,game_name,game_entry.console)
+
+        await EmojiCreator.create_console_emoji_if_not_exists(ctx.guild, game_entry.console)
 
         embed = MessageManager.get_embed(title=f"**{game_name} {"(100%)" * game_entry.hundred_percent}**",description=self.get_game_view_txt(game_entry,game_infos))
         embed.set_thumbnail(url=game_infos.cover)
