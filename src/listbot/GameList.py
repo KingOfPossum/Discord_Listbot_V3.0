@@ -1,5 +1,6 @@
 import discord
 
+from common.EmojiCreator import EmojiCreator
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
@@ -18,13 +19,16 @@ class GameList:
         self.games = self.database.get_all_game_entries(self.user)
 
     @staticmethod
-    def game_entry_to_list_entry(game_entry: GameEntry) -> str:
+    async def game_entry_to_list_entry(game_entry: GameEntry,guild) -> str:
         """
         Converts a GameEntry object to a string representation used in the list.
         Will add special emojis for completion and replayed status or for having a review.
+        :param guild: The guild in which the list is being displayed. Used for fetching custom emojis.
         :param game_entry:
         :return: The string representation for the list
         """
+        await EmojiCreator.create_console_emoji_if_not_exists(guild,game_entry.console)
+
         game_name = f"**{game_entry.name}**"
         replay_txt = "**(REPLAY)**" if game_entry.replayed else ""
         completion_txt = "**(100%)**" if game_entry.hundred_percent else ""
@@ -35,11 +39,12 @@ class GameList:
 
         return " ".join([game_name,replay_txt,completion_txt,console_txt,rating_txt,date_txt,review_txt])
 
-    def get_list_txt(self) -> str:
+    async def get_list_txt(self,guild) -> str:
         """
         Creates a string representing a list of games.
         It will only show the games for the current page,
         While only showing the set maximum number of entries per page.
+        :param guild : The guild in which the list is being displayed. Used for fetching custom emojis.
         :return: The string representation of the game list for the current page.
         """
         start_index = (self.page - 1) * self.max_entries_per_page
@@ -48,7 +53,7 @@ class GameList:
         page_txt = f"**Page {self.page}/{self.number_of_pages()}**\n"
         number_games_txt = f"Number of games: **{len(self.games)}**"
 
-        return page_txt + "\n".join([f"**{i + 1}.** {self.game_entry_to_list_entry(self.games[i])}" for i in range(start_index,end_index) if i < len(self.games)]) + "\n" + number_games_txt
+        return page_txt + "\n".join([f"**{i + 1}.** {await self.game_entry_to_list_entry(self.games[i],guild)}" for i in range(start_index,end_index) if i < len(self.games)]) + "\n" + number_games_txt
 
     def next_page(self) -> int:
         """
@@ -79,16 +84,17 @@ class GameList:
         """
         return (len(self.games) + self.max_entries_per_page - 1) // self.max_entries_per_page
 
-    async def send_list(self):
+    async def send_list(self,guild):
         """
         Sends the game list to the lists ctx channel.
         Will add two buttons for navigating through the pages.
+        :param guild: The guild in which the list is being displayed. Used for fetching custom emojis.
         """
         if len(self.games) == 0:
             await MessageManager.send_error_message(self.ctx.channel,"you have No Games in your List")
 
         embed_title = f"**{self.ctx.author.display_name}'games**"
-        embed_description = self.get_list_txt()
+        embed_description = await self.get_list_txt(guild)
         embed = MessageManager.get_embed(title=embed_title,description=embed_description,user=self.ctx.author)
 
         async def next_callback(interaction: discord.Interaction):
@@ -97,7 +103,7 @@ class GameList:
             :param interaction: The interaction object for the button click.
             """
             self.next_page()
-            embed.description = self.get_list_txt()
+            embed.description = await self.get_list_txt(guild)
             await interaction.response.edit_message(embed=embed,view=view)
 
         async def previous_callback(interaction:  discord.Interaction):
@@ -106,7 +112,7 @@ class GameList:
             :param interaction: The interaction object for the button click.
             """
             self.previous_page()
-            embed.description = self.get_list_txt()
+            embed.description = await self.get_list_txt(guild)
             await interaction.response.edit_message(embed=embed,view=view)
 
         view = discord.ui.View()

@@ -1,16 +1,16 @@
 import discord
 
-from common.ConfigLoader import ConfigLoader
+from common.EmojiCreator import EmojiCreator
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
+from common.Wrapper import Wrapper
 from database.ListDatabase import ListDatabase
 from database.TokensDatabase import TokensDatabase
 from Game import Game
 from listbot.Commands.CompletedCommand import CompletedCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
 from listbot.Commands.ViewCommand import ViewCommand
-from wrapper import IGDBWrapper
 
 class GameCreationModal(discord.ui.Modal):
     """
@@ -27,8 +27,6 @@ class GameCreationModal(discord.ui.Modal):
         self.token_database = token_database
         self.game_entry = game_entry
 
-        self.wrapper = IGDBWrapper("vhxxz4jvptvoj99f6arnjii3wgzq47",
-                              "ydclz2x5k42rru95bzgr6kqvxfmum9")
         self.game: Game | None = None
 
         self.added_token = False
@@ -127,9 +125,7 @@ class GameCreationModal(discord.ui.Modal):
             await MessageManager.send_message(i.channel,"Added Token")
             self.added_token = True
 
-            if i.response.is_done():
-                await i.followup.defer()
-            else:
+            if not i.response.is_done():
                 await i.response.defer()
 
         replayed_button.callback = replayed_callback
@@ -151,6 +147,11 @@ class GameCreationModal(discord.ui.Modal):
         it will create a new game entry in the database.
         :param interaction: the interaction in which the modal was submitted
         """
+        if interaction.response.is_done():
+            await interaction.followup.defer()
+        else:
+            await interaction.response.defer()
+
         if not await self._isvalid(interaction):
             return
 
@@ -159,7 +160,9 @@ class GameCreationModal(discord.ui.Modal):
 
         print(game_entry)
 
-        self.game = Game.from_igdb(self.wrapper, game_entry.name, game_entry.console)
+        self.game = Game.from_igdb(Wrapper.wrapper, game_entry.name, game_entry.console)
+
+        await EmojiCreator.create_console_emoji_if_not_exists(interaction.guild, game_entry.console)
 
         game_view_txt = ViewCommand.get_game_view_txt(game_entry,self.game)
         embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
@@ -169,8 +172,3 @@ class GameCreationModal(discord.ui.Modal):
         view = self._get_game_view(interaction,game_entry)
 
         await MessageManager.send_message(channel=interaction.channel,embed=embed,view=view)
-
-        if interaction.response.is_done():
-            await interaction.followup.defer()
-        else:
-            await interaction.response.defer()

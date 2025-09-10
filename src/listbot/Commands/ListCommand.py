@@ -38,7 +38,7 @@ class ListCommand(Command):
             user = UserManager.get_user_name(user)
             game_list = GameList(self.database,ctx,user=user)
 
-        await game_list.send_list()
+        await game_list.send_list(ctx.guild)
 
     def help(self) -> str:
         """
