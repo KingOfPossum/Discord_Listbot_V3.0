@@ -40,7 +40,7 @@ class ListDatabase(Database):
 
         return None
 
-    def get_all_game_entries(self, user_name:str) -> list[GameEntry]:
+    def get_all_game_entries_from_user(self, user_name:str) -> list[GameEntry]:
         """
         Retrieves all game entries for a specific user from the database.
         :param user_name: The name of the user whose game entries are to be retrieved.
@@ -48,6 +48,16 @@ class ListDatabase(Database):
         """
         query = f"SELECT * FROM {self.table_name} WHERE user = ?"
         data = self.sql_execute_fetchall(query, (user_name,))
+
+        return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
+
+    def get_all_game_entries(self) -> list[GameEntry]:
+        """
+        Retrieves all game entries from the database.
+        :return: A list of all GameEntry objects in the database.
+        """
+        query = f"SELECT * FROM {self.table_name}"
+        data = self.sql_execute_fetchall(query)
 
         return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
 

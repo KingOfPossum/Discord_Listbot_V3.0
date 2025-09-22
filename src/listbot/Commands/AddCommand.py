@@ -46,4 +46,4 @@ class AddCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}add` - Add a new game to the list\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}add` - Add a new game to the list.\n"

@@ -42,13 +42,17 @@ class EmojiCreator:
 
     @staticmethod
     async def create_console_emoji_if_not_exists(guild,console_name):
-        if not await EmojiCreator.emoji_exists(guild, console_name):
-            print("Creating Emoji")
-            console_logo = Wrapper.request("platforms",
-                                           f"fields platform_logo.url; where name ~ *\"{console_name}\"* | abbreviation ~ *\"{console_name}\"*;")
-            await EmojiCreator.create_console_emoji(guild, console_name,
-                                                    "https:" + console_logo[0]["platform_logo"]["url"].replace(
-                                                        "t_thumb", "t_logo_med"))
+        try:
+            if not await EmojiCreator.emoji_exists(guild, console_name):
+                print("Creating Emoji")
+                console_logo = Wrapper.request("platforms",
+                                               f"fields platform_logo.url; where name ~ *\"{console_name}\"* | abbreviation ~ *\"{console_name}\"*;")
+                print(console_logo)
+                await EmojiCreator.create_console_emoji(guild, console_name,
+                                                        "https:" + console_logo[0]["platform_logo"]["url"].replace(
+                                                            "t_thumb", "t_logo_med"))
+        except Exception as e:
+            print(f"Failed to create emoji for console {console_name}: {e}")
 
     @staticmethod
     async def emoji_exists(guild,emoji_name):
