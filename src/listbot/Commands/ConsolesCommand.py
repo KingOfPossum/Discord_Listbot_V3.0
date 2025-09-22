@@ -27,4 +27,4 @@ class ConsolesCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: A string containing the command usage and description.
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}consoles` - View the list of supported consoles\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}consoles` - View the list of supported consoles.\n"

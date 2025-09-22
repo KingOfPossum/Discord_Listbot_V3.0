@@ -4,19 +4,19 @@ from common.EmojiCreator import EmojiCreator
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
-from database.Database import Database
+from database.ListDatabase import ListDatabase
 
 class GameList:
     """
     This class represents a list of games for a user.
     """
-    def __init__(self,database: Database,ctx: discord.Interaction,user: str = None):
+    def __init__(self,database: ListDatabase,ctx: discord.Interaction,user: str = None):
         self.ctx = ctx
         self.user = user if user is not None else ctx.author.name
         self.database = database
         self.page = 1
         self.max_entries_per_page = 5
-        self.games = self.database.get_all_game_entries(self.user)
+        self.games = self.database.get_all_game_entries_from_user(self.user)
 
     @staticmethod
     async def game_entry_to_list_entry(game_entry: GameEntry,guild) -> str:
@@ -32,7 +32,7 @@ class GameList:
         game_name = f"**{game_entry.name}**"
         replay_txt = "**(REPLAY)**" if game_entry.replayed else ""
         completion_txt = "**(100%)**" if game_entry.hundred_percent else ""
-        console_txt = f"({Emojis.CONSOLES[game_entry.console]})"
+        console_txt = f"({Emojis.get_console_emoji(game_entry.console)})"
         rating_txt = f"Rating: **{game_entry.rating}**"
         date_txt = f"added on **{game_entry.date}**"
         review_txt = Emojis.REVIEW if len(game_entry.review) > 0 else ""

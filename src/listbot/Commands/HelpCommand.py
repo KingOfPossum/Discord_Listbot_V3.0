@@ -11,6 +11,7 @@ from listbot.Commands.ConsolesCommand import ConsolesCommand
 from listbot.Commands.ListCommand import ListCommand
 from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
+from listbot.Commands.StatsCommand import StatsCommand
 from listbot.Commands.UpdateCommand import UpdateCommand
 from listbot.Commands.ViewCommand import ViewCommand
 from tokenSystem.commands.AddTokenCommand import AddTokenCommand
@@ -25,7 +26,7 @@ class HelpCommand(Command):
     def __init__(self):
         self.general_commands = [RandomizeNumCommand(),RandomizeCommand(),ActivateBotRepliesCommand(),DeactivateBotRepliesCommand(),ToggleBotRepliesCommand()]
         self.list_commands = [AddCommand(list_database=None,token_database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
-                              ConsolesCommand()]
+                              ConsolesCommand(),StatsCommand(list_database=None)]
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
 
     @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])

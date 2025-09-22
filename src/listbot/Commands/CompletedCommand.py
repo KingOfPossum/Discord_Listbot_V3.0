@@ -63,4 +63,4 @@ class CompletedCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}completed` `gameName` - Changes the completion status of a game\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}completed` `gameName` - Changes the completion status of a game.\n"

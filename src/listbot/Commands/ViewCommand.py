@@ -28,10 +28,7 @@ class ViewCommand(Command):
         :param game_entry: The GameEntry containing the game details.
         :return : A formatted string with the game details.
         """
-        if game_entry.console in Emojis.CONSOLES:
-            console_emoji = Emojis.CONSOLES[game_entry.console]
-        else:
-            console_emoji = game_entry.console
+        console_emoji = Emojis.get_console_emoji(game_entry.console)
 
         view_game_details = f"**Console:** {console_emoji}\n" \
                             f"**Rating:** {game_entry.rating}\n" \
@@ -72,7 +69,6 @@ class ViewCommand(Command):
             return
 
         game_name, game_entry = game
-
         game_infos = Game.from_igdb(Wrapper.wrapper,game_name,game_entry.console)
 
         await EmojiCreator.create_console_emoji_if_not_exists(ctx.guild, game_entry.console)
@@ -83,5 +79,5 @@ class ViewCommand(Command):
         await MessageManager.send_message(ctx.channel,embed=embed)
 
     def help(self) -> str:
-        return f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` - View the details of a game your list\n" \
-               f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` `user` - View the details of a game from another user's list\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` - View the details of a game your list.\n" \
+               f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` `user` - View the details of a game from another user's list.\n"

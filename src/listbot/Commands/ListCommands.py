@@ -7,6 +7,7 @@ from listbot.Commands.HelpCommand import HelpCommand
 from listbot.Commands.ListCommand import ListCommand
 from listbot.Commands.RemoveCommand import RemoveCommand
 from listbot.Commands.ReplayedCommand import ReplayedCommand
+from listbot.Commands.StatsCommand import StatsCommand
 from listbot.Commands.UpdateCommand import UpdateCommand
 from listbot.Commands.ViewCommand import ViewCommand
 
@@ -37,6 +38,7 @@ class ListCommands:
         await bot.add_cog(CompletedCommand(list_database))
         await bot.add_cog(ViewCommand(list_database))
         await bot.add_cog(ListCommand(list_database))
+        await bot.add_cog(StatsCommand(list_database))
         await bot.add_cog(ConsolesCommand())
         await bot.add_cog(HelpCommand())
         print("Registered ListCommands cogs.")

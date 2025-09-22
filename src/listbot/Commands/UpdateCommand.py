@@ -53,4 +53,4 @@ class UpdateCommand(Command):
         Returns a string that describes the command and how to use it.
         :return: The help string for the command
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}update` `gameName` - Update an existing Game\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}update` `gameName` - Update an existing Game.\n"
