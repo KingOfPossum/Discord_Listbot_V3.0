@@ -24,4 +24,4 @@ class TimeUtils:
         Returns the current date formatted as a string in the format "YYYY-MM-DD".
         :return: the current date as a string.
         """
-        return datetime.now().strftime("%d.%m.%y")
+        return datetime.now().strftime("%Y-%m-%d")
