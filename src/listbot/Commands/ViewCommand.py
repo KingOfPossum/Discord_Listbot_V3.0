@@ -7,6 +7,7 @@ from common.EmojiCreator import EmojiCreator
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
+from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
 from common.Wrapper import Wrapper
 from database.ListDatabase import ListDatabase
@@ -37,7 +38,7 @@ class ViewCommand(Command):
                             f"**Genre:** {", ".join([genre for genre in game_data.genres[0]] if game_data else "IDK")}\n" \
                             f"**Review:** {game_entry.review}\n\n" \
                             f"**Replay:** {[Emojis.CROSS_MARK, Emojis.CHECK_MARK][game_entry.replayed]}\n\n" \
-                            f"Added on **{game_entry.date}**"
+                            f"Added on **{TimeUtils.convert_to_readable_form(game_entry.date)}**"
 
         return view_game_details
 
