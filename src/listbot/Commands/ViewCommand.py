@@ -1,3 +1,5 @@
+import discord
+
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
@@ -39,6 +41,11 @@ class ViewCommand(Command):
 
         return view_game_details
 
+    def get_game_embed(self,game_entry: GameEntry,game_infos: Game):
+        embed = MessageManager.get_embed(title=f"**{game_entry.name} {"(100%)" * game_entry.hundred_percent}**",
+                                         description=self.get_game_view_txt(game_entry, game_infos))
+        embed.set_thumbnail(url=game_infos.cover)
+        return embed
 
     @commands.command(name="view",aliases=["View","v","viewGame","ViewGame","VIEW","VIEWGAME","view_game","View_Game","VIEW_GAME","viewgame","Viewgame"])
     async def execute(self, ctx):
@@ -64,19 +71,40 @@ class ViewCommand(Command):
             user = None
             game_name = " ".join(args)
 
-        game = await BotUtils.game_exists(game_name,self.database,user=user,ctx=ctx)
-        if not game:
+        instances = self.database.get_all_instances_of_game(game_name,user if user else ctx.author.name)
+        if not instances:
             return
 
-        game_name, game_entry = game
+        game_entry_index = 0
+        game_entry = instances[game_entry_index]
         game_infos = Game.from_igdb(Wrapper.wrapper,game_name,game_entry.console)
 
+        view = discord.ui.View()
+
+        if len(instances) > 1:
+            left_button = discord.ui.Button(label="←", style=discord.ButtonStyle.green)
+            right_button = discord.ui.Button(label="→", style=discord.ButtonStyle.blurple)
+
+            async def left_callback(interaction: discord.Interaction):
+                nonlocal game_entry_index, game_entry
+                game_entry_index = (game_entry_index + 1) % len(instances)
+                game_entry = instances[game_entry_index]
+                await interaction.response.edit_message(embed=self.get_game_embed(game_entry,game_infos), view=view)
+
+            async def right_callback(interaction: discord.Interaction):
+                nonlocal game_entry_index, game_entry
+                game_entry_index = (game_entry_index - 1) % len(instances)
+                game_entry = instances[game_entry_index]
+                await interaction.response.edit_message(embed=self.get_game_embed(game_entry,game_infos), view=view)
+
+            left_button.callback = left_callback
+            right_button.callback = right_callback
+
+            view.add_item(left_button)
+            view.add_item(right_button)
+
         await EmojiCreator.create_console_emoji_if_not_exists(ctx.guild, game_entry.console)
-
-        embed = MessageManager.get_embed(title=f"**{game_name} {"(100%)" * game_entry.hundred_percent}**",description=self.get_game_view_txt(game_entry,game_infos))
-        embed.set_thumbnail(url=game_infos.cover)
-
-        await MessageManager.send_message(ctx.channel,embed=embed)
+        await MessageManager.send_message(ctx.channel,embed=self.get_game_embed(game_entry,game_infos),view=view)
 
     def help(self) -> str:
         return f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` - View the details of a game your list.\n" \
