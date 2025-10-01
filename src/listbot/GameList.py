@@ -36,7 +36,7 @@ class GameList:
         completion_txt = "**(100%)**" if game_entry.hundred_percent else ""
         console_txt = f"({Emojis.get_console_emoji(game_entry.console)})"
         rating_txt = f"Rating: **{game_entry.rating}**"
-        date_txt = f"added on **{game_entry.date}**"
+        date_txt = f"added on **{TimeUtils.convert_to_readable_form(game_entry.date)}**"
         review_txt = Emojis.REVIEW if len(game_entry.review) > 0 else ""
 
         return " ".join([game_name,replay_txt,completion_txt,console_txt,rating_txt,date_txt,review_txt])

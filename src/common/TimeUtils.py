@@ -25,3 +25,19 @@ class TimeUtils:
         :return: the current date as a string.
         """
         return datetime.now().strftime("%Y-%m-%d")
+
+    @staticmethod
+    def convert_to_readable_form(date: str):
+        """
+        Converts a date string in the format "YYYY-MM-DD" to a more readable format "DD.MM.YYYY".
+        :param date: the date string in the format "YYYY-MM-DD".
+        :return: The converted date string in the format "DD.MM.YYYY".
+        """
+        formats = ["%Y-%m-%d", "%Y-%m-%d %H:%M:%S.%f"]
+        for fmt in formats:
+            try:
+                dt = datetime.strptime(date, fmt)
+                return dt.strftime("%d.%m.%Y")
+            except ValueError:
+                continue
+        return date
