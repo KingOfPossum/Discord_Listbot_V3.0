@@ -1,4 +1,5 @@
 from common.GameEntry import GameEntry
+from common.TimeUtils import TimeUtils
 from database.Database import Database
 
 class ListDatabase(Database):
@@ -40,23 +41,41 @@ class ListDatabase(Database):
 
         return None
 
-    def get_all_game_entries_from_user(self, user_name:str) -> list[GameEntry]:
+    def get_all_instances_of_game(self,name: str, user: str) -> list[GameEntry] | None:
+        """
+        Retrieves all instances of a game entry from the database based on the name and user sorted by the date they were added.
+        :param name: Name of the game
+        :param user: Name of the user who added the game
+        :return: A list of GameEntry objects containing the details of all instances of the game added by the user sorted by date.
+        """
+        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND user = ? ORDER BY date DESC"
+        data = self.sql_execute_fetchall(query, (name, user))
+
+        return [GameEntry(name=row[0],user=row[1],date=row[2],console=row[3],rating=row[4],review=row[5],replayed=bool(row[7]),hundred_percent=bool(row[8])) for row in data] if data else None
+
+    def get_all_game_entries_from_user(self, user_name:str,year:str=str(TimeUtils.get_current_year())) -> list[GameEntry]:
         """
         Retrieves all game entries for a specific user from the database.
         :param user_name: The name of the user whose game entries are to be retrieved.
+        :param year: The year to filter the game entries. Default is the current year.
         :return: A list of GameEntry objects containing the details of all games added by the user.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE user = ?"
+        print(TimeUtils.get_current_year())
+        query = f"SELECT * FROM {self.table_name} WHERE user = ? AND STRFTIME('%Y',date) = '{year}'"
         data = self.sql_execute_fetchall(query, (user_name,))
 
         return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
 
-    def get_all_game_entries(self) -> list[GameEntry]:
+    def get_all_game_entries(self,year=None) -> list[GameEntry]:
         """
         Retrieves all game entries from the database.
+        :param year: The year to filter the game entries. If None, retrieves all entries.
         :return: A list of all GameEntry objects in the database.
         """
-        query = f"SELECT * FROM {self.table_name}"
+        if year:
+            query = f"SELECT * FROM {self.table_name} WHERE STRFTIME('%Y',date) = '{year}'"
+        else:
+            query = f"SELECT * FROM {self.table_name}"
         data = self.sql_execute_fetchall(query)
 
         return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
@@ -84,6 +103,21 @@ class ListDatabase(Database):
         """
         query = f"DELETE FROM {self.table_name} WHERE name = ? AND user = ? AND date = ?"
         self.sql_execute(query, (entry.name, entry.user, entry.date))
+
+    def get_years(self,user: str = None) -> list[str]:
+        """
+        Retrieves a list of distinct years in which the user has added games.
+        :param user: The name of the user whose game years are to be retrieved, if user is None consider all games added by all users in total.
+        :return: A list of years as strings.
+        """
+        if user:
+            query = f"SELECT DISTINCT STRFTIME('%Y',date) AS year FROM {self.table_name} WHERE user = ? ORDER BY year DESC"
+            data = self.sql_execute_fetchall(query, (user,))
+        else:
+            query = f"SELECT DISTINCT STRFTIME('%Y',date) AS year FROM {self.table_name} ORDER BY year DESC"
+            data = self.sql_execute_fetchall(query)
+
+        return [row[0] for row in data if row[0] is not None]
 
     def print_database(self):
         """Prints the contents of the database to the console."""

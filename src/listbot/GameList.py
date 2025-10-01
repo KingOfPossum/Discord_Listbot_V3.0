@@ -4,6 +4,7 @@ from common.EmojiCreator import EmojiCreator
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
+from common.TimeUtils import TimeUtils
 from database.ListDatabase import ListDatabase
 
 class GameList:
@@ -17,6 +18,7 @@ class GameList:
         self.page = 1
         self.max_entries_per_page = 5
         self.games = self.database.get_all_game_entries_from_user(self.user)
+        self.years = self.database.get_years(self.user) # List of years in which the user has added games used for adding buttons to view specific years
 
     @staticmethod
     async def game_entry_to_list_entry(game_entry: GameEntry,guild) -> str:
@@ -124,5 +126,29 @@ class GameList:
 
         view.add_item(previous_button)
         view.add_item(next_button)
+
+        year_buttons: dict = {}
+
+        # Add buttons for each year in which the user has added games, to filter the list by this year
+        if len(self.years) > 1:
+            for year in self.years:
+                async def year_callback(interaction: discord.Interaction,year=year):
+                    self.games = self.database.get_all_game_entries_from_user(self.user,year)
+                    self.page = 1
+                    embed.description = await self.get_list_txt(guild)
+
+                    for yb in year_buttons.values():
+                        yb.disabled = False
+                    year_buttons[year].disabled = True
+
+                    await interaction.response.edit_message(embed=embed,view=view)
+
+                year_button = discord.ui.Button(label=str(year),style=discord.ButtonStyle.gray)
+                year_button.callback = year_callback
+                view.add_item(year_button)
+
+                year_buttons[year] = year_button
+                if year == str(TimeUtils.get_current_year()):
+                    year_buttons[year].disabled = True
 
         await MessageManager.send_message(self.ctx.channel,embed=embed,view=view)
