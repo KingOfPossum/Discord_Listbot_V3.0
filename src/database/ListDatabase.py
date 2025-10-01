@@ -66,12 +66,16 @@ class ListDatabase(Database):
 
         return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
 
-    def get_all_game_entries(self) -> list[GameEntry]:
+    def get_all_game_entries(self,year=None) -> list[GameEntry]:
         """
         Retrieves all game entries from the database.
+        :param year: The year to filter the game entries. If None, retrieves all entries.
         :return: A list of all GameEntry objects in the database.
         """
-        query = f"SELECT * FROM {self.table_name}"
+        if year:
+            query = f"SELECT * FROM {self.table_name} WHERE STRFTIME('%Y',date) = '{year}'"
+        else:
+            query = f"SELECT * FROM {self.table_name}"
         data = self.sql_execute_fetchall(query)
 
         return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
@@ -100,14 +104,18 @@ class ListDatabase(Database):
         query = f"DELETE FROM {self.table_name} WHERE name = ? AND user = ? AND date = ?"
         self.sql_execute(query, (entry.name, entry.user, entry.date))
 
-    def get_years(self,user: str) -> list[str]:
+    def get_years(self,user: str = None) -> list[str]:
         """
         Retrieves a list of distinct years in which the user has added games.
-        :param user: The name of the user whose game years are to be retrieved.
+        :param user: The name of the user whose game years are to be retrieved, if user is None consider all games added by all users in total.
         :return: A list of years as strings.
         """
-        query = f"SELECT DISTINCT STRFTIME('%Y',date) AS year FROM {self.table_name} WHERE user = ? ORDER BY year DESC"
-        data = self.sql_execute_fetchall(query, (user,))
+        if user:
+            query = f"SELECT DISTINCT STRFTIME('%Y',date) AS year FROM {self.table_name} WHERE user = ? ORDER BY year DESC"
+            data = self.sql_execute_fetchall(query, (user,))
+        else:
+            query = f"SELECT DISTINCT STRFTIME('%Y',date) AS year FROM {self.table_name} ORDER BY year DESC"
+            data = self.sql_execute_fetchall(query)
 
         return [row[0] for row in data if row[0] is not None]
 
