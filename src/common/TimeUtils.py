@@ -41,3 +41,12 @@ class TimeUtils:
             except ValueError:
                 continue
         return date
+
+    @staticmethod
+    def timestamp_to_date(timestamp: int) -> str:
+        """
+        Converts a Unix timestamp to a date string in the format "YYYY-MM-DD".
+        :param timestamp: The Unix timestamp to convert.
+        :return: The converted date string in the format "YYYY-MM-DD".
+        """
+        return datetime.fromtimestamp(timestamp).strftime("%d.%m.%Y")
