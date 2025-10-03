@@ -17,7 +17,7 @@ class GameList:
         self.database = database
         self.page = 1
         self.max_entries_per_page = 5
-        self.games = self.database.get_all_game_entries_from_user(self.user)
+        self.games = self.database.get_all_game_entries(self.user,str(TimeUtils.get_current_year()))
         self.years = self.database.get_years(self.user) # List of years in which the user has added games used for adding buttons to view specific years
 
     @staticmethod
@@ -132,8 +132,8 @@ class GameList:
         # Add buttons for each year in which the user has added games, to filter the list by this year
         if len(self.years) > 1:
             for year in self.years:
-                async def year_callback(interaction: discord.Interaction,year=year):
-                    self.games = self.database.get_all_game_entries_from_user(self.user,year)
+                async def year_callback(interaction: discord.Interaction,current_year=year):
+                    self.games = self.database.get_all_game_entries(self.user,year=current_year)
                     self.page = 1
                     embed.description = await self.get_list_txt(guild)
 

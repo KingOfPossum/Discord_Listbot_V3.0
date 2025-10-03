@@ -53,30 +53,20 @@ class ListDatabase(Database):
 
         return [GameEntry(name=row[0],user=row[1],date=row[2],console=row[3],rating=row[4],review=row[5],replayed=bool(row[7]),hundred_percent=bool(row[8])) for row in data] if data else None
 
-    def get_all_game_entries_from_user(self, user_name:str,year:str=str(TimeUtils.get_current_year())) -> list[GameEntry]:
-        """
-        Retrieves all game entries for a specific user from the database.
-        :param user_name: The name of the user whose game entries are to be retrieved.
-        :param year: The year to filter the game entries. Default is the current year.
-        :return: A list of GameEntry objects containing the details of all games added by the user.
-        """
-        print(TimeUtils.get_current_year())
-        query = f"SELECT * FROM {self.table_name} WHERE user = ? AND STRFTIME('%Y',date) = '{year}'"
-        data = self.sql_execute_fetchall(query, (user_name,))
-
-        return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
-
-    def get_all_game_entries(self,year=None) -> list[GameEntry]:
+    def get_all_game_entries(self,user_name:str=None,year=None) -> list[GameEntry]:
         """
         Retrieves all game entries from the database.
+        :param user_name: The name of the user whose game entries are to be retrieved.
         :param year: The year to filter the game entries. If None, retrieves all entries.
         :return: A list of all GameEntry objects in the database.
         """
-        if year:
-            query = f"SELECT * FROM {self.table_name} WHERE STRFTIME('%Y',date) = '{year}'"
-        else:
-            query = f"SELECT * FROM {self.table_name}"
+        year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
+        user_filter = f"user = '{user_name}'" if user_name else "1=1"
+
+        query = f"SELECT * FROM {self.table_name} WHERE {year_filter} AND {user_filter}"
         data = self.sql_execute_fetchall(query)
+        print("QUERY: ",query)
+        print("DATA: ",data)
 
         return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
 
@@ -118,6 +108,16 @@ class ListDatabase(Database):
             data = self.sql_execute_fetchall(query)
 
         return [row[0] for row in data if row[0] is not None]
+
+    def does_user_have_entries(self,user: str) -> bool:
+        """
+        Checks if a user has any game entries in the database.
+        :param user: The user to check for
+        :return: True if the user has at least one game entry, False otherwise.
+        """
+        query = f"SELECT * FROM {self.table_name} WHERE user = ?"
+        data = self.sql_execute_fetchall(query, (user,))
+        return len(data) > 0
 
     def print_database(self):
         """Prints the contents of the database to the console."""
