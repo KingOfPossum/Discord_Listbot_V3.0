@@ -1,4 +1,3 @@
-import asyncio
 import discord
 import os
 
@@ -8,9 +7,10 @@ from discord.ext import commands
 from general.Commands.GeneralCommands import GeneralCommands
 from listbot.BotEvents import BotEvents
 from listbot.Commands.ListCommands import ListCommands
+from timeTracking.TimeTracker import TimeTracker
 from tokenSystem.commands.TokenCommands import TokenCommands
 
-class Bot:
+class Bot(commands.Bot):
     """
     A Discord bot that manages a list of games.
     """
@@ -43,31 +43,43 @@ class Bot:
         self.command_prefix = self.__config_data.command_prefix
 
         self.__intents = self.set_intents()
-        self.__bot = commands.Bot(command_prefix=self.command_prefix, intents=self.__intents)
+        super().__init__(command_prefix=self.command_prefix, intents=self.__intents)
 
-        self.__bot.remove_command('help')
+        self.remove_command('help')
         self.list_commands = ListCommands(self._databases)
         self.general_commands = GeneralCommands()
         self.tokens_commands = TokenCommands(self._databases)
 
-        asyncio.run(self.register_events())
-        asyncio.run(self.register_commands())
+    async def setup_hook(self):
+        """A setup hook that is called when the bot is ready."""
+        await self.register_cogs()
+
+    async def register_cogs(self):
+        """Registers all the cogs for the bot."""
+        await self.register_events()
+        await self.register_commands()
+        await self.register_tasks()
 
     async def register_events(self):
         """Registers the bot events cog."""
-        await self.__bot.add_cog(BotEvents(self.__bot,self._databases))
+        await self.add_cog(BotEvents(self,self._databases))
         print("Registered BotEvents cog.")
 
     async def register_commands(self):
         """Registers the list commands cogs."""
-        await self.list_commands.register(self.__bot)
-        await self.general_commands.register(self.__bot)
-        await self.tokens_commands.register(self.__bot)
-        print("Cogs:", list(self.__bot.cogs.keys()))
-        print("Commands:", [c.name for c in self.__bot.commands])
+        await self.list_commands.register(self)
+        await self.general_commands.register(self)
+        await self.tokens_commands.register(self)
+        print("Cogs:", list(self.cogs.keys()))
+        print("Commands:", [c.name for c in self.commands])
         print()
 
-    def run(self):
+    async def register_tasks(self):
+        """Registers the bot tasks."""
+        await self.add_cog(TimeTracker(self))
+        print("Registered TimeTracker task.")
+
+    def run_bot(self):
         """
         Runs the bot using the API key from the configuration file.
         This method will block until the bot is stopped.
@@ -75,7 +87,7 @@ class Bot:
         api_key = self.__config_data.api_key
 
         try:
-            self.__bot.run(api_key)
+            super().run(api_key)
         finally:
             input("Press any key to exit...")
 
