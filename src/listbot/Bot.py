@@ -39,6 +39,7 @@ class Bot(commands.Bot):
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
         self._databases.init_list_database()
         self._databases.init_tokens_database()
+        self._databases.init_time_database()
 
         self.command_prefix = self.__config_data.command_prefix
 
@@ -102,6 +103,7 @@ class Bot(commands.Bot):
         intents.message_content = True
         intents.members = True
         intents.guilds = True
+        intents.presences = True
         return intents
 
     @staticmethod

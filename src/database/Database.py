@@ -1,6 +1,6 @@
 import sqlite3
-from abc import abstractmethod
 
+from abc import abstractmethod
 from common.TimeUtils import TimeUtils
 
 class Database:
@@ -19,20 +19,6 @@ class Database:
         self._init_database(table_name,params)
         self.print_database()
 
-    def sql_execute(self,query: str, params: tuple = ()):
-        """
-        Executes a SQL command on the database.
-        This method is used for commands that do not return data, such as INSERT, UPDATE, or DELETE.
-        It will connect to the database, execute the query with the provided parameters, and commit the changes.
-        :param query: The SQL query to be executed.
-        :param params: The parameters to be used in the SQL query. Default is an empty tuple.
-        """
-        connection = sqlite3.connect(self._path)
-        cursor = connection.cursor()
-        cursor.execute(query, params)
-        connection.commit()
-        connection.close()
-
     def _init_database(self,table_name: str,params: list[tuple]):
         """
         Initializes the database by creating a table with the specified name and parameters if it does not already exist.
@@ -49,6 +35,20 @@ class Database:
         create_table_command = f'CREATE TABLE IF NOT EXISTS {table_name} (' + ', '.join(paramList) + ')'
 
         self.sql_execute(create_table_command)
+
+    def sql_execute(self,query: str, params: tuple = ()):
+        """
+        Executes a SQL command on the database.
+        This method is used for commands that do not return data, such as INSERT, UPDATE, or DELETE.
+        It will connect to the database, execute the query with the provided parameters, and commit the changes.
+        :param query: The SQL query to be executed.
+        :param params: The parameters to be used in the SQL query. Default is an empty tuple.
+        """
+        connection = sqlite3.connect(self._path)
+        cursor = connection.cursor()
+        cursor.execute(query, params)
+        connection.commit()
+        connection.close()
 
     def sql_execute_fetchall(self, query: str, params: tuple = ()) -> list:
         """
