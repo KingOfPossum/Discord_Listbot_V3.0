@@ -77,7 +77,7 @@ class Bot(commands.Bot):
 
     async def register_tasks(self):
         """Registers the bot tasks."""
-        await self.add_cog(TimeTracker(self))
+        await self.add_cog(TimeTracker(self,self._databases.time_database))
         print("Registered TimeTracker task.")
 
     def run_bot(self):

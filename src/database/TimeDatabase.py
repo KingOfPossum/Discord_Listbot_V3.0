@@ -63,11 +63,22 @@ class TimeDatabase(Database):
         params = (user,activity)
         self.sql_execute(query,params)
 
+    def get_users(self) -> list[str]:
+        """
+        Retrieves a list of all users who have time entries in the database.
+        :return: A list of usernames.
+        """
+        query = f"SELECT DISTINCT user FROM {self.table_name}"
+        data = self.sql_execute_fetchall(query)
+
+        return [row[0] for row in data]
+
     def print_database(self):
         """Prints the contents of the time tracking database to the console."""
         print("-" * 100 + "\nDatabase: " + self._path + "\n" + "-" * 100)
 
         entries = self.get_all_time_entries()
+        print(entries)
         for user in entries.keys():
             print(f"User: {user}")
             for activity, time_spent in entries[user]:
