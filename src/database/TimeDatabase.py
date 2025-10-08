@@ -1,3 +1,4 @@
+from common.TimeEntry import TimeEntry
 from database.Database import Database
 
 class TimeDatabase(Database):
@@ -10,14 +11,27 @@ class TimeDatabase(Database):
                          table_name="time_entries",
                          params=[("user","TEXT"), ("activity","TEXT"),("time_spent","INT")])
 
-    def get_all_time_entries(self,user: str = None) -> dict:
+    def get_time_entry(self,user: str, activity: str) -> TimeEntry | None:
+        """
+        Retrieves a time entry for a specific user and activity from the database.
+        :param user: The user whose time entry is to be retrieved.
+        :param activity: The activity whose time entry is to be retrieved.
+        :return: The TimeEntry object if there is one else None
+        """
+        query = f"SELECT * FROM {self.table_name} WHERE user = ? and activity = ?"
+        params = (user,activity)
+        data = self.sql_execute_fetchall(query,params)
+        if data:
+            return TimeEntry(data[0][0],data[0][1],data[0][2])
+        return None
+
+    def get_all_time_entries(self,user: str = None) -> list[TimeEntry]:
         """
         Returns all time entries from the database.
         If a user is specified, only returns the time entries for that user.
         :param user: The user whose time entries are to be retrieved. If None, retrieves all entries.
-        :return: A dictionary where the keys are usernames and the values are lists of tuples (activity, time_spent).
+        :return: A list of TimeEntry objects.
         """
-
         if user is None:
             user_query = "1=1"
         else:
@@ -25,42 +39,32 @@ class TimeDatabase(Database):
         query = f"SELECT * FROM {self.table_name} WHERE {user_query}"
         data = self.sql_execute_fetchall(query)
 
-        users = {row[0] for row in data}
+        entries = [TimeEntry(row[0], row[1], row[2]) for row in data]
+        return entries
 
-        result = {}
-        for user in users:
-            result[user] = list()
-
-        for row in data:
-            result[row[0]].append((row[1], row[2]))
-
-        return result
-
-    def put_entry(self,user: str, activity: str, time_spent: int,is_new:bool = True):
+    def put_entry(self,time_entry: TimeEntry):
         """
-        If an entry for the same user and activity already exists, it will update the time spent by adding the new time to the existing time.
-        Else it will create a new entry in the database.
-        :param user: The user of the activity.
-        :param activity: The name of the activity.
-        :param time_spent: The time spent on the activity in seconds.
-        :param is_new: Whether the entry is new or not.
+        Inserts or updates an TimeEntry object in the database.
+        If the user of the entry already has an entry for that activity in the database means the entry has to be updated with the new values.
+        Else a new entry will be created.
+        :param time_entry: The TimeEntry object to be put into the database.
         """
-        if not is_new:
-           self.remove_entry(user,activity)
+        old_entry = self.get_time_entry(time_entry.user,time_entry.activity)
+        if old_entry:
+           self.remove_entry(old_entry)
 
         query = f"INSERT INTO {self.table_name} (user,activity,time_spent) VALUES (?,?,?)"
-        params = (user,activity,time_spent)
+        params = (time_entry.user,time_entry.activity,time_entry.time_spent)
 
         self.sql_execute(query,params)
 
-    def remove_entry(self,user:str, activity:str):
+    def remove_entry(self,time_entry: TimeEntry):
         """
         Removes an entry from the database.
-        :param user: The user of the activity.
-        :param activity: The name of the activity.
+        :param time_entry: The TimeEntry object to be removed from the database
         """
         query = f"DELETE FROM {self.table_name} WHERE user = ? AND activity = ?"
-        params = (user,activity)
+        params = (time_entry.user,time_entry.activity)
         self.sql_execute(query,params)
 
     def get_users(self) -> list[str]:
@@ -78,10 +82,7 @@ class TimeDatabase(Database):
         print("-" * 100 + "\nDatabase: " + self._path + "\n" + "-" * 100)
 
         entries = self.get_all_time_entries()
-        print(entries)
-        for user in entries.keys():
-            print(f"User: {user}")
-            for activity, time_spent in entries[user]:
-                print(f" - Activity: {activity}, Time Spent: {time_spent} seconds")
+        for entry in entries:
+            print(entry)
 
         print("-" * 100 + "\n")
