@@ -1,5 +1,4 @@
 from common.GameEntry import GameEntry
-from common.TimeUtils import TimeUtils
 from database.Database import Database
 
 class ListDatabase(Database):
@@ -33,8 +32,6 @@ class ListDatabase(Database):
         query = f"SELECT * FROM {self.table_name} WHERE name = ? AND user = ?"
         data = self.sql_execute_fetchall(query, (name, user))
 
-        print(data)
-
         if data:
             row = data[0]
             return GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4],review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8]))
@@ -65,8 +62,6 @@ class ListDatabase(Database):
 
         query = f"SELECT * FROM {self.table_name} WHERE {year_filter} AND {user_filter}"
         data = self.sql_execute_fetchall(query)
-        print("QUERY: ",query)
-        print("DATA: ",data)
 
         return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
 
