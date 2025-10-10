@@ -50,3 +50,21 @@ class TimeUtils:
         :return: The converted date string in the format "YYYY-MM-DD".
         """
         return datetime.fromtimestamp(timestamp).strftime("%d.%m.%Y")
+
+    @staticmethod
+    def convert_to_hours(seconds:int) -> float:
+        """
+        Converts seconds to hours.
+        :param seconds: The number of seconds to convert.
+        :return: The equivalent number of hours.
+        """
+        return round(seconds / 3600, 1)
+
+    @staticmethod
+    def convert_to_minutes(seconds:int) -> int:
+        """
+        Converts seconds to minutes.
+        :param seconds: The number of seconds to convert.
+        :return: The equivalent number of minutes.
+        """
+        return seconds // 60

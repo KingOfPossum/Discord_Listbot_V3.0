@@ -1,23 +1,22 @@
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
-from listbot.Commands.AddCommand import AddCommand
-from listbot.Commands.CompletedCommand import CompletedCommand
-from listbot.Commands.ConsolesCommand import ConsolesCommand
-from listbot.Commands.HelpCommand import HelpCommand
-from listbot.Commands.InfoCommand import InfoCommand
-from listbot.Commands.ListCommand import ListCommand
-from listbot.Commands.RemoveCommand import RemoveCommand
-from listbot.Commands.ReplayedCommand import ReplayedCommand
-from listbot.Commands.StatsCommand import StatsCommand
-from listbot.Commands.UpdateCommand import UpdateCommand
-from listbot.Commands.ViewCommand import ViewCommand
+from listbot.commands.AddCommand import AddCommand
+from listbot.commands.CompletedCommand import CompletedCommand
+from listbot.commands.ConsolesCommand import ConsolesCommand
+from listbot.commands.HelpCommand import HelpCommand
+from listbot.commands.InfoCommand import InfoCommand
+from listbot.commands.ListCommand import ListCommand
+from listbot.commands.RemoveCommand import RemoveCommand
+from listbot.commands.ReplayedCommand import ReplayedCommand
+from listbot.commands.StatsCommand import StatsCommand
+from listbot.commands.UpdateCommand import UpdateCommand
+from listbot.commands.ViewCommand import ViewCommand
 
 class ListCommands:
     """
-    A Discord cog that contains commands related to managing a list of games.
-    This cog provides commands to add games.
+    Collection of commands related to managing the game list.
+    This class registers these commands to the provided bot instance.
     """
-
     def __init__(self,databases: DatabaseCollection):
         """
         Initializes the ListCommands cog.
