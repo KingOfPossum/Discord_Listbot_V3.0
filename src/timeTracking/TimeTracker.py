@@ -50,8 +50,6 @@ class TimeTracker(commands.Cog):
                 self.time_database.put_entry(new_entry)
             self.tracking_dict[user.name]["current_activity"] = user.activity.name
 
-        print(self.tracking_dict)
-
     @track_time.before_loop
     async def before_track_time(self):
         """This will ensure that the TimeTracker only starts after the bot is ready."""

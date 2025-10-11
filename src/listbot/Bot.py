@@ -4,10 +4,11 @@ import os
 from common.ConfigLoader import ConfigLoader
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
-from general.Commands.GeneralCommands import GeneralCommands
+from general.commands.GeneralCommands import GeneralCommands
 from listbot.BotEvents import BotEvents
-from listbot.Commands.ListCommands import ListCommands
+from listbot.commands.ListCommands import ListCommands
 from timeTracking.TimeTracker import TimeTracker
+from timeTracking.commands.TimeTrackingCommands import TimeTrackingCommands
 from tokenSystem.commands.TokenCommands import TokenCommands
 
 class Bot(commands.Bot):
@@ -50,6 +51,7 @@ class Bot(commands.Bot):
         self.list_commands = ListCommands(self._databases)
         self.general_commands = GeneralCommands()
         self.tokens_commands = TokenCommands(self._databases)
+        self.time_commands = TimeTrackingCommands(self._databases)
 
     async def setup_hook(self):
         """A setup hook that is called when the bot is ready."""
@@ -71,6 +73,7 @@ class Bot(commands.Bot):
         await self.list_commands.register(self)
         await self.general_commands.register(self)
         await self.tokens_commands.register(self)
+        await self.time_commands.register(self)
         print("Cogs:", list(self.cogs.keys()))
         print("Commands:", [c.name for c in self.commands])
         print()

@@ -8,9 +8,9 @@ from common.Wrapper import Wrapper
 from database.ListDatabase import ListDatabase
 from database.TokensDatabase import TokensDatabase
 from Game import Game
-from listbot.Commands.CompletedCommand import CompletedCommand
-from listbot.Commands.ReplayedCommand import ReplayedCommand
-from listbot.Commands.ViewCommand import ViewCommand
+from listbot.commands.CompletedCommand import CompletedCommand
+from listbot.commands.ReplayedCommand import ReplayedCommand
+from listbot.commands.ViewCommand import ViewCommand
 
 class GameCreationModal(discord.ui.Modal):
     """

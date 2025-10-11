@@ -1,10 +1,10 @@
-from general.Commands.ActivateBotRepliesCommand import ActivateBotRepliesCommand
-from general.Commands.DeactivateBotRepliesCommand import DeactivateBotRepliesCommand
-from general.Commands.RandomizeCommand import RandomizeCommand
-from general.Commands.RandomizeNumCommand import RandomizeNumCommand
+from general.commands.ActivateBotRepliesCommand import ActivateBotRepliesCommand
+from general.commands.DeactivateBotRepliesCommand import DeactivateBotRepliesCommand
+from general.commands.RandomizeCommand import RandomizeCommand
+from general.commands.RandomizeNumCommand import RandomizeNumCommand
 from discord.ext import commands
 
-from general.Commands.ToggleBotRepliesCommand import ToggleBotRepliesCommand
+from general.commands.ToggleBotRepliesCommand import ToggleBotRepliesCommand
 
 
 class GeneralCommands:
