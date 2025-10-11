@@ -5,6 +5,7 @@ from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.TimeEntry import TimeEntry
 from common.TimeUtils import TimeUtils
+from common.UserManager import UserManager
 from database.TimeDatabase import TimeDatabase
 from discord.ext import commands
 
@@ -28,11 +29,13 @@ class TimeStatsCommand(Command):
 
         if not entries or len(entries) == 0:
             await MessageManager.send_error_message(ctx.channel,"You have no time statistics yet.")
+            return
 
-        page_amount = len(entries) // self.ENTRIES_PER_PAGE + 1
+        page_amount = (len(entries) + self.ENTRIES_PER_PAGE - 1) // self.ENTRIES_PER_PAGE
         current_page = 1
 
-        embed = self.get_time_stats_embed(ctx.author.display_name,entries,current_page,page_amount)
+        selected_user = ctx.author.display_name
+        embed = self.get_time_stats_embed(selected_user,entries,current_page,page_amount)
 
         view = discord.ui.View()
         prev_button = discord.ui.Button(label="<", style=discord.ButtonStyle.green)
@@ -43,7 +46,7 @@ class TimeStatsCommand(Command):
             current_page -= 1
             if current_page < 1:
                 current_page = int(len(entries) / self.ENTRIES_PER_PAGE) + 1
-            new_embed = self.get_time_stats_embed(ctx.author.display_name,entries,current_page,page_amount)
+            new_embed = self.get_time_stats_embed(selected_user,entries,current_page,page_amount)
             await interaction.response.edit_message(embed=new_embed, view=view)
 
         async def next_callback(interaction: discord.Interaction):
@@ -51,7 +54,7 @@ class TimeStatsCommand(Command):
             current_page += 1
             if (current_page - 1) * self.ENTRIES_PER_PAGE >= len(entries):
                 current_page = 1
-            new_embed = self.get_time_stats_embed(ctx.author.display_name,entries,current_page,page_amount)
+            new_embed = self.get_time_stats_embed(selected_user,entries,current_page,page_amount)
             await interaction.response.edit_message(embed=new_embed, view=view)
 
         prev_button.callback = prev_callback
@@ -59,6 +62,23 @@ class TimeStatsCommand(Command):
 
         view.add_item(prev_button)
         view.add_item(next_button)
+
+        for user in self.time_database.get_users():
+            user_button = discord.ui.Button(label=UserManager.get_display_name(user), style=discord.ButtonStyle.gray)
+
+            async def user_callback(interaction: discord.Interaction, current_user=user):
+                nonlocal current_page,entries,page_amount,selected_user
+                current_page = 1
+                entries = sorted(self.time_database.get_all_time_entries(user=current_user),key=lambda t: t.time_spent,reverse=True)
+                page_amount = (len(entries) + self.ENTRIES_PER_PAGE - 1) // self.ENTRIES_PER_PAGE
+
+                selected_user = UserManager.get_display_name(current_user)
+                new_embed = self.get_time_stats_embed(selected_user,entries,current_page,page_amount)
+
+                await interaction.response.edit_message(embed=new_embed, view=view)
+
+            user_button.callback = user_callback
+            view.add_item(user_button)
 
         await MessageManager.send_message(ctx, embed=embed,view=view)
 
