@@ -10,6 +10,7 @@ class ConfigLoader:
     """
     A class to load configuration settings from a file.
     """
+    resource_dir = "../resources/"
     config_path = "../resources/config.yaml"
     config = None
 
@@ -25,6 +26,8 @@ class ConfigLoader:
         If no path is provided, it defaults to "../resources/config.yaml".
         :param config_path: The path to the configuration file.
         """
+        self.create_resources_directory_if_not_exists()
+
         if config_path:
             self.set_config_path(config_path)
 
@@ -49,6 +52,16 @@ class ConfigLoader:
         else:
             raise ValueError(f"Invalid configuration path format: {config_path}. "
                              f"Expected format: {correct_path_format_regex}")
+
+    @staticmethod
+    def create_resources_directory_if_not_exists():
+        """
+        Creates the resources directory if it does not exist.
+        This directory is used to store the configuration file and is supposed to contain the databases(But can be changed in the config).
+        """
+        if not os.path.exists("../resources/"):
+            print("Creating resources directory at: ../resources/")
+            os.mkdir("../resources/")
 
     @staticmethod
     def create_config_file_if_not_exists():

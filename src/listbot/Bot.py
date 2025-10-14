@@ -33,8 +33,6 @@ class Bot(commands.Bot):
         The bot will create a resources directory if it does not exist,
         and will load the configuration from the specified path.
         """
-        self.create_resources_directory_if_not_exists()
-
         self.__config_data = ConfigLoader.get_config()
         print(self.__config_data)
 
@@ -111,13 +109,3 @@ class Bot(commands.Bot):
         intents.guilds = True
         intents.presences = True
         return intents
-
-    @staticmethod
-    def create_resources_directory_if_not_exists():
-        """
-        Creates the resources directory if it does not exist.
-        This directory is used to store the configuration file and is supposed to contain the databases(But can be changed in the config).
-        """
-        if not os.path.exists("../resources/"):
-            print("Creating resources directory at: ../resources/")
-            os.mkdir("../resources/")
