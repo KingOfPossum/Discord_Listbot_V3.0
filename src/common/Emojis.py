@@ -6,12 +6,15 @@ class Emojis:
     """
     CHECK_MARK = "✅"
     CROSS_MARK = "❌"
-    CONSOLES = ConfigLoader.get_config().consoles
     REVIEW = "📜"
     RANKINGS = ["🥇", "🥈", "🥉"]
     first_place = "🥇"
     second_place = "🥈"
     third_place = "🥉"
+
+    @classmethod
+    def consoles(cls) -> dict:
+        return ConfigLoader.get_config().consoles
 
     @staticmethod
     def get_console_emoji(console_name:str):
@@ -21,6 +24,6 @@ class Emojis:
         :param console_name: The name of the console.
         :return: The emoji for the console or the console name if not found.
         """
-        if console_name in Emojis.CONSOLES:
-            return Emojis.CONSOLES[console_name]
+        if console_name in Emojis.consoles():
+            return Emojis.consoles()[console_name]
         return console_name

@@ -19,7 +19,7 @@ class ConsolesCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        consoles_txt = "\n".join([f"- {console} : {Emojis.CONSOLES[console]}" for console in ConfigLoader.get_config().consoles.keys()])
+        consoles_txt = "\n".join([f"- {console} : {Emojis.consoles()[console]}" for console in ConfigLoader.get_config().consoles.keys()])
         await ctx.send(consoles_txt)
 
     def help(self) -> str:
