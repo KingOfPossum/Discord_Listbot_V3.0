@@ -15,6 +15,8 @@ from listbot.commands.ReplayedCommand import ReplayedCommand
 from listbot.commands.StatsCommand import StatsCommand
 from listbot.commands.UpdateCommand import UpdateCommand
 from listbot.commands.ViewCommand import ViewCommand
+from music.commands.JoinCommand import JoinCommand
+from music.commands.LeaveCommand import LeaveCommand
 from timeTracking.commands.TimeStatsCommand import TimeStatsCommand
 from tokenSystem.commands.AddTokenCommand import AddTokenCommand
 from tokenSystem.commands.RemoveCoinCommand import RemoveCoinCommand
@@ -31,6 +33,7 @@ class HelpCommand(Command):
                               ConsolesCommand(),StatsCommand(list_database=None),InfoCommand()]
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
         self.time_commands = [TimeStatsCommand(time_database=None)]
+        self.music_commands = [JoinCommand(bot=None),LeaveCommand(bot=None)]
 
     @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])
     async def execute(self, ctx):
@@ -50,4 +53,5 @@ class HelpCommand(Command):
         list_commands_help = "**List Commands:**\n" + "".join([command.help() for command in self.list_commands])
         tokens_command_help = "**Token Commands:**\n" + "".join(command.help() for command in self.token_commands)
         time_command_help = "**Time Tracking Commands:**\n" + "".join(command.help() for command in self.time_commands)
-        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help
+        music_command_help = "**Musicbot Commands:**\n" + "".join(command.help() for command in self.music_commands)
+        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help + "\n" + music_command_help
