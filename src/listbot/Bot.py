@@ -2,6 +2,7 @@ import discord
 import os
 
 from common.ConfigLoader import ConfigLoader
+from common.Wrapper import Wrapper
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from general.commands.GeneralCommands import GeneralCommands
@@ -36,6 +37,8 @@ class Bot(commands.Bot):
 
         self.__config_data = ConfigLoader.get_config()
         print(self.__config_data)
+
+        Wrapper.init()
 
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
         self._databases.init_list_database()

@@ -16,6 +16,8 @@ class Config:
     bot_replies_channels: set[str]
     accepted_users: set[str]
     consoles: dict[str, str]
+    igdb_client_id: str
+    igdb_client_secret: str
 
     def __str__(self):
         return  "-" *100 + "\n" \
