@@ -25,6 +25,10 @@ class TimeStatsCommand(Command):
         This command retrieves and displays the time tracking statistics for the user who invoked the command.
         :param ctx: The context of the command invocation.
         """
+        if not UserManager.is_user_accepted(ctx.author.name):
+            await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
+            return
+
         entries = sorted(self.time_database.get_all_time_entries(user=ctx.author.name),key=lambda t: t.time_spent,reverse=True)
 
         if not entries or len(entries) == 0:
