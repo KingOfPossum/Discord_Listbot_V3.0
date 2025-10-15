@@ -35,10 +35,10 @@ class EmojiCreator:
         """
         if ConfigLoader.get_config().create_emojis:
             emoji = await EmojiCreator.create_emoji_from_url(guild,console_name,url)
-            Emojis.CONSOLES[console_name] = f"<:{emoji.name}:{emoji.id}>"
+            Emojis.consoles()[console_name] = f"<:{emoji.name}:{emoji.id}>"
         else:
-            Emojis.CONSOLES[console_name] = console_name
-        ConfigLoader.update("consoles",Emojis.CONSOLES)
+            Emojis.consoles()[console_name] = console_name
+        ConfigLoader.update("consoles",Emojis.consoles())
 
     @staticmethod
     async def create_console_emoji_if_not_exists(guild,console_name):
