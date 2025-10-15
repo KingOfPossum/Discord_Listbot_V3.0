@@ -1,6 +1,7 @@
 import discord
 import os
 
+from backlog.commands.BacklogCommands import BacklogCommands
 from common.ConfigLoader import ConfigLoader
 from common.Wrapper import Wrapper
 from database.DatabaseCollection import DatabaseCollection
@@ -52,6 +53,7 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=self.command_prefix, intents=self.__intents)
 
         self.remove_command('help')
+        self.backlog_commands = BacklogCommands(self._databases)
         self.list_commands = ListCommands(self._databases)
         self.general_commands = GeneralCommands()
         self.tokens_commands = TokenCommands(self._databases)
@@ -78,6 +80,7 @@ class Bot(commands.Bot):
         await self.general_commands.register(self)
         await self.tokens_commands.register(self)
         await self.time_commands.register(self)
+        await self.backlog_commands.register(self)
         print("Cogs:", list(self.cogs.keys()))
         print("Commands:", [c.name for c in self.commands])
         print()
