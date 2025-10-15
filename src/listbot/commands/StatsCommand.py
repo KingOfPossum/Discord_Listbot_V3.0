@@ -4,6 +4,7 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
+from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
 from database.ListDatabase import ListDatabase
@@ -18,6 +19,10 @@ class StatsCommand(Command):
     @commands.command(name="stats")
     async def execute(self, ctx):
         """Executes the stats command. Viewing statistics about added games in the list and users."""
+        if not UserManager.is_user_accepted(ctx.author.name):
+            await MessageManager.send_error_message(ctx.channel, "You are Not Allowed to use this command")
+            return
+
         year = TimeUtils.get_current_year()
         game_entries, highest_rated_games, worst_rated_games, user_game_counts, months_counts, console_counts = self.get_stats(year=year)
 
