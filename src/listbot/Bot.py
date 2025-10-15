@@ -44,6 +44,7 @@ class Bot(commands.Bot):
         self._databases.init_list_database()
         self._databases.init_tokens_database()
         self._databases.init_time_database()
+        self._databases.init_backlog_database()
 
         self.command_prefix = self.__config_data.command_prefix
 
