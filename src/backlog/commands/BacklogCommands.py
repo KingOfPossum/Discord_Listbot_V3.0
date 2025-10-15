@@ -1,4 +1,5 @@
 from backlog.commands.BacklogAddCommand import BacklogAddCommand
+from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
 from database.DatabaseCollection import DatabaseCollection
 
 class BacklogCommands:
@@ -15,5 +16,6 @@ class BacklogCommands:
         :param bot: The Discord bot instance to register commands with.
         """
         await bot.add_cog(BacklogAddCommand(self.databases.backlog_database))
+        await bot.add_cog(BacklogRemoveCommand(self.databases.backlog_database))
 
         print("Registered BacklogCommands cogs.")

@@ -20,6 +20,15 @@ class BacklogDatabase(Database):
         data = (entry.name,entry.user,entry.recommended_by)
         self.sql_execute(query,data)
 
+    def remove_entry(self,entry:BacklogEntry):
+        """
+        Removes a backlog entry from the database.
+        :param entry: The backlog entry to remove.
+        """
+        query = f"DELETE FROM {self.table_name} WHERE name=? AND user=?"
+        data = (entry.name,entry.user)
+        self.sql_execute(query,data)
+
     def get_entry(self,name:str, user:str) -> BacklogEntry|None:
         """
         Retrieves a backlog entry from the database.

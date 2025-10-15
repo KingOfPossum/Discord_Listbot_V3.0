@@ -1,3 +1,5 @@
+from backlog.commands.BacklogAddCommand import BacklogAddCommand
+from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
 from common.Command import Command
 from discord.ext import commands
 from general.commands.RandomizeCommand import RandomizeCommand
@@ -31,6 +33,7 @@ class HelpCommand(Command):
                               ConsolesCommand(),StatsCommand(list_database=None),InfoCommand()]
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
         self.time_commands = [TimeStatsCommand(time_database=None)]
+        self.backlog_commands = [BacklogAddCommand(backlog_database=None),BacklogRemoveCommand(backlog_database=None)]
 
     @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])
     async def execute(self, ctx):
@@ -50,4 +53,5 @@ class HelpCommand(Command):
         list_commands_help = "**List Commands:**\n" + "".join([command.help() for command in self.list_commands])
         tokens_command_help = "**Token Commands:**\n" + "".join(command.help() for command in self.token_commands)
         time_command_help = "**Time Tracking Commands:**\n" + "".join(command.help() for command in self.time_commands)
-        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help
+        backlog_command_help = "**Backlog Commands:**\n" + "".join(command.help() for command in self.backlog_commands)
+        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help + "\n" + backlog_command_help

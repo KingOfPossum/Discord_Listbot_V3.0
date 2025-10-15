@@ -14,7 +14,7 @@ class BacklogAddCommand(Command):
     def __init__(self,backlog_database:BacklogDatabase):
         self.backlog_database = backlog_database
 
-    @commands.command(name="backlogAdd", aliases=["BacklogAdd","backlogadd","backlog_add","Backlog_Add","BACKLOGADD","BACKLOG_ADD"])
+    @commands.command(name="backlogAdd", aliases=["BacklogAdd","backlogadd","backlog_add","Backlog_Add","BACKLOGADD","BACKLOG_ADD","addBacklog","AddBacklog","ADDBACKLOG","add_backlog","Add_Backlog","ADD_BACKLOG"])
     async def execute(self, ctx):
         """
         Adds the provided game into the backlog of the command invoker.
