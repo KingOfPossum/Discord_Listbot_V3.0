@@ -32,7 +32,7 @@ class BacklogRemoveCommand(Command):
         await BacklogRemoveCommand.remove_backlog_entry(entry,self.backlog_database,ctx.channel)
 
     def help(self) -> str:
-        return f"- `{ConfigLoader.get_config().command_prefix}BacklogRemove` `gameName` - Removes a game from your backlog\n"
+        return f"- `{ConfigLoader.get_config().command_prefix}backlogRemove` `gameName` - Removes a game from your backlog\n"
 
     @staticmethod
     async def remove_backlog_entry(entry: BacklogEntry,backlog_database:BacklogDatabase,channel:discord.TextChannel):

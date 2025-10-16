@@ -54,13 +54,25 @@ class BacklogDatabase(Database):
         if user is None:
             user_txt = "1=1"
         else:
-            user_txt = f"user='{user}"
+            user_txt = f"user='{user}'"
         query = f"SELECT * FROM {self.table_name} WHERE {user_txt}"
         result = self.sql_execute_fetchall(query)
         if not result:
             return list()
         else:
             return [BacklogEntry(row[0],row[1],row[2]) for row in result]
+
+    def users_with_backlog(self) -> list[str]:
+        """
+        Retrieves a list of users who have backlog entries.
+        :return: A list of usernames.
+        """
+        query = f"SELECT DISTINCT user FROM {self.table_name}"
+        result = self.sql_execute_fetchall(query)
+        if not result:
+            return list()
+        else:
+            return [row[0] for row in result]
 
     def print_database(self):
         """
