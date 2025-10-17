@@ -1,5 +1,6 @@
 from backlog.commands.BacklogAddCommand import BacklogAddCommand
 from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
+from backlog.commands.RecommendCommand import RecommendCommand
 from backlog.commands.ViewBacklogCommand import ViewBacklogCommand
 from common.Command import Command
 from discord.ext import commands
@@ -30,11 +31,11 @@ class HelpCommand(Command):
     """
     def __init__(self):
         self.general_commands = [RandomizeNumCommand(),RandomizeCommand(),ActivateBotRepliesCommand(),DeactivateBotRepliesCommand(),ToggleBotRepliesCommand()]
-        self.list_commands = [AddCommand(list_database=None,token_database=None),UpdateCommand(database=None),RemoveCommand(database=None),ReplayedCommand(database=None),CompletedCommand(database=None),ViewCommand(database=None),ListCommand(database=None),
-                              ConsolesCommand(),StatsCommand(list_database=None),InfoCommand()]
-        self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
-        self.time_commands = [TimeStatsCommand(time_database=None)]
-        self.backlog_commands = [BacklogAddCommand(backlog_database=None),BacklogRemoveCommand(backlog_database=None),ViewBacklogCommand(backlog_database=None)]
+        self.list_commands = [AddCommand(None,None),UpdateCommand(None),RemoveCommand(None),ReplayedCommand(None),CompletedCommand(None),ViewCommand(None),ListCommand(None),
+                              ConsolesCommand(),StatsCommand(None),InfoCommand()]
+        self.token_commands = [AddTokenCommand(None),RemoveCoinCommand(None),SetNeededCoinsCommand(None),ViewTokensCommand(None)]
+        self.time_commands = [TimeStatsCommand(None)]
+        self.backlog_commands = [BacklogAddCommand(None),BacklogRemoveCommand(None),RecommendCommand(None),ViewBacklogCommand(None)]
 
     @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])
     async def execute(self, ctx):
