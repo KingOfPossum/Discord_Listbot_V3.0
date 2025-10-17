@@ -14,12 +14,16 @@ Other functionalities of the bot include:
     - The bot will reply to messages that contain specific keywords with a message. These can be customized by changing the `replies.yaml` file that is automatically generated in the `\resources` folder
  - Creating emojis for consoles:
     - The bot will automatically create emojis in your server for consoles after adding a game with that console. You can disable this feature in the `config.yaml` file located in the `\resources` folder
- 
+ - A Backlog system:
+    - You can add games to your backlog that you want to play in the future to keep track of them
+    - You can also recommend games to other users. This will add the game to their backlog  
+    - Also you can get a random recommendation from your backlog if you can't decide what to play next
+
 Functionality that I plan for the future:
  - Playing Music by playing Audio from YouTube videos or maybe directly from Spotify
  - A website for better list management and more detailed statistics
- - A guessing game where the bot gives you information about a game from the database like release year, genre or reviews of users, and you have to guess the game
- - A list of games that you like to play in the future. With the option to recommend games to other users.
+ - A guessing game where the bot gives you information about a game from the database like release year, genre or reviews of users, and you have to guess the game 
+ - Automatic updates
 
 ## Dependencies
 In order to run the bot you will need to have some libraries installed. These are also listed in the `requirements.txt` file.  
@@ -60,6 +64,13 @@ The bot will also have a help command that will list all commands, the way to us
 
 ### Time Tracking Commands
 - `!timeStats` : This will show you all the time you or other users have spent on different applications that are visible in Discord
+
+### Backlog Commands
+- `!backlogAdd` `gameName`: This will add a game to your backlog
+- `!backlogRemove` `gameName`: This will remove a game from your backlog
+- `!recommend` `gameName` `user`: This will recommend a game to another user by adding it to their backlog
+- `!getRecommendation` : This will give you a random recommendation from your backlog
+- `!viewBacklog` : This will show you all games in your backlog. Can also show you backlogs of other users
 
 ## Setup
 1. Clone the repository

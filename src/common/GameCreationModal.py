@@ -1,10 +1,13 @@
 import discord
 
+from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
+from common.BacklogEntry import BacklogEntry
 from common.EmojiCreator import EmojiCreator
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.Wrapper import Wrapper
+from database.BacklogDatabase import BacklogDatabase
 from database.ListDatabase import ListDatabase
 from database.TokensDatabase import TokensDatabase
 from Game import Game
@@ -18,13 +21,15 @@ class GameCreationModal(discord.ui.Modal):
     This modal will prompt the user to enter details about the game they want to add,
     including the name, console, rating, genre, and a review.
     """
-    def __init__(self,list_database: ListDatabase,token_database: TokensDatabase = None, game_entry: GameEntry = None):
+    def __init__(self,list_database: ListDatabase,token_database: TokensDatabase = None,backlog_database:BacklogDatabase = None, game_entry: GameEntry = None):
         """
         Initializes the GameCreationModal with fields for game details.
         @param database: The database instance where the new gameEntry will be stored.
         """
         self.list_database = list_database
         self.token_database = token_database
+        self.backlog_database = backlog_database
+
         self.game_entry = game_entry
 
         self.game: Game | None = None
@@ -157,6 +162,11 @@ class GameCreationModal(discord.ui.Modal):
 
         game_entry = self._to_game_entry(interaction.user.name)
         self.list_database.put_game(game_entry, self.game_entry)
+
+        if self.backlog_database:
+            if self.backlog_database.get_entry(game_entry.name,game_entry.user):
+                backlog_entry = BacklogEntry(game_entry.name,game_entry.user,None)
+                await BacklogRemoveCommand.remove_backlog_entry(backlog_entry,self.backlog_database,interaction.channel)
 
         print(game_entry)
 
