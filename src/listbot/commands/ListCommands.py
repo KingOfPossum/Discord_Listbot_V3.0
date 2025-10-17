@@ -30,8 +30,9 @@ class ListCommands:
         """
         list_database = self.databases.list_database
         tokens_database = self.databases.tokens_database
+        backlog_database = self.databases.backlog_database
 
-        await bot.add_cog(AddCommand(list_database,tokens_database))
+        await bot.add_cog(AddCommand(list_database,tokens_database,backlog_database))
         await bot.add_cog(UpdateCommand(list_database))
         await bot.add_cog(RemoveCommand(list_database))
         await bot.add_cog(ReplayedCommand(list_database))
