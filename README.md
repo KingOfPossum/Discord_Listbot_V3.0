@@ -17,7 +17,8 @@ Other functionalities of the bot include:
  - A Backlog system:
     - You can add games to your backlog that you want to play in the future to keep track of them
     - You can also recommend games to other users. This will add the game to their backlog  
-   
+    - Also you can get a random recommendation from your backlog if you can't decide what to play next
+
 Functionality that I plan for the future:
  - Playing Music by playing Audio from YouTube videos or maybe directly from Spotify
  - A website for better list management and more detailed statistics
@@ -68,6 +69,7 @@ The bot will also have a help command that will list all commands, the way to us
 - `!backlogAdd` `gameName`: This will add a game to your backlog
 - `!backlogRemove` `gameName`: This will remove a game from your backlog
 - `!recommend` `gameName` `user`: This will recommend a game to another user by adding it to their backlog
+- `!getRecommendation` : This will give you a random recommendation from your backlog
 - `!viewBacklog` : This will show you all games in your backlog. Can also show you backlogs of other users
 
 ## Setup

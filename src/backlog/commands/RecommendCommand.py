@@ -21,6 +21,10 @@ class RecommendCommand(Command):
         Checks if the user is valid and adds the recommendation as a new BacklogEntry object to the backlog database.
         :param ctx: The context of the command.
         """
+        if not UserManager.is_user_accepted(ctx.author.name):
+            await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
+            return
+
         message_content = BotUtils.get_message_content(ctx.message)
         args = message_content.split(" ")
         user = args[-1]
@@ -40,4 +44,4 @@ class RecommendCommand(Command):
         Returns the help text for the recommend command.
         :return: The help text for the recommend command.
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}recommend` `gameName` `user` - Recommends a game to another user"
+        return f"- `{ConfigLoader.get_config().command_prefix}recommend` `gameName` `user` - Recommends a game to another user\n"

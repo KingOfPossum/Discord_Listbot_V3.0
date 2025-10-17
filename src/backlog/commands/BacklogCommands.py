@@ -1,5 +1,6 @@
 from backlog.commands.BacklogAddCommand import BacklogAddCommand
 from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
+from backlog.commands.GetRecommendationCommand import GetRecommendationCommand
 from backlog.commands.RecommendCommand import RecommendCommand
 from backlog.commands.ViewBacklogCommand import ViewBacklogCommand
 from database.DatabaseCollection import DatabaseCollection
@@ -21,5 +22,6 @@ class BacklogCommands:
         await bot.add_cog(BacklogRemoveCommand(self.databases.backlog_database))
         await bot.add_cog(ViewBacklogCommand(self.databases.backlog_database))
         await bot.add_cog(RecommendCommand(self.databases.backlog_database))
+        await bot.add_cog(GetRecommendationCommand(self.databases.backlog_database))
 
         print("Registered BacklogCommands cogs.")
