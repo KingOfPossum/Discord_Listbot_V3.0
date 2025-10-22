@@ -1,3 +1,6 @@
+import discord
+from discord.ext.commands import before_invoke
+
 from common.ChannelManager import ChannelManager
 from common.ConfigLoader import ConfigLoader
 from common.Replies import Replies
@@ -10,6 +13,8 @@ class BotEvents(commands.Cog):
     A Discord cog that handles bot events.
     This cog listens for the `on_ready` event.
     """
+    _active_uses:int = 0 # Amount of interactions/commands that are currently active
+
     def __init__(self,bot: commands.Bot, databases: DatabaseCollection):
         """
         Initializes the BotEvents cog.
@@ -18,6 +23,9 @@ class BotEvents(commands.Cog):
         self.__bot = bot
         self.replies = Replies("../resources/replies.yaml")
         self.databases = databases
+
+        self.__bot.before_invoke(self._before_invoke)
+        self.__bot.after_invoke(self._after_invoke)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -53,3 +61,61 @@ class BotEvents(commands.Cog):
         reply = self.replies.handle_message(message)
         if reply is not None:
             await message.reply(reply)
+
+    @classmethod
+    def start_action(cls,action:str = ""):
+        """
+        Should be called at the beginning of each action.
+        :param action: The name of the action for better logging
+        """
+        cls._active_uses += 1
+        print(f"Started Action ({action})! Currently active uses: {str(cls._active_uses)}")
+
+    @classmethod
+    def end_action(cls,action:str = ""):
+        """
+        Should be called at the end of each action.
+        :param action: The name of the action for better logging
+        :return:
+        """
+        cls._active_uses -= 1
+        print(f"Ended Action ({action})! Currently active uses: {str(cls._active_uses)}")
+
+    async def _before_invoke(self,ctx: commands.Context):
+        """
+        Should be called whenever a command is invoked or something like a modal has been opened.
+        Is meant for keeping track of how many things are currently being processed.
+        Meaning for commands or interactions that are instantly executed this method should not be called as they dont need processing.
+        """
+        self.start_action(ctx.command.name)
+
+    async def _after_invoke(self,ctx: commands.Context):
+        """
+        Should be called whenever a command has finished or something like a modal has been closed.
+        Is meant for keeping track of how many things are currently being processed.
+        Meaning for commands or interactions that are instantly executed this method should not be called as they dont need processing.
+        """
+        self.end_action(ctx.command.name)
+
+    @staticmethod
+    def is_bot_used():
+        """
+        Is anyone currently using the bot. In other words are there any unfinished commands or interactions.
+        :return: True if the bot is currently being used, False otherwise.
+        """
+        return BotEvents._active_uses != 0
+
+    @commands.Cog.listener()
+    async def on_interaction(self,interaction: discord.Interaction):
+        self.start_action("Interaction")
+
+        action_type = ""
+        try:
+            if interaction.type == discord.InteractionType.component:
+                custom_id = interaction.data.get("custom_id")
+                action_type = f"button/dropdown <{custom_id}>"
+            elif interaction.type == discord.InteractionType.modal_submit:
+                custom_id = interaction.data.get("custom_id")
+                action_type = f"modal_submit <{custom_id}>"
+        finally:
+            self.end_action(action_type)

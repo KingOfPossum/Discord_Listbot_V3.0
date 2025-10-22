@@ -8,6 +8,7 @@ from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from general.commands.GeneralCommands import GeneralCommands
 from listbot.BotEvents import BotEvents
+from listbot.Updater import Updater
 from listbot.commands.ListCommands import ListCommands
 from timeTracking.TimeTracker import TimeTracker
 from timeTracking.commands.TimeTrackingCommands import TimeTrackingCommands
@@ -88,6 +89,7 @@ class Bot(commands.Bot):
     async def register_tasks(self):
         """Registers the bot tasks."""
         await self.add_cog(TimeTracker(self,self._databases.time_database))
+        await self.add_cog(Updater(self))
         print("Registered TimeTracker task.")
 
     def run_bot(self):
@@ -100,7 +102,7 @@ class Bot(commands.Bot):
         try:
             super().run(api_key)
         finally:
-            input("Press any key to exit...")
+            print("Shutting down bot.")
 
     @staticmethod
     def set_intents() -> discord.Intents:
