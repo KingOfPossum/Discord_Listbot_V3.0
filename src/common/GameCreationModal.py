@@ -11,6 +11,7 @@ from database.BacklogDatabase import BacklogDatabase
 from database.ListDatabase import ListDatabase
 from database.TokensDatabase import TokensDatabase
 from Game import Game
+from listbot.BotEvents import BotEvents
 from listbot.commands.CompletedCommand import CompletedCommand
 from listbot.commands.ReplayedCommand import ReplayedCommand
 from listbot.commands.ViewCommand import ViewCommand
@@ -46,6 +47,8 @@ class GameCreationModal(discord.ui.Modal):
         self.add_item(discord.ui.TextInput(label="Console", default=game_entry.console if game_entry else "", placeholder="What console did you play on?", required=True,style=discord.TextStyle.short))
         self.add_item(discord.ui.TextInput(label="Rating", default=str(game_entry.rating) if game_entry else "", placeholder="Put your rating here (0-100)", required=True,style=discord.TextStyle.short))
         self.add_item(discord.ui.TextInput(label="Review", default=game_entry.review if game_entry else "", placeholder="Your review", required=False,style=discord.TextStyle.paragraph))
+
+        BotEvents.start_action("GameCreationModal")
 
     async def _isvalid(self, interaction: discord.Interaction):
         """
@@ -152,33 +155,36 @@ class GameCreationModal(discord.ui.Modal):
         it will create a new game entry in the database.
         :param interaction: the interaction in which the modal was submitted
         """
-        if interaction.response.is_done():
-            await interaction.followup.defer()
-        else:
-            await interaction.response.defer()
+        try:
+            if interaction.response.is_done():
+                await interaction.followup.defer()
+            else:
+                await interaction.response.defer()
 
-        if not await self._isvalid(interaction):
-            return
+            if not await self._isvalid(interaction):
+                return
 
-        game_entry = self._to_game_entry(interaction.user.name)
-        self.list_database.put_game(game_entry, self.game_entry)
+            game_entry = self._to_game_entry(interaction.user.name)
+            self.list_database.put_game(game_entry, self.game_entry)
 
-        if self.backlog_database:
-            if self.backlog_database.get_entry(game_entry.name,game_entry.user):
-                backlog_entry = BacklogEntry(game_entry.name,game_entry.user,None)
-                await BacklogRemoveCommand.remove_backlog_entry(backlog_entry,self.backlog_database,interaction.channel)
+            if self.backlog_database:
+                if self.backlog_database.get_entry(game_entry.name,game_entry.user):
+                    backlog_entry = BacklogEntry(game_entry.name,game_entry.user,None)
+                    await BacklogRemoveCommand.remove_backlog_entry(backlog_entry,self.backlog_database,interaction.channel)
 
-        print(game_entry)
+            print(game_entry)
 
-        self.game = Game.from_igdb(Wrapper.wrapper, game_entry.name, game_entry.console)
+            self.game = Game.from_igdb(Wrapper.wrapper, game_entry.name, game_entry.console)
 
-        await EmojiCreator.create_console_emoji_if_not_exists(interaction.guild, game_entry.console)
+            await EmojiCreator.create_console_emoji_if_not_exists(interaction.guild, game_entry.console)
 
-        game_view_txt = ViewCommand.get_game_view_txt(game_entry,self.game)
-        embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
-        if self.game and self.game.cover:
-            embed.set_thumbnail(url=self.game.cover)
+            game_view_txt = ViewCommand.get_game_view_txt(game_entry,self.game)
+            embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
+            if self.game and self.game.cover:
+                embed.set_thumbnail(url=self.game.cover)
 
-        view = self._get_game_view(interaction,game_entry)
+            view = self._get_game_view(interaction,game_entry)
 
-        await MessageManager.send_message(channel=interaction.channel,embed=embed,view=view)
+            await MessageManager.send_message(channel=interaction.channel,embed=embed,view=view)
+        finally:
+            BotEvents.end_action("GameCreationModal")
