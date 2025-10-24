@@ -18,12 +18,13 @@ Other functionalities of the bot include:
     - You can add games to your backlog that you want to play in the future to keep track of them
     - You can also recommend games to other users. This will add the game to their backlog  
     - Also you can get a random recommendation from your backlog if you can't decide what to play next
+  - Automatic Updates:
+    - The bot will automatically check for updates once every minute. If there is a new version available the bot will wait until all actions are finished and then restart itself to update to the newest version
 
 Functionality that I plan for the future:
  - Playing Music by playing Audio from YouTube videos or maybe directly from Spotify
  - A website for better list management and more detailed statistics
- - A guessing game where the bot gives you information about a game from the database like release year, genre or reviews of users, and you have to guess the game 
- - Automatic updates
+ - A guessing game where the bot gives you information about a game from the database like release year, genre or reviews of users, and you have to guess the game
 
 ## Dependencies
 In order to run the bot you will need to have some libraries installed. These are also listed in the `requirements.txt` file.  
@@ -32,45 +33,49 @@ In order to run the bot you will need to have some libraries installed. These ar
 - `requests` : For making requests to the IGDB API
 
 ## Bot Commands
-The bot will listen to all commands that start with a specific prefix. The default one is `!` but you can change it into whatever you want in the `config.yaml` file that is located in the `\resources` folder.
+The bot will listen to all commands that start with a specific prefix. The default one is `%` but you can change it into whatever you want in the `config.yaml` file that is located in the `\resources` folder.
 
 The bot will also have a help command that will list all commands, the way to use them, and a short description of what they do but for documentation purposes, I will list all commands here as well.
 
 ### General Commands
-- `!help` : Lists all commands with the way to use them and a short description
-- `!randomize` `item1`, `item2`,... : Randomly select one of the provided items
-- `!randomizeNum` `min` `max` : Randomly select a number between the provided min and max values (inclusive). If only one value is provided a number between `0` and `max`is randomized
-- `!activateBotReplies` : Activates bot replies completely
-- `!deactivateBotReplies` : Deactivates bot replies completely
-- `!toggleBotReplies` : This will toggle the bot replies on or off for a specific channel if you would like to have the bot only reply in specific channel
+- `%help` : Lists all commands with the way to use them and a short description
+- `%randomize` `item1`, `item2`,... : Randomly select one of the provided items
+- `%randomizeNum` `min` `max` : Randomly select a number between the provided min and max values (inclusive). If only one value is provided a number between `0` and `max`is randomized
+- `%activateBotReplies` : Activates bot replies completely
+- `%deactivateBotReplies` : Deactivates bot replies completely
+- `%toggleBotReplies` : This will toggle the bot replies on or off for a specific channel if you would like to have the bot only reply in specific channel
 
 ### List Commands
-- `!add` : This will show up a button that opens a Discord modal where you can add all information about the game that you want to add to your list
-- `!update` `gameName` : This lets you update a game that is already in your list if you wish to change something about it. Works similarly to the `!add` command
-- `!remove` `gameName` : This will remove a specific game from your list
-- `!replayed` `gameName` : This will change the replay status (Showing if you have already played this game before) of a game
-- `!completed` `gameName` : This will change the completion status (Showing if you have 100% this game) of a game
-- `!view` `gameName` `Optional(user)` : This will show you all the information about a game from the database. If you provide a user it will show you the game entry from that users list
-- `!list` `Optional(user)` : This will show you the list of all games added by you or if provided by another user. If there were games added in another year you can swap the list to that year by using a button on the list's embed
-- `!consoles` : This will list up all consoles that have been played on together with its emojis if the feature is activated in the `config.yaml` file
-- `!stats` : This will show you some statistics about the server. Like who has played the most games this year, the most active month/console
-- `!info` `gameName` : This will show you more general information about a game from the IGDB database. These include a summary, genres,available consoles and release date
+- `%add` : This will show up a button that opens a Discord modal where you can add all information about the game that you want to add to your list
+- `%update` `gameName` : This lets you update a game that is already in your list if you wish to change something about it. Works similarly to the `!add` command
+- `%remove` `gameName` : This will remove a specific game from your list
+- `%replayed` `gameName` : This will change the replay status (Showing if you have already played this game before) of a game
+- `%completed` `gameName` : This will change the completion status (Showing if you have 100% this game) of a game
+- `%view` `gameName` `Optional(user)` : This will show you all the information about a game from the database. If you provide a user it will show you the game entry from that users list
+- `%list` `Optional(user)` : This will show you the list of all games added by you or if provided by another user. If there were games added in another year you can swap the list to that year by using a button on the list's embed
+- `%consoles` : This will list up all consoles that have been played on together with its emojis if the feature is activated in the `config.yaml` file
+- `%stats` : This will show you some statistics about the server. Like who has played the most games this year, the most active month/console
+- `%info` `gameName` : This will show you more general information about a game from the IGDB database. These include a summary, genres,available consoles and release date
 
 ### Token Commands
-- `!addToken` : This will add one token to your account. After a specific amount of tokens (default is 3), you will be rewarded with a coin
-- `!removeCoin` : This will remove one coin from your account
-- `!setNeededTokens` `amount` : This will set the amount of tokens needed to get a coin to `amount`
-- `!viewTokens` : This will show you how many tokens and coins you currently have and how many tokens you need to get the next coin
+- `%addToken` : This will add one token to your account. After a specific amount of tokens (default is 3), you will be rewarded with a coin
+- `%removeCoin` : This will remove one coin from your account
+- `%setNeededTokens` `amount` : This will set the amount of tokens needed to get a coin to `amount`
+- `%viewTokens` : This will show you how many tokens and coins you currently have and how many tokens you need to get the next coin
 
 ### Time Tracking Commands
-- `!timeStats` : This will show you all the time you or other users have spent on different applications that are visible in Discord
+- `%timeStats` : This will show you all the time you or other users have spent on different applications that are visible in Discord
 
 ### Backlog Commands
-- `!backlogAdd` `gameName`: This will add a game to your backlog
-- `!backlogRemove` `gameName`: This will remove a game from your backlog
-- `!recommend` `gameName` `user`: This will recommend a game to another user by adding it to their backlog
-- `!getRecommendation` : This will give you a random recommendation from your backlog
-- `!viewBacklog` : This will show you all games in your backlog. Can also show you backlogs of other users
+- `%backlogAdd` `gameName`: This will add a game to your backlog
+- `%backlogRemove` `gameName`: This will remove a game from your backlog
+- `%recommend` `gameName` `user`: This will recommend a game to another user by adding it to their backlog
+- `%getRecommendation` : This will give you a random recommendation from your backlog
+- `%viewBacklog` : This will show you all games in your backlog. Can also show you backlogs of other users
+
+### Voice Commands
+- `%join` : This will make the bot join your current voice channel. Either joining directly or moving to it if the bot is in another channel
+- '%leave' : This will let the bot leave from his current voice channel
 
 ## Setup
 1. Clone the repository
