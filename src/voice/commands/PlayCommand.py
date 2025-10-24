@@ -1,9 +1,16 @@
+from discord.ext import commands
+
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
+from voice.commands.JoinCommand import JoinCommand
 
 class PlayCommand(Command):
+    """
+    Command for playing audio from YouTube in a voice channel.
+    """
+    @commands.command(name="play",aliases=["Play","PLAY","playAudio","PlayAudio","PLAYAUDIO","playaudio","playSong","PlaySong","PLAYSONG","playsong"])
     async def execute(self, ctx):
         """
         Executes the PlayCommand.
@@ -12,6 +19,7 @@ class PlayCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are not allowed to use this command.")
             return
 
+        await JoinCommand.join(ctx.author.voice,ctx.voice_client)
 
     def help(self) -> str:
         """
