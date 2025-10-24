@@ -37,6 +37,11 @@ class Updater(commands.Cog):
             await asyncio.sleep(10)
             print("Waiting for all actions to be finished...")
 
+        # If the bot is connected to any voice channels, disconnect from them
+        for guild in self.bot.guilds:
+            if guild.voice_client:
+                await guild.voice_client.disconnect(force=True)
+
         print("Now restarting bot")
         await self.bot.close()
         os.execl(sys.executable, sys.executable, *sys.argv)
