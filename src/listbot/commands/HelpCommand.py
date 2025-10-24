@@ -1,3 +1,8 @@
+from backlog.commands.BacklogAddCommand import BacklogAddCommand
+from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
+from backlog.commands.GetRecommendationCommand import GetRecommendationCommand
+from backlog.commands.RecommendCommand import RecommendCommand
+from backlog.commands.ViewBacklogCommand import ViewBacklogCommand
 from common.Command import Command
 from discord.ext import commands
 from general.commands.RandomizeCommand import RandomizeCommand
@@ -34,6 +39,7 @@ class HelpCommand(Command):
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
         self.time_commands = [TimeStatsCommand(time_database=None)]
         self.voice_commands = [JoinCommand(),LeaveCommand()]
+        self.backlog_commands = [BacklogAddCommand(None),BacklogRemoveCommand(None),RecommendCommand(None),GetRecommendationCommand(None),ViewBacklogCommand(None)]
 
     @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])
     async def execute(self, ctx):
@@ -54,4 +60,5 @@ class HelpCommand(Command):
         tokens_command_help = "**Token Commands:**\n" + "".join(command.help() for command in self.token_commands)
         time_command_help = "**Time Tracking Commands:**\n" + "".join(command.help() for command in self.time_commands)
         voice_command_help = "**Voice Commands:**\n" + "".join(command.help() for command in self.voice_commands)
-        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help + "\n" + voice_command_help
+        backlog_command_help = "**Backlog Commands:**\n" + "".join(command.help() for command in self.backlog_commands)
+        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help + "\n" + backlog_command_help + "\n" + voice_command_help

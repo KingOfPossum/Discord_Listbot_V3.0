@@ -1,11 +1,14 @@
 import discord
 import os
 
+from backlog.commands.BacklogCommands import BacklogCommands
 from common.ConfigLoader import ConfigLoader
+from common.Wrapper import Wrapper
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from general.commands.GeneralCommands import GeneralCommands
 from listbot.BotEvents import BotEvents
+from listbot.Updater import Updater
 from listbot.commands.ListCommands import ListCommands
 from timeTracking.TimeTracker import TimeTracker
 from timeTracking.commands.TimeTrackingCommands import TimeTrackingCommands
@@ -39,10 +42,13 @@ class Bot(commands.Bot):
         self.__config_data = ConfigLoader.get_config()
         print(self.__config_data)
 
+        Wrapper.init()
+
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
         self._databases.init_list_database()
         self._databases.init_tokens_database()
         self._databases.init_time_database()
+        self._databases.init_backlog_database()
 
         self.command_prefix = self.__config_data.command_prefix
 
@@ -50,6 +56,7 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=self.command_prefix, intents=self.__intents)
 
         self.remove_command('help')
+        self.backlog_commands = BacklogCommands(self._databases)
         self.list_commands = ListCommands(self._databases)
         self.general_commands = GeneralCommands()
         self.tokens_commands = TokenCommands(self._databases)
@@ -78,6 +85,7 @@ class Bot(commands.Bot):
         await self.tokens_commands.register(self)
         await self.time_commands.register(self)
         await self.voice_commands.register(self)
+        await self.backlog_commands.register(self)
         print("Cogs:", list(self.cogs.keys()))
         print("Commands:", [c.name for c in self.commands])
         print()
@@ -85,6 +93,7 @@ class Bot(commands.Bot):
     async def register_tasks(self):
         """Registers the bot tasks."""
         await self.add_cog(TimeTracker(self,self._databases.time_database))
+        await self.add_cog(Updater(self))
         print("Registered TimeTracker task.")
 
     def run_bot(self):
@@ -97,7 +106,7 @@ class Bot(commands.Bot):
         try:
             super().run(api_key)
         finally:
-            input("Press any key to exit...")
+            print("Shutting down bot.")
 
     @staticmethod
     def set_intents() -> discord.Intents:

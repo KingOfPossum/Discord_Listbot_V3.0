@@ -5,11 +5,10 @@ from common.ConfigLoader import ConfigLoader
 from common.GameCreationModal import GameCreationModal
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
+from database.BacklogDatabase import BacklogDatabase
 from database.ListDatabase import ListDatabase
-from discord.ext import commands
-
 from database.TokensDatabase import TokensDatabase
-
+from discord.ext import commands
 
 class AddCommand(Command):
     """
@@ -17,9 +16,10 @@ class AddCommand(Command):
     This command will create a button that, when clicked, will open a GameCreationModal to
     fill in the game details.
     """
-    def __init__(self,list_database: ListDatabase,token_database: TokensDatabase):
+    def __init__(self,list_database: ListDatabase,token_database: TokensDatabase,backlog_database:BacklogDatabase):
         self.list_database = list_database
         self.tokens_database = token_database
+        self.backlog_database = backlog_database
 
     @commands.command(name="add",aliases=["Add","addGame","AddGame","ADD","ADDGAME","add_game","Add_Game","a"])
     async def execute(self, ctx):
@@ -34,7 +34,7 @@ class AddCommand(Command):
 
         add_button = discord.ui.Button(label="Add Game", style=discord.ButtonStyle.green)
         add_button.callback = lambda interaction: interaction.response.send_modal(
-            GameCreationModal(self.list_database,self.tokens_database))
+            GameCreationModal(self.list_database,self.tokens_database,self.backlog_database))
 
         view = discord.ui.View()
         view.add_item(add_button)

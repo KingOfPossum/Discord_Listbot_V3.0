@@ -41,6 +41,9 @@ class TimeTracker(commands.Cog):
             if user.activity is None:
                 continue
 
+            if not user.name in self.tracking_dict.keys():
+                self.add_user_to_tracking_dict(user.name)
+
             if self.tracking_dict[user.name]["current_activity"] == user.activity.name:
                 try:
                     self.tracking_dict[user.name]["activities"][user.activity.name] += 10
@@ -82,3 +85,10 @@ class TimeTracker(commands.Cog):
             new_dict[entry.user]["activities"][entry.activity] = entry.time_spent
 
         self.tracking_dict = new_dict
+
+    def add_user_to_tracking_dict(self,user: str):
+        """
+        Initializes the given user in the tracking dictionary.
+        :param user: The user to initialize in the tracking dictionary.
+        """
+        self.tracking_dict[user] = {"current_activity": None, "activities": {}}
