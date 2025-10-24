@@ -28,7 +28,7 @@ class JoinCommand(Command):
 
         if not bot_voice:
             await user_voice.channel.connect()
-            await MessageManager.send_message(ctx.channel,f"Joined channel {user_voice.channel.name} (where the sigmas at?)!")
+            await MessageManager.send_message(ctx.channel,f"Joined channel **{user_voice.channel.name}** (where the sigmas at?)!")
             return
 
         if user_voice.channel == bot_voice.channel:
@@ -37,7 +37,7 @@ class JoinCommand(Command):
 
         if user_voice and bot_voice and user_voice.channel != bot_voice.channel:
             await bot_voice.move_to(user_voice.channel)
-            await MessageManager.send_message(ctx.channel,f"Moved to channel {user_voice.channel.name}!")
+            await MessageManager.send_message(ctx.channel,f"Moved to channel **{user_voice.channel.name}**!")
             return
 
 
@@ -46,4 +46,4 @@ class JoinCommand(Command):
         Returns the help string for the join command.
         :return: Help string.
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}join`: Lets the bot join your current voice channel."
+        return f"- `{ConfigLoader.get_config().command_prefix}join`: Lets the bot join your current voice channel\n"
