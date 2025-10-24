@@ -20,6 +20,8 @@ from tokenSystem.commands.AddTokenCommand import AddTokenCommand
 from tokenSystem.commands.RemoveCoinCommand import RemoveCoinCommand
 from tokenSystem.commands.SetNeededCoinsCommand import SetNeededCoinsCommand
 from tokenSystem.commands.ViewTokensCommand import ViewTokensCommand
+from voice.commands.JoinCommand import JoinCommand
+
 
 class HelpCommand(Command):
     """
@@ -31,6 +33,7 @@ class HelpCommand(Command):
                               ConsolesCommand(),StatsCommand(list_database=None),InfoCommand()]
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
         self.time_commands = [TimeStatsCommand(time_database=None)]
+        self.voice_commands = [JoinCommand()]
 
     @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])
     async def execute(self, ctx):
@@ -50,4 +53,5 @@ class HelpCommand(Command):
         list_commands_help = "**List Commands:**\n" + "".join([command.help() for command in self.list_commands])
         tokens_command_help = "**Token Commands:**\n" + "".join(command.help() for command in self.token_commands)
         time_command_help = "**Time Tracking Commands:**\n" + "".join(command.help() for command in self.time_commands)
-        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help
+        voice_command_help = "**Voice Commands:**\n" + "".join(command.help() for command in self.voice_commands)
+        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help + "\n" + voice_command_help
