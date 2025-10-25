@@ -38,14 +38,18 @@ class ListDatabase(Database):
 
         return None
 
-    def get_all_instances_of_game(self,name: str, user: str) -> list[GameEntry] | None:
+    def get_all_instances_of_game(self,name: str, user: str = None) -> list[GameEntry] | None:
         """
         Retrieves all instances of a game entry from the database based on the name and user sorted by the date they were added.
         :param name: Name of the game
-        :param user: Name of the user who added the game
+        :param user: Name of the user who added the game if no user is provided all instances from all users will be returned.
         :return: A list of GameEntry objects containing the details of all instances of the game added by the user sorted by date.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND user = ? ORDER BY date DESC"
+        user_query = "1=1"
+        if user:
+            user_query = f"user = '{user}'"
+
+        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND {user_query} ORDER BY date DESC"
         data = self.sql_execute_fetchall(query, (name, user))
 
         return [GameEntry(name=row[0],user=row[1],date=row[2],console=row[3],rating=row[4],review=row[5],replayed=bool(row[7]),hundred_percent=bool(row[8])) for row in data] if data else None

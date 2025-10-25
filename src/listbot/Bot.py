@@ -7,6 +7,7 @@ from common.Wrapper import Wrapper
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from general.commands.GeneralCommands import GeneralCommands
+from guessingGame.commands.GuessingGameCommands import GuessingGameCommands
 from listbot.BotEvents import BotEvents
 from listbot.Updater import Updater
 from listbot.commands.ListCommands import ListCommands
@@ -59,6 +60,7 @@ class Bot(commands.Bot):
         self.general_commands = GeneralCommands()
         self.tokens_commands = TokenCommands(self._databases)
         self.time_commands = TimeTrackingCommands(self._databases)
+        self.guessing_game_commands = GuessingGameCommands(self._databases.list_database)
 
     async def setup_hook(self):
         """A setup hook that is called when the bot is ready."""
@@ -82,6 +84,7 @@ class Bot(commands.Bot):
         await self.tokens_commands.register(self)
         await self.time_commands.register(self)
         await self.backlog_commands.register(self)
+        await self.guessing_game_commands.register(self)
         print("Cogs:", list(self.cogs.keys()))
         print("Commands:", [c.name for c in self.commands])
         print()
