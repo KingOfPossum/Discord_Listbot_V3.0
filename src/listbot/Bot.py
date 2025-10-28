@@ -13,6 +13,7 @@ from listbot.commands.ListCommands import ListCommands
 from timeTracking.TimeTracker import TimeTracker
 from timeTracking.commands.TimeTrackingCommands import TimeTrackingCommands
 from tokenSystem.commands.TokenCommands import TokenCommands
+from voice.MusicManager import MusicManager
 from voice.commands.VoiceCommands import VoiceCommands
 
 
@@ -49,6 +50,8 @@ class Bot(commands.Bot):
         self._databases.init_tokens_database()
         self._databases.init_time_database()
         self._databases.init_backlog_database()
+
+        self.music_manager = MusicManager(self.__config_data.music_folder_path)
 
         self.command_prefix = self.__config_data.command_prefix
 
