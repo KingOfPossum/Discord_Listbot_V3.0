@@ -27,8 +27,8 @@ from tokenSystem.commands.SetNeededCoinsCommand import SetNeededCoinsCommand
 from tokenSystem.commands.ViewTokensCommand import ViewTokensCommand
 from voice.commands.JoinCommand import JoinCommand
 from voice.commands.LeaveCommand import LeaveCommand
+from voice.commands.PauseCommand import PauseCommand
 from voice.commands.PlayCommand import PlayCommand
-
 
 class HelpCommand(Command):
     """
@@ -40,7 +40,7 @@ class HelpCommand(Command):
                               ConsolesCommand(),StatsCommand(list_database=None),InfoCommand()]
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
         self.time_commands = [TimeStatsCommand(time_database=None)]
-        self.voice_commands = [JoinCommand(),LeaveCommand(),PlayCommand()]
+        self.voice_commands = [JoinCommand(),LeaveCommand(),PlayCommand(None),PauseCommand()]
         self.backlog_commands = [BacklogAddCommand(None),BacklogRemoveCommand(None),RecommendCommand(None),GetRecommendationCommand(None),ViewBacklogCommand(None)]
 
     @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])

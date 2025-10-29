@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 import os
 import re
@@ -9,7 +11,8 @@ from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
 from discord.ext import commands
-
+from voice.MusicManager import MusicManager
+from voice.PlayStatus import PlayStatus
 from voice.VideoEntry import VideoEntry
 from voice.commands.JoinCommand import JoinCommand
 
@@ -17,6 +20,9 @@ class PlayCommand(Command):
     """
     Command for playing audio from YouTube in a voice channel.
     """
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
     youtube_options = {
         'format': 'bestaudio/best',
         'outtmpl': f'{ConfigLoader.get_config().music_folder_path}%(id)s.%(ext)s',
@@ -51,12 +57,14 @@ class PlayCommand(Command):
             self.download_audio_from_url(url)
         source = discord.FFmpegPCMAudio(ConfigLoader.get_config().music_folder_path + video.video_id + ".mp3")
 
-        ctx.voice_client.play(source,after=lambda e: print(f"Player error: {e}" if e else None))
+        ctx.voice_client.play(source,after=lambda _: asyncio.run_coroutine_threadsafe(self._after_song(),self.bot.loop))
+
+        MusicManager.set_current_song(video)
+        MusicManager.current_play_status = PlayStatus.PLAYING
+
         await ctx.send(f"**Now Playing** : {video.title}\n{video.thumbnail_url}")
 
-        embed = MessageManager.get_embed(title=video.url,description=f"00:00 - {video.duration}")
-        embed.set_thumbnail(url=video.thumbnail_url)
-        await ctx.send(embed=embed)
+        await MusicManager.send_song_embed(ctx,video)
 
     def help(self) -> str:
         """
@@ -65,6 +73,14 @@ class PlayCommand(Command):
         """
         return f"- `{ConfigLoader.get_config().command_prefix}play` `url` : Plays audio from a YouTube URL in the voice channel you are connected to\n" +\
                 f"- `{ConfigLoader.get_config().command_prefix}play` `videoName` : Searches YouTube for the given video name and plays the first result in the voice channel you are connected to\n"
+
+    @staticmethod
+    async def _after_song():
+        print("Song ended!")
+        MusicManager.set_current_song(None)
+        MusicManager.current_play_status = PlayStatus.NOTHING
+
+        await MusicManager.delete_song_message()
 
     @staticmethod
     def extract_video_id_from_url(url:str) -> str:

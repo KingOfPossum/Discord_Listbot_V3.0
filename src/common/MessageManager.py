@@ -21,7 +21,7 @@ class MessageManager:
         return embed
 
     @staticmethod
-    async def send_message(channel: discord.TextChannel,message: str = "", embed: discord.Embed = None, view: discord.ui.View = None):
+    async def send_message(channel: discord.TextChannel,message: str = "", embed: discord.Embed = None, view: discord.ui.View = None) -> discord.Message:
         """
         Sends a message to a Text Channel
         If an embed is provided, it will be sent with the message.
@@ -30,6 +30,7 @@ class MessageManager:
         :param message: The message to be sent.
         :param embed: An optional embed to be sent with the message.
         :param view: An optional view to be added to the message.
+        :return: The created message.
         """
         kwargs = {"content": message}
         if embed:
@@ -37,7 +38,7 @@ class MessageManager:
         if view:
             kwargs["view"] = view
 
-        await channel.send(**kwargs)
+        return await channel.send(**kwargs)
 
     @staticmethod
     async def send_error_message(channel: discord.TextChannel, error_message: str):

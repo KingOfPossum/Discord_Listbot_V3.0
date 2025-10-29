@@ -14,6 +14,7 @@ from timeTracking.TimeTracker import TimeTracker
 from timeTracking.commands.TimeTrackingCommands import TimeTrackingCommands
 from tokenSystem.commands.TokenCommands import TokenCommands
 from voice.MusicManager import MusicManager
+from voice.SongUpdater import SongUpdater
 from voice.commands.VoiceCommands import VoiceCommands
 
 
@@ -97,6 +98,7 @@ class Bot(commands.Bot):
         """Registers the bot tasks."""
         await self.add_cog(TimeTracker(self,self._databases.time_database))
         await self.add_cog(Updater(self))
+        await self.add_cog(SongUpdater(self))
         print("Registered TimeTracker task.")
 
     def run_bot(self):

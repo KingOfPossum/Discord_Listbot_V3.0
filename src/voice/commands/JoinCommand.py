@@ -4,7 +4,7 @@ from common.MessageManager import MessageManager
 from common.UserManager import UserManager
 from discord import VoiceClient
 from discord.ext import commands
-from voice.JoinStatus import JoinStatus
+from voice.JoinResponse import JoinResponse
 
 class JoinCommand(Command):
     """
@@ -24,18 +24,18 @@ class JoinCommand(Command):
         user_voice = ctx.author.voice
         bot_voice = ctx.voice_client
 
-        status:JoinStatus = await JoinCommand.join(user_voice,bot_voice)
+        status:JoinResponse = await JoinCommand.join(user_voice,bot_voice)
 
         match status:
-            case JoinStatus.JOINED:
+            case JoinResponse.JOINED:
                 await MessageManager.send_message(ctx.channel,f"Joined your voice channel `{user_voice.channel.name}`")
-            case JoinStatus.MOVED:
+            case JoinResponse.MOVED:
                 await MessageManager.send_message(ctx.channel,f"Moved to your voice channel `{user_voice.channel.name}`")
-            case JoinStatus.USER_NOT_IN_VOICE:
+            case JoinResponse.USER_NOT_IN_VOICE:
                 await MessageManager.send_error_message(ctx.channel,"You are not in a voice channel")
-            case JoinStatus.ALREADY_IN_CHANNEL:
+            case JoinResponse.ALREADY_IN_CHANNEL:
                 await MessageManager.send_error_message(ctx.channel,"Bot is already in the voice channel")
-            case JoinStatus.FAILED:
+            case JoinResponse.FAILED:
                 await MessageManager.send_error_message(ctx.channel,"Failed to join your voice channel")
 
     def help(self) -> str:
@@ -46,7 +46,7 @@ class JoinCommand(Command):
         return f"- `{ConfigLoader.get_config().command_prefix}join`: Lets the bot join your current voice channel\n"
 
     @staticmethod
-    async def join(voice_client:VoiceClient,bot_voice_client:VoiceClient) -> JoinStatus:
+    async def join(voice_client:VoiceClient,bot_voice_client:VoiceClient) -> JoinResponse:
         """
         Joins the voice channel.
         If bot is already in correct voice channel, does nothing.
@@ -54,20 +54,20 @@ class JoinCommand(Command):
         If the bot is not in any voice channel, joins the user's channel.
         :param voice_client: The voice client of the user.
         :param bot_voice_client: The voice client of the bot.
-        :return: JoinStatus indicating the result of the operation.
+        :return: JoinResponse indicating the result of the operation.
         """
         try:
             if not voice_client:
-                return JoinStatus.USER_NOT_IN_VOICE
+                return JoinResponse.USER_NOT_IN_VOICE
 
             if voice_client and not bot_voice_client:
                 await voice_client.channel.connect()
-                return JoinStatus.JOINED
+                return JoinResponse.JOINED
 
             if voice_client and bot_voice_client and voice_client.channel != bot_voice_client.channel:
                 await bot_voice_client.move_to(voice_client.channel)
-                return JoinStatus.MOVED
+                return JoinResponse.MOVED
 
-            return JoinStatus.ALREADY_IN_CHANNEL
+            return JoinResponse.ALREADY_IN_CHANNEL
         except Exception:
-            return JoinStatus.FAILED
+            return JoinResponse.FAILED
