@@ -34,7 +34,7 @@ class PauseCommand(Command):
         Returns the help text for the command
         :return: The help text for the command
         """
-        return f"- `{ConfigLoader.get_config().command_prefix}pause` - Pause the current song."
+        return f"- `{ConfigLoader.get_config().command_prefix}pause` - Pause the current song.\n"
 
     @staticmethod
     def pause(bot_client:VoiceClient):

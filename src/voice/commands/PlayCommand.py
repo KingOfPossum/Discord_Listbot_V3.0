@@ -10,6 +10,8 @@ from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
 from discord.ext import commands
+
+from voice.JoinResponse import JoinResponse
 from voice.MusicManager import MusicManager
 from voice.PlayStatus import PlayStatus
 from voice.VideoEntry import VideoEntry
@@ -43,7 +45,12 @@ class PlayCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are not allowed to use this command.")
             return
 
-        await JoinCommand.join(ctx.author.voice,ctx.voice_client)
+        response = await JoinCommand.join(ctx.author.voice,ctx.voice_client)
+        print(response.name)
+
+        if not response == JoinResponse.JOINED and not response == JoinResponse.ALREADY_IN_CHANNEL:
+            await MessageManager.send_error_message(ctx.channel,"Error while joining channel!")
+            return
 
         url = BotUtils.get_message_content(ctx.message)
         video = self.search_for_video(url)

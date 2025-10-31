@@ -29,6 +29,7 @@ from voice.commands.JoinCommand import JoinCommand
 from voice.commands.LeaveCommand import LeaveCommand
 from voice.commands.PauseCommand import PauseCommand
 from voice.commands.PlayCommand import PlayCommand
+from voice.commands.ResumeCommand import ResumeCommand
 
 class HelpCommand(Command):
     """
@@ -40,7 +41,7 @@ class HelpCommand(Command):
                               ConsolesCommand(),StatsCommand(list_database=None),InfoCommand()]
         self.token_commands = [AddTokenCommand(database=None),RemoveCoinCommand(database=None),SetNeededCoinsCommand(database=None),ViewTokensCommand(database=None)]
         self.time_commands = [TimeStatsCommand(time_database=None)]
-        self.voice_commands = [JoinCommand(),LeaveCommand(),PlayCommand(None),PauseCommand()]
+        self.voice_commands = [JoinCommand(),LeaveCommand(),PlayCommand(None),PauseCommand(),ResumeCommand()]
         self.backlog_commands = [BacklogAddCommand(None),BacklogRemoveCommand(None),RecommendCommand(None),GetRecommendationCommand(None),ViewBacklogCommand(None)]
 
     @commands.command(name="help",aliases=["Help","HELP","h","commands","Commands","COMMANDS"])
@@ -51,16 +52,21 @@ class HelpCommand(Command):
         :param ctx: the context in which the command was invoked
         """
         await ctx.send(self.help())
+        await ctx.send(self.help2())
 
     def help(self) -> str:
         """
         Returns a string that describes the command and how to use it.
+        In this class are multiple help commands because of the character limit in discord
         :return: The help string for the command
         """
         general_commands_help = "**General Commands:**\n" + "".join([command.help() for command in self.general_commands])
         list_commands_help = "**List Commands:**\n" + "".join([command.help() for command in self.list_commands])
         tokens_command_help = "**Token Commands:**\n" + "".join(command.help() for command in self.token_commands)
         time_command_help = "**Time Tracking Commands:**\n" + "".join(command.help() for command in self.time_commands)
+        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help
+
+    def help2(self) -> str:
         voice_command_help = "**Voice Commands:**\n" + "".join(command.help() for command in self.voice_commands)
         backlog_command_help = "**Backlog Commands:**\n" + "".join(command.help() for command in self.backlog_commands)
-        return general_commands_help + "\n" + list_commands_help + "\n" + tokens_command_help + "\n" + time_command_help + "\n" + backlog_command_help + "\n" + voice_command_help
+        return voice_command_help + "\n" + backlog_command_help

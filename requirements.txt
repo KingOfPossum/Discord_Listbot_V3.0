@@ -2,3 +2,4 @@ discord.py
 PyYAML==6.0.4
 requests==2.32.5
 yt-dlp
+pynacl
