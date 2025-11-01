@@ -38,7 +38,8 @@ class MusicManager:
 
     @staticmethod
     async def delete_song_message():
-        await MusicManager.song_message.delete()
+        if MusicManager.song_message:
+            await MusicManager.song_message.delete()
         MusicManager.song_embed = None
         MusicManager.song_message = None
 

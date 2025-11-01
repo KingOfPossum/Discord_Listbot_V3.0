@@ -10,9 +10,8 @@ from voice.MusicManager import MusicManager
 from voice.PlayStatus import PlayStatus
 from voice.ResumeResponse import ResumeResponse
 
-
 class ResumeCommand(Command):
-    @commands.command(name="resume")
+    @commands.command(name="resume",aliases=["Resume","ResumeSong","resumeSong","resumesong","resume_song","Resume_Song","resume_Song","resumeAudio","ResumeAudio","resumeaudio"])
     async def execute(self, ctx):
         if not UserManager.is_user_accepted(ctx.author.name):
             await MessageManager.send_error_message(ctx.channel,"You are not allowed to use this command")
@@ -21,7 +20,7 @@ class ResumeCommand(Command):
 
         match response:
             case ResumeResponse.RESUMED:
-                await MessageManager.send_message(ctx.channel,f"Resuming song {MusicManager.current_song.title}!")
+                await MessageManager.send_message(ctx.channel,f"Resuming Song {MusicManager.current_song.title}!")
             case ResumeResponse.ALREADY_PLAYING:
                 await MessageManager.send_error_message(ctx.channel,"Already playing song!")
             case ResumeResponse.NO_SONG:
