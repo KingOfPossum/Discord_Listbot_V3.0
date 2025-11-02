@@ -10,7 +10,6 @@ class JoinResponse(Enum):
      USER_NOT_IN_VOICE : The user who invoked the join command was in no voice channel.
      FAILED : Something went wrong with the join command.
     """
-
     JOINED = 1
     MOVED = 2
     ALREADY_IN_CHANNEL = 3
