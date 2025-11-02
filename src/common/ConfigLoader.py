@@ -65,6 +65,7 @@ class ConfigLoader:
                 file.write("  api_key:\n")
                 file.write("  command_prefix: '%'\n")
                 file.write("  databases_folder_path: '../resources/databases/'\n")
+                file.write("  music_folder_path: '../resources/music/'\n")
                 file.write("  create_emojis: True\n")
                 file.write("  bot_replies: True\n")
                 file.write("  bot_replies_to_links: False\n")
@@ -92,6 +93,7 @@ class ConfigLoader:
             return Config(api_key=config_dict["bot"]["api_key"],
                           command_prefix=config_dict["bot"]["command_prefix"],
                           database_folder_path=config_dict["bot"]["databases_folder_path"],
+                          music_folder_path=config_dict["bot"]["music_folder_path"],
                           create_emojis=config_dict["bot"]["create_emojis"],
                           bot_replies=config_dict["bot"]["bot_replies"],
                           bot_replies_to_links=config_dict["bot"]["bot_replies_to_links"],
