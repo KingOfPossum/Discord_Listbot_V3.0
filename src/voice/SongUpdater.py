@@ -32,13 +32,21 @@ class SongUpdater(commands.Cog):
 
     @staticmethod
     async def _update_song_embed():
+        """
+        Updates the song embed. Updating the current playtime in the embed
+        """
         if MusicManager.current_song and MusicManager.song_embed and MusicManager.song_message:
             if MusicManager.current_play_status == PlayStatus.PLAYING:
                 MusicManager.current_song.current_playtime += 1
-                MusicManager.song_embed.description = f"{VoiceUtils.convert_seconds_to_time(MusicManager.current_song.current_playtime)} - {VoiceUtils.convert_seconds_to_time(MusicManager.current_song.duration)}"
+                MusicManager.song_embed.description = f"[{MusicManager.current_song.title}]({MusicManager.current_song.url})\n{VoiceUtils.convert_seconds_to_time(MusicManager.current_song.current_playtime)} - {VoiceUtils.convert_seconds_to_time(MusicManager.current_song.duration)}"
                 await MusicManager.song_message.edit(embed=MusicManager.song_embed)
 
     async def check_for_inactivity(self):
+        """
+        Checks how long the bot has been inactive in a voice chat.
+        Being to loong inactive results in the bot being kicked from the voice chat.
+        :return:
+        """
         print(f"Inactivity check : Inactive for {MusicManager.inactive_time} seconds")
         if MusicManager.current_play_status == PlayStatus.PLAYING:
             MusicManager.reset_inactivity()

@@ -11,6 +11,11 @@ class Emojis:
     first_place = "🥇"
     second_place = "🥈"
     third_place = "🥉"
+    PAUSE = "⏸️"
+    RESUME = "▶️"
+    STOP = "⏹️"
+    SHUFFLE = "🔀"
+    LOOP = "🔁"
 
     @staticmethod
     def consoles() -> dict:
