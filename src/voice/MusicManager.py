@@ -3,16 +3,23 @@ import os
 
 from common.Emojis import Emojis
 from common.MessageManager import MessageManager
+from discord.ext import commands
+
+from voice.PlayResponse import PlayResponse
 from voice.PlayStatus import PlayStatus
 from voice.VideoEntry import VideoEntry
 from voice.VoiceUtils import VoiceUtils
 
 class MusicManager:
-    INACTIVE_SECONDS_UNTIL_DISCONNECT = 30
+    INACTIVE_SECONDS_UNTIL_DISCONNECT = 300 # 5 Minutes
     inactive_time = 0
 
     current_song: VideoEntry = None
+    song_queue: list[VideoEntry] = []
     current_play_status: PlayStatus = PlayStatus.NOTHING
+
+    current_ctx:commands.Context = None
+
     song_embed: discord.Embed = None
     song_view: discord.ui.View = None
     song_embed_buttons: dict = {}
@@ -27,10 +34,6 @@ class MusicManager:
         if not os.path.exists(music_folder_path):
             print(f"Creating music folder at {music_folder_path}")
             os.mkdir(music_folder_path)
-
-    @staticmethod
-    def set_current_song(new_song: VideoEntry):
-        MusicManager.current_song = new_song
 
     @staticmethod
     async def send_song_embed(ctx,song: VideoEntry):
@@ -79,6 +82,38 @@ class MusicManager:
     @staticmethod
     def reset_inactivity():
         MusicManager.inactive_time = 0
+
+    @staticmethod
+    async def next_song():
+        if MusicManager.current_song:
+            MusicManager.current_song = None
+            MusicManager.current_play_status = PlayStatus.NOTHING
+            await MusicManager.delete_song_message()
+
+        if len(MusicManager.song_queue) > 0:
+            next_song = MusicManager.song_queue.pop(0)
+            if MusicManager.current_ctx:
+                await MusicManager.play_song(MusicManager.current_ctx,next_song)
+
+    @staticmethod
+    async def play_song(ctx,song: VideoEntry):
+        MusicManager.current_ctx = ctx
+
+        if MusicManager.current_song:
+            MusicManager.song_queue.append(song)
+            return
+
+        MusicManager.current_song = song
+        response = await MusicManager.current_song.play(ctx.voice_client)
+
+        match response:
+            case PlayResponse.SUCCESS:
+                MusicManager.current_play_status = PlayStatus.PLAYING
+                await MusicManager.send_song_embed(ctx,song)
+            case PlayResponse.ANOTHER_SONG_IS_PLAYING:
+                await MessageManager.send_error_message(ctx.channel,"Another song is already playing!")
+            case PlayResponse.ERROR:
+                await MessageManager.send_error_message(ctx.channel,"Error while trying to play the song!")
 
     async def pause_callback(interaction:discord.Interaction):
         from voice.commands.PauseCommand import PauseCommand

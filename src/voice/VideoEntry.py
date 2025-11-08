@@ -1,4 +1,13 @@
+import asyncio
 import dataclasses
+import os
+
+from common.BootLoop import BotLoop
+from common.ConfigLoader import ConfigLoader
+from discord import VoiceClient, FFmpegPCMAudio
+from voice.DownloadManager import DownloadManager
+from voice.PlayResponse import PlayResponse
+from voice.PlayStatus import PlayStatus
 
 @dataclasses.dataclass
 class VideoEntry:
@@ -17,6 +26,8 @@ class VideoEntry:
     duration: int
     current_playtime: int
     thumbnail_url: str
+    file_path: str
+    downloaded: bool
 
     @classmethod
     def new(cls,url,title,video_id,duration):
@@ -28,7 +39,41 @@ class VideoEntry:
         :param duration: The duration of the video.
         :return: A new VideoEntry object.
         """
-        return cls(url,title,video_id,duration,0,f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg")
+        file_path = ConfigLoader.get_config().music_folder_path + video_id + ".mp3"
+        already_downloaded = os.path.exists(file_path)
+
+        return cls(url,title,video_id,duration,0,f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg",file_path,already_downloaded)
+
+    async def play(self,bot_voice:VoiceClient):
+        """
+        Plays the audio from this VideoEntry object.
+        :param bot_voice: The VoiceClient object of the bot used to play the audio.
+        :return: PlayResponse object representing if the playing was successful.
+        """
+        from voice.MusicManager import MusicManager
+
+        print("Playing audio:",self.file_path)
+
+        if MusicManager.current_play_status == PlayStatus.PLAYING:
+            return PlayResponse.ANOTHER_SONG_IS_PLAYING
+
+        if not self.downloaded:
+            self.download()
+            self.downloaded = True
+
+        print("Playing audio:",self.file_path)
+
+        source = FFmpegPCMAudio(self.file_path)
+        bot_voice.play(source,after=lambda _: asyncio.run_coroutine_threadsafe(MusicManager.next_song(),BotLoop.loop))
+        return PlayResponse.SUCCESS
+
+    def download(self):
+        """
+        Downloads the audio from this VideoEntry object.
+        :return:
+        """
+        if not self.downloaded:
+            DownloadManager.download_audio_from_url(url=self.url)
 
     def __str__(self):
-        return f"URL: {self.url}\nTitle: {self.title}\nVideo ID: {self.video_id}\nThumbnail URL: {self.thumbnail_url}\nDuration: {self.duration}"
+        return f"URL: {self.url}\nTitle: {self.title}\nVideo ID: {self.video_id}\nThumbnail URL: {self.thumbnail_url}\nDuration: {self.duration}\nDownloaded: {self.downloaded}"

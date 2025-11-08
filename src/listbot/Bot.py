@@ -2,6 +2,7 @@ import discord
 import os
 
 from backlog.commands.BacklogCommands import BacklogCommands
+from common.BootLoop import BotLoop
 from common.ConfigLoader import ConfigLoader
 from common.Wrapper import Wrapper
 from database.DatabaseCollection import DatabaseCollection
@@ -69,6 +70,7 @@ class Bot(commands.Bot):
 
     async def setup_hook(self):
         """A setup hook that is called when the bot is ready."""
+        BotLoop.loop = self.loop
         await self.register_cogs()
 
     async def register_cogs(self):
