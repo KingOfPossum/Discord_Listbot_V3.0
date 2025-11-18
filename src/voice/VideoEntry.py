@@ -6,8 +6,8 @@ from common.BootLoop import BotLoop
 from common.ConfigLoader import ConfigLoader
 from discord import VoiceClient, FFmpegPCMAudio
 from voice.DownloadManager import DownloadManager
-from voice.PlayResponse import PlayResponse
-from voice.PlayStatus import PlayStatus
+from voice.enums.PlayResponse import PlayResponse
+from voice.enums.PlayStatus import PlayStatus
 
 @dataclasses.dataclass
 class VideoEntry:
@@ -52,8 +52,6 @@ class VideoEntry:
         """
         from voice.MusicManager import MusicManager
 
-        print("Playing audio:",self.file_path)
-
         if MusicManager.current_play_status == PlayStatus.PLAYING:
             return PlayResponse.ANOTHER_SONG_IS_PLAYING
 
@@ -61,8 +59,7 @@ class VideoEntry:
             self.download()
             self.downloaded = True
 
-        print("Playing audio:",self.file_path)
-
+        self.current_playtime = 0
         source = FFmpegPCMAudio(self.file_path)
         bot_voice.play(source,after=lambda _: asyncio.run_coroutine_threadsafe(MusicManager.next_song(),BotLoop.loop))
         return PlayResponse.SUCCESS

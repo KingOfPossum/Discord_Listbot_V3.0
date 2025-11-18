@@ -7,8 +7,8 @@ from common.UserManager import UserManager
 from discord.ext import commands
 
 from voice.MusicManager import MusicManager
-from voice.PlayStatus import PlayStatus
-from voice.ResumeResponse import ResumeResponse
+from voice.enums.PlayStatus import PlayStatus
+from voice.enums.ResumeResponse import ResumeResponse
 
 class ResumeCommand(Command):
     @commands.command(name="resume",aliases=["Resume","ResumeSong","resumeSong","resumesong","resume_song","Resume_Song","resume_Song","resumeAudio","ResumeAudio","resumeaudio"])

@@ -1,12 +1,14 @@
+from asyncio import timeout
+
 import discord
 import os
+import random
 
 from common.Emojis import Emojis
 from common.MessageManager import MessageManager
 from discord.ext import commands
-
-from voice.PlayResponse import PlayResponse
-from voice.PlayStatus import PlayStatus
+from voice.enums.PlayResponse import PlayResponse
+from voice.enums.PlayStatus import PlayStatus
 from voice.VideoEntry import VideoEntry
 from voice.VoiceUtils import VoiceUtils
 
@@ -16,6 +18,7 @@ class MusicManager:
 
     current_song: VideoEntry = None
     song_queue: list[VideoEntry] = []
+    current_song_index: int = 0
     current_play_status: PlayStatus = PlayStatus.NOTHING
 
     current_ctx:commands.Context = None
@@ -25,6 +28,9 @@ class MusicManager:
     song_embed_buttons: dict = {}
     song_message: discord.Message = None
     bot_voice_client: discord.VoiceClient = None
+
+    shuffle: bool = False
+    looping: bool = False
 
     def __init__(self,music_folder_path: str):
         self.create_music_folder_if_not_exists(music_folder_path)
@@ -43,12 +49,16 @@ class MusicManager:
         embed.set_thumbnail(url=song.thumbnail_url)
 
         view = discord.ui.View()
+        view.timeout = None
 
         pause_button = discord.ui.Button(label=Emojis.PAUSE,style=discord.ButtonStyle.primary)
         pause_button.callback = MusicManager.pause_callback
 
         stop_button = discord.ui.Button(label=Emojis.STOP,style=discord.ButtonStyle.primary)
         stop_button.callback = MusicManager.stop_callback
+
+        skip_button = discord.ui.Button(label=Emojis.SKIP,style=discord.ButtonStyle.primary)
+        skip_button.callback = MusicManager.skip_callback
 
         shuffle_button = discord.ui.Button(label=Emojis.SHUFFLE,style=discord.ButtonStyle.red)
         shuffle_button.callback = MusicManager.shuffle_callback
@@ -59,11 +69,13 @@ class MusicManager:
         view.add_item(shuffle_button)
         view.add_item(loop_button)
         view.add_item(stop_button)
+        view.add_item(skip_button)
         view.add_item(pause_button)
 
         MusicManager.song_embed_buttons["shuffle"] = shuffle_button
         MusicManager.song_embed_buttons["loop"] = loop_button
         MusicManager.song_embed_buttons["stop"] = stop_button
+        MusicManager.song_embed_buttons["skip"] = skip_button
         MusicManager.song_embed_buttons["pause/resume"] = pause_button
 
         MusicManager.song_embed = embed
@@ -85,23 +97,40 @@ class MusicManager:
 
     @staticmethod
     async def next_song():
-        if MusicManager.current_song:
-            MusicManager.current_song = None
-            MusicManager.current_play_status = PlayStatus.NOTHING
+        print([song.title for song in MusicManager.song_queue])
+
+        if not MusicManager.song_queue or len(MusicManager.song_queue) == 0:
             await MusicManager.delete_song_message()
+            return
 
         if len(MusicManager.song_queue) > 0:
-            next_song = MusicManager.song_queue.pop(0)
+            MusicManager.song_queue.pop(MusicManager.current_song_index)
+            if MusicManager.looping:
+                if MusicManager.current_song:
+                    MusicManager.song_queue.append(MusicManager.current_song)
+
+            if MusicManager.shuffle:
+                MusicManager.current_song_index = random.randint(0,len(MusicManager.song_queue)-1)
+            else:
+                MusicManager.current_song_index = 0
+
+            next_song = MusicManager.song_queue[MusicManager.current_song_index]
+            MusicManager.current_song = None
+            MusicManager.current_play_status = PlayStatus.NOTHING
+
             if MusicManager.current_ctx:
-                await MusicManager.play_song(MusicManager.current_ctx,next_song)
+                print("Playing next song:",next_song.title)
+                await MusicManager.play_song(MusicManager.current_ctx,next_song,True)
 
     @staticmethod
-    async def play_song(ctx,song: VideoEntry):
+    async def play_song(ctx,song: VideoEntry,force: bool = False):
         MusicManager.current_ctx = ctx
 
-        if MusicManager.current_song:
+        if not force:
+            if MusicManager.current_song:
+                MusicManager.song_queue.append(song)
+                return
             MusicManager.song_queue.append(song)
-            return
 
         MusicManager.current_song = song
         response = await MusicManager.current_song.play(ctx.voice_client)
@@ -109,7 +138,8 @@ class MusicManager:
         match response:
             case PlayResponse.SUCCESS:
                 MusicManager.current_play_status = PlayStatus.PLAYING
-                await MusicManager.send_song_embed(ctx,song)
+                if not MusicManager.song_embed:
+                    await MusicManager.send_song_embed(ctx,song)
             case PlayResponse.ANOTHER_SONG_IS_PLAYING:
                 await MessageManager.send_error_message(ctx.channel,"Another song is already playing!")
             case PlayResponse.ERROR:
@@ -143,11 +173,23 @@ class MusicManager:
 
     async def stop_callback(interaction:discord.Interaction):
         from voice.commands.StopCommand import StopCommand
-        StopCommand.stop(MusicManager.bot_voice_client)
+        await StopCommand.stop(MusicManager.bot_voice_client)
+        await interaction.response.defer()
+
+    async def skip_callback(interaction:discord.Interaction):
+        if len(MusicManager.song_queue) <= 1 and not MusicManager.looping:
+            await MusicManager.stop_callback(interaction)
+            return
+
+        MusicManager.bot_voice_client.stop()
         await interaction.response.defer()
 
     async def shuffle_callback(interaction:discord.Interaction):
-        pass
+        MusicManager.shuffle = not MusicManager.shuffle
+        MusicManager.song_embed_buttons["shuffle"].style = discord.ButtonStyle.green if MusicManager.shuffle else discord.ButtonStyle.red
+        await interaction.response.edit_message(embed=MusicManager.song_embed,view=MusicManager.song_view)
 
     async def loop_callback(interaction:discord.Interaction):
-        pass
+        MusicManager.looping = not MusicManager.looping
+        MusicManager.song_embed_buttons["loop"].style = discord.ButtonStyle.green if MusicManager.looping else discord.ButtonStyle.red
+        await interaction.response.edit_message(embed=MusicManager.song_embed, view=MusicManager.song_view)

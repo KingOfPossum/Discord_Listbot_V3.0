@@ -5,8 +5,8 @@ from common.MessageManager import MessageManager
 from discord import VoiceClient
 from discord.ext import commands
 from voice.MusicManager import MusicManager
-from voice.PlayStatus import PlayStatus
-from voice.StopResponse import StopResponse
+from voice.enums.PlayStatus import PlayStatus
+from voice.enums.StopResponse import StopResponse
 
 class StopCommand(Command):
     """
@@ -18,7 +18,7 @@ class StopCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are not allowed to use this command.")
             return
 
-        response = self.stop(ctx.voice_client)
+        response = await self.stop(ctx.voice_client)
 
         match response:
             case StopResponse.STOPPED_SONG:
@@ -36,7 +36,7 @@ class StopCommand(Command):
         return f"- `{ConfigLoader.get_config().command_prefix}stop` : Stops the current played Song\n"
 
     @staticmethod
-    def stop(bot_client:VoiceClient):
+    async def stop(bot_client:VoiceClient):
         """
         Stops the current played song.
         :param bot_client: The bots voice client.
@@ -46,10 +46,11 @@ class StopCommand(Command):
             return StopResponse.NO_SONG
 
         try:
-            bot_client.stop()
             MusicManager.current_play_status = PlayStatus.NOTHING
             MusicManager.current_song = None
-            MusicManager.delete_song_message()
+            MusicManager.song_queue = []
+            await MusicManager.delete_song_message()
+            bot_client.stop()
             return StopResponse.STOPPED_SONG
         except Exception:
             return StopResponse.ERROR

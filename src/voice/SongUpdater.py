@@ -1,6 +1,6 @@
 from discord.ext import commands, tasks
 from voice.MusicManager import MusicManager
-from voice.PlayStatus import PlayStatus
+from voice.enums.PlayStatus import PlayStatus
 from voice.VoiceUtils import VoiceUtils
 
 class SongUpdater(commands.Cog):
@@ -20,7 +20,7 @@ class SongUpdater(commands.Cog):
         self.update.cancel()
         print("Voice updater unloaded")
 
-    @tasks.loop(seconds=1)
+    @tasks.loop(seconds=1,reconnect=True)
     async def update(self):
         await self._update_song_embed()
         await self.check_for_inactivity()
@@ -36,9 +36,16 @@ class SongUpdater(commands.Cog):
         Updates the song embed. Updating the current playtime in the embed
         """
         if MusicManager.current_song and MusicManager.song_embed and MusicManager.song_message:
+            print(f"\nCurrent Song: {MusicManager.current_song.title}")
+            print(f"Song queue: {[song.title for song in MusicManager.song_queue]}")
+            print(f"Current song index: {MusicManager.current_song_index}")
+            print(f"Looping: {MusicManager.looping}")
+            print(f"Shuffle: {MusicManager.shuffle}\n")
+
             if MusicManager.current_play_status == PlayStatus.PLAYING:
                 MusicManager.current_song.current_playtime += 1
                 MusicManager.song_embed.description = f"[{MusicManager.current_song.title}]({MusicManager.current_song.url})\n{VoiceUtils.convert_seconds_to_time(MusicManager.current_song.current_playtime)} - {VoiceUtils.convert_seconds_to_time(MusicManager.current_song.duration)}"
+                MusicManager.song_embed.set_thumbnail(url=MusicManager.current_song.thumbnail_url)
                 await MusicManager.song_message.edit(embed=MusicManager.song_embed)
 
     async def check_for_inactivity(self):

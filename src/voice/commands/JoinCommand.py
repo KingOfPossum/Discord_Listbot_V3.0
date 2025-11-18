@@ -4,7 +4,7 @@ from common.MessageManager import MessageManager
 from common.UserManager import UserManager
 from discord import VoiceClient
 from discord.ext import commands
-from voice.JoinResponse import JoinResponse
+from voice.enums.JoinResponse import JoinResponse
 
 class JoinCommand(Command):
     """

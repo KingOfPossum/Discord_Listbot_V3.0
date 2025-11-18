@@ -5,7 +5,7 @@ from common.MessageManager import MessageManager
 from common.UserManager import UserManager
 from discord.ext import commands
 from voice.DownloadManager import DownloadManager
-from voice.JoinResponse import JoinResponse
+from voice.enums.JoinResponse import JoinResponse
 from voice.MusicManager import MusicManager
 from voice.commands.JoinCommand import JoinCommand
 
@@ -35,8 +35,6 @@ class PlayCommand(Command):
         video = DownloadManager.search_for_video(url)
 
         await MusicManager.play_song(ctx,video)
-
-        await ctx.send(f"**Now Playing** : {video.title}\n{video.thumbnail_url}")
 
     def help(self) -> str:
         """
