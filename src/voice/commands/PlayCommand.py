@@ -32,6 +32,15 @@ class PlayCommand(Command):
             return
 
         url = BotUtils.get_message_content(ctx.message)
+
+        if 'list' in url:
+            songs = DownloadManager.search_for_playlist(url)
+            if MusicManager.song_queue is None or len(MusicManager.song_queue) == 0:
+                await MusicManager.play_song(ctx,songs[0])
+                for i in range(1,len(songs)):
+                    MusicManager.song_queue.append(songs[i])
+            return
+
         video = DownloadManager.search_for_video(url)
 
         await MusicManager.play_song(ctx,video)

@@ -16,6 +16,18 @@ class DownloadManager:
         }]
     }
 
+    youtube_playlist_options = {
+        'format': 'bestaudio/best',
+        'default_search': 'ytsearch',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192'
+        }],
+        'noplaylist': False,
+        'extract_flat': True,
+    }
+
     @staticmethod
     def extract_video_id_from_url(url: str) -> str:
         """
@@ -49,6 +61,26 @@ class DownloadManager:
                     return VideoEntry.new(result['original_url'], result['title'], result['id'], result['duration'])
 
             return VideoEntry.new(info['original_url'], info['title'], info['id'], info['duration'])
+
+    @staticmethod
+    def search_for_playlist(query: str):
+        """
+        Searches YouTube for a playlist matching the given query.
+        :param query: The query to search for.
+        :return: A list of VideoEntry objects representing the videos in the playlist.
+        """
+        from voice.VideoEntry import VideoEntry
+
+        with yt_dlp.YoutubeDL(DownloadManager.youtube_playlist_options) as ytdlp:
+            info = ytdlp.extract_info(query, download=False)
+
+            video_entries = []
+            if 'entries' in info:
+                for entry in info['entries']:
+                    print(entry)
+                    video_entries.append(VideoEntry.new(entry['url'], entry['title'], entry['id'], entry['duration']))
+
+            return video_entries
 
     @staticmethod
     def download_audio_from_url(url):
