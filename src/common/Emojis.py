@@ -16,6 +16,7 @@ class Emojis:
     STOP = "⏹️"
     SHUFFLE = "🔀"
     LOOP = "🔁"
+    SKIP = "⏭️"
 
     @staticmethod
     def consoles() -> dict:

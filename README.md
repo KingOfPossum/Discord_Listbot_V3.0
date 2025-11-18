@@ -21,8 +21,8 @@ Other functionalities of the bot include:
   - Automatic Updates:
     - The bot will automatically check for updates once every minute. If there is a new version available the bot will wait until all actions are finished and then restart itself to update to the newest version
   - Playing Music from YouTube:
-    - You can play audio from YouTube videos.
-    - The audio is being downloaded to cache them for later use to speed up the initialisation of playing a new song
+    - You can play audio from YouTube videos and playlists.
+    - The audio is being downloaded to cache them for repeating usage to speed up the initialisation of playing a new song
 
 Functionality that I plan for the future:
  - Playlists for the Music feature
@@ -82,7 +82,7 @@ The bot will also have a help command that will list all commands, the way to us
 ### Voice Commands
 - `%join` : This will make the bot join your current voice channel. Either joining directly or moving to it if the bot is in another channel
 - `%leave` : This will let the bot leave from his current voice channel
-- `%play` `(url | searchquery)` : This will make the bot play the audio from  a YouTube video. You can either provide a `url` directly to that video or a `searchquery` which will result in the bot searching YouTube for a video.
+- `%play` `(url | searchquery)` : This will make the bot play the audio from  a YouTube video or playlist. You can either provide a `url` directly to that video or a `searchquery` which will result in the bot searching YouTube for a video.
 - `%pause` : Will pause the currently played song
 - `%resume` : Will resume the currently played song
 - `%stop` : Will stop the currently played song

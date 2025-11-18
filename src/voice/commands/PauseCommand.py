@@ -5,8 +5,8 @@ from common.UserManager import UserManager
 from discord import VoiceClient
 from discord.ext import commands
 from voice.MusicManager import MusicManager
-from voice.PauseResponse import PauseResponse
-from voice.PlayStatus import PlayStatus
+from voice.enums.PauseResponse import PauseResponse
+from voice.enums.PlayStatus import PlayStatus
 
 class PauseCommand(Command):
     """
