@@ -39,6 +39,8 @@ class SongUpdater(commands.Cog):
             print(f"\nCurrent Song: {MusicManager.current_song.title}")
             print(f"Song queue: {[song.title for song in MusicManager.song_queue]}")
             print(f"Current song index: {MusicManager.current_song_index}")
+            print(f"Next song index: {MusicManager.next_song_index}")
+            print(f"Next song: {MusicManager.next_song_entry.title if MusicManager.next_song_entry else 'None'}")
             print(f"Looping: {MusicManager.looping}")
             print(f"Shuffle: {MusicManager.shuffle}\n")
 

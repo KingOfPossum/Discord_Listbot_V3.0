@@ -19,6 +19,8 @@ class MusicManager:
     current_song: VideoEntry = None
     song_queue: list[VideoEntry] = []
     current_song_index: int = 0
+    next_song_index: int = 0
+    next_song_entry: VideoEntry = None
     current_play_status: PlayStatus = PlayStatus.NOTHING
 
     current_ctx:commands.Context = None
@@ -110,17 +112,25 @@ class MusicManager:
                     MusicManager.song_queue.append(MusicManager.current_song)
 
             if MusicManager.shuffle:
-                MusicManager.current_song_index = random.randint(0,len(MusicManager.song_queue)-1)
+                if not MusicManager.next_song_entry:
+                    MusicManager.current_song_index = random.randint(0,len(MusicManager.song_queue)-1)
+                else:
+                    MusicManager.current_song_index = MusicManager.song_queue.index(MusicManager.next_song_entry)
+                MusicManager.next_song_index = random.randint(0,len(MusicManager.song_queue)-1)
             else:
+                MusicManager.next_song_index = 1
                 MusicManager.current_song_index = 0
 
             next_song = MusicManager.song_queue[MusicManager.current_song_index]
+            MusicManager.next_song_entry = MusicManager.song_queue[MusicManager.next_song_index]
+
             MusicManager.current_song = None
             MusicManager.current_play_status = PlayStatus.NOTHING
 
             if MusicManager.current_ctx:
                 print("Playing next song:",next_song.title)
                 await MusicManager.play_song(MusicManager.current_ctx,next_song,True)
+                MusicManager.next_song_entry.download()
 
     @staticmethod
     async def play_song(ctx,song: VideoEntry,force: bool = False):

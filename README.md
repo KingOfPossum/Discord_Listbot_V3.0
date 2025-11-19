@@ -18,9 +18,9 @@ Other functionalities of the bot include:
     - You can add games to your backlog that you want to play in the future to keep track of them
     - You can also recommend games to other users. This will add the game to their backlog  
     - Also you can get a random recommendation from your backlog if you can't decide what to play next
-  - Automatic Updates:
+ - Automatic Updates:
     - The bot will automatically check for updates once every minute. If there is a new version available the bot will wait until all actions are finished and then restart itself to update to the newest version
-  - Playing Music from YouTube:
+ - Playing Music from YouTube:
     - You can play audio from YouTube videos and playlists.
     - The audio is being downloaded to cache them for repeating usage to speed up the initialisation of playing a new song
 
