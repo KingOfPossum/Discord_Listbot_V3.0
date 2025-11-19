@@ -38,7 +38,8 @@ class PlayCommand(Command):
             if MusicManager.song_queue is None or len(MusicManager.song_queue) == 0:
                 await MusicManager.play_song(ctx,songs[0])
                 for i in range(1,len(songs)):
-                    MusicManager.song_queue.append(songs[i])
+                    if not songs[i].title in ["[Deleted video]","[Private video]"]:
+                        MusicManager.song_queue.append(songs[i])
             return
 
         video = DownloadManager.search_for_video(url)

@@ -70,7 +70,9 @@ class VideoEntry:
         :return:
         """
         if not self.downloaded:
+            print(f"DOWNLOADING AUDIO FOR SONG : {self.title}")
             DownloadManager.download_audio_from_url(url=self.url)
+            self.downloaded = True
 
     def __str__(self):
         return f"URL: {self.url}\nTitle: {self.title}\nVideo ID: {self.video_id}\nThumbnail URL: {self.thumbnail_url}\nDuration: {self.duration}\nDownloaded: {self.downloaded}"

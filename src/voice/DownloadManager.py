@@ -77,7 +77,6 @@ class DownloadManager:
             video_entries = []
             if 'entries' in info:
                 for entry in info['entries']:
-                    print(entry)
                     video_entries.append(VideoEntry.new(entry['url'], entry['title'], entry['id'], entry['duration']))
 
             return video_entries

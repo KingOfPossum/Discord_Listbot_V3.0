@@ -39,6 +39,8 @@ class SongUpdater(commands.Cog):
             print(f"\nCurrent Song: {MusicManager.current_song.title}")
             print(f"Song queue: {[song.title for song in MusicManager.song_queue]}")
             print(f"Current song index: {MusicManager.current_song_index}")
+            print(f"Next song index: {MusicManager.next_song_index}")
+            print(f"Next song: {MusicManager.next_song_entry.title if MusicManager.next_song_entry else 'None'}")
             print(f"Looping: {MusicManager.looping}")
             print(f"Shuffle: {MusicManager.shuffle}\n")
 
@@ -46,6 +48,7 @@ class SongUpdater(commands.Cog):
                 MusicManager.current_song.current_playtime += 1
                 MusicManager.song_embed.description = f"[{MusicManager.current_song.title}]({MusicManager.current_song.url})\n{VoiceUtils.convert_seconds_to_time(MusicManager.current_song.current_playtime)} - {VoiceUtils.convert_seconds_to_time(MusicManager.current_song.duration)}"
                 MusicManager.song_embed.set_thumbnail(url=MusicManager.current_song.thumbnail_url)
+                MusicManager.song_embed.set_field_at(0, name = f"Songs in Queue: {len(MusicManager.song_queue)}",value = f"Next Song: {MusicManager.next_song_entry.title if MusicManager.next_song_entry else ''}", inline=False)
                 await MusicManager.song_message.edit(embed=MusicManager.song_embed)
 
     async def check_for_inactivity(self):
