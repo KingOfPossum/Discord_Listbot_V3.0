@@ -1,5 +1,3 @@
-from asyncio import timeout
-
 import discord
 import os
 import random
@@ -49,6 +47,7 @@ class MusicManager:
 
         embed = MessageManager.get_embed(title=f"", description=f"[{song.title}]({song.url})\n{VoiceUtils.convert_seconds_to_time(song.current_playtime)} - {VoiceUtils.convert_seconds_to_time(song.duration)}")
         embed.set_thumbnail(url=song.thumbnail_url)
+        embed.add_field(name=f"Songs in Queue: {len(MusicManager.song_queue)}", value="", inline=False)
 
         view = discord.ui.View()
         view.timeout = None
