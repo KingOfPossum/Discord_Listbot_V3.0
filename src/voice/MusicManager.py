@@ -1,6 +1,7 @@
 import discord
 import os
 import random
+import threading
 
 from common.Emojis import Emojis
 from common.MessageManager import MessageManager
@@ -129,7 +130,10 @@ class MusicManager:
             if MusicManager.current_ctx:
                 print("Playing next song:",next_song.title)
                 await MusicManager.play_song(MusicManager.current_ctx,next_song,True)
-                MusicManager.next_song_entry.download()
+
+                downloader = threading.Thread(target=MusicManager.next_song_entry.download,daemon=True)
+                downloader.start()
+                print(f"Started downloading next song in background (Thread: {downloader.ident}) : {MusicManager.next_song_entry.title}")
 
     @staticmethod
     async def play_song(ctx,song: VideoEntry,force: bool = False):
