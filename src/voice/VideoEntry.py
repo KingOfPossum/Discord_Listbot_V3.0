@@ -56,7 +56,7 @@ class VideoEntry:
             return PlayResponse.ANOTHER_SONG_IS_PLAYING
 
         if not self.downloaded:
-            self.download()
+            await self.download()
             self.downloaded = True
 
         self.current_playtime = 0
@@ -64,15 +64,20 @@ class VideoEntry:
         bot_voice.play(source,after=lambda _: asyncio.run_coroutine_threadsafe(MusicManager.next_song(),BotLoop.loop))
         return PlayResponse.SUCCESS
 
-    def download(self):
+    async def download(self):
         """
         Downloads the audio from this VideoEntry object.
         :return:
         """
         if not self.downloaded:
             print(f"DOWNLOADING AUDIO FOR SONG : {self.title}")
-            DownloadManager.download_audio_from_url(url=self.url)
-            self.downloaded = True
+            if await DownloadManager.download_audio_from_url(url=self.url):
+                self.downloaded = True
+                return True
+            else:
+                print("DOWNLOAD FAILED: PROBABLY VIDEO UNAVAILABLE")
+                return False
+        return True
 
     def __str__(self):
         return f"URL: {self.url}\nTitle: {self.title}\nVideo ID: {self.video_id}\nThumbnail URL: {self.thumbnail_url}\nDuration: {self.duration}\nDownloaded: {self.downloaded}"
