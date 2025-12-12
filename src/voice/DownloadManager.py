@@ -113,6 +113,7 @@ class DownloadManager:
     async def download_audio_from_url(url):
         """
         Downloads the audio from a YouTube URL.
+        Download is performed in a separate thread to avoid blocking the main event loop.
         :param url: The URL of the YouTube video.
         """
         try:

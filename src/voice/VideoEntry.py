@@ -72,6 +72,7 @@ class VideoEntry:
         if not self.downloaded:
             print(f"DOWNLOADING AUDIO FOR SONG : {self.title}")
             if await DownloadManager.download_audio_from_url(url=self.url):
+                print("DOWNLOAD SUCCESSFUL FOR SONG : " + self.title)
                 self.downloaded = True
                 return True
             else:

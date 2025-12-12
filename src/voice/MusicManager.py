@@ -15,7 +15,6 @@ class MusicManager:
     Class for managing the actual audio playing logic
     Handles the song queue and which song to play or download next
     """
-
     INACTIVE_SECONDS_UNTIL_DISCONNECT = 300 # 5 Minutes
     inactive_time = 0
 
@@ -46,7 +45,6 @@ class MusicManager:
         Creates the music folder if it doesn't exist already.
         Used to store all cached audio files
         """
-
         if not os.path.exists(music_folder_path):
             print(f"Creating music folder at {music_folder_path}")
             os.mkdir(music_folder_path)
@@ -60,7 +58,6 @@ class MusicManager:
         :param ctx: The context in which the message should be send
         :param song: The song for which to send the message for
         """
-
         MusicManager.bot_voice_client = ctx.voice_client
 
         embed = MessageManager.get_embed(title=f"", description=f"[{song.title}]({song.url})\n{VoiceUtils.convert_seconds_to_time(song.current_playtime)} - {VoiceUtils.convert_seconds_to_time(song.duration)}")
@@ -76,7 +73,7 @@ class MusicManager:
         stop_button = discord.ui.Button(label=Emojis.STOP,style=discord.ButtonStyle.primary)
         stop_button.callback = MusicManager.stop_callback
 
-        skip_button = discord.ui.Button(label=Emojis.SKIP,style=discord.ButtonStyle.primary)
+        skip_button = discord.ui.Button(label=Emojis.SKIP,style=discord.ButtonStyle.primary,disabled=True)
         skip_button.callback = MusicManager.skip_callback
 
         shuffle_button = discord.ui.Button(label=Emojis.SHUFFLE,style=discord.ButtonStyle.red)
@@ -106,7 +103,6 @@ class MusicManager:
         """
         Delete the song message and reset embed,message,view,buttons variables
         """
-
         if MusicManager.song_message:
             await MusicManager.song_message.delete()
         MusicManager.song_embed = None
@@ -119,8 +115,18 @@ class MusicManager:
         """
         Reset the current time that the bot was inactive
         """
-
         MusicManager.inactive_time = 0
+
+    @staticmethod
+    def set_next_song():
+        """
+        Sets the next song to be played based on the current shuffle setting.
+        """
+        if MusicManager.shuffle:
+            MusicManager.next_song_index = random.randint(0,len(MusicManager.song_queue)-1)
+        else:
+            MusicManager.next_song_index = 1
+        MusicManager.next_song_entry = MusicManager.song_queue[MusicManager.next_song_index]
 
     @staticmethod
     async def next_song():
@@ -131,13 +137,14 @@ class MusicManager:
         If shuffle: The next song is a random one. Otherwise the next song is simply the next in the queue
         After starting the next song, will try to preload the next song to improve performance
         """
-
-        if not MusicManager.song_queue or len(MusicManager.song_queue) == 0:
-            await MusicManager.delete_song_message()
+        print("FINISHED ASDIOJJJJJJJJJJJJJJJJJJ")
+        if not MusicManager.song_queue or len(MusicManager.song_queue) <= 1:
+            from voice.commands.StopCommand import StopCommand
+            await StopCommand.stop(MusicManager.bot_voice_client)
             return
 
+        MusicManager.song_queue.pop(MusicManager.current_song_index)
         if len(MusicManager.song_queue) > 0:
-            MusicManager.song_queue.pop(MusicManager.current_song_index)
             if MusicManager.looping:
                 if MusicManager.current_song:
                     MusicManager.song_queue.append(MusicManager.current_song)
@@ -170,17 +177,16 @@ class MusicManager:
         Tries to preload the next song.
         If an error occurrs then we will remove the song from the queue and try to preload the next song.
         """
-
         if not MusicManager.next_song_entry:
             return
 
         result = await MusicManager.next_song_entry.download()
-        print(f"Started downloading next song in background  : {MusicManager.next_song_entry.title}")
 
         if not result:
             print(f"Error while downloading. Probably due to unavailable video. Skipping to next song.")
             MusicManager.song_queue.remove(MusicManager.next_song_entry)
-            #TODO: TRY FOR NEXT SONG / SET NEXT SONG ENTRY TO THE ACTUAL NEXT SONG
+            MusicManager.set_next_song()
+
             await MusicManager.download_next_song()
 
     @staticmethod
@@ -191,12 +197,15 @@ class MusicManager:
         :param song: The song to play
         :param force: If True then the bot will play the song directly Otherwise the song will be but into the song_queue
         """
-
         MusicManager.current_ctx = ctx
 
         if not force:
             if MusicManager.current_song:
                 MusicManager.song_queue.append(song)
+                if not MusicManager.next_song_entry:
+                    MusicManager.next_song_index = 1
+                    MusicManager.next_song_entry = MusicManager.song_queue[MusicManager.next_song_index]
+                    await MusicManager.next_song_entry.download()
                 return
             MusicManager.song_queue.append(song)
 
@@ -208,6 +217,10 @@ class MusicManager:
                 MusicManager.current_play_status = PlayStatus.PLAYING
                 if not MusicManager.song_embed:
                     await MusicManager.send_song_embed(ctx,song)
+                    if len(MusicManager.song_queue) > 1:
+                        MusicManager.next_song_index = 1
+                        MusicManager.next_song_entry = MusicManager.song_queue[1]
+                        await MusicManager.next_song_entry.download()
             case PlayResponse.ANOTHER_SONG_IS_PLAYING:
                 await MessageManager.send_error_message(ctx.channel,"Another song is already playing!")
             case PlayResponse.ERROR:
@@ -218,7 +231,6 @@ class MusicManager:
         Pause the current song and switch pause button in song embed to the resume button
         :param interaction: The interaction that invoked this command
         """
-
         from voice.commands.PauseCommand import PauseCommand
         PauseCommand.pause(MusicManager.bot_voice_client)
 
@@ -236,7 +248,6 @@ class MusicManager:
         Resume the current song an switch the resume button in the song_embed to the pause button.
         :param interaction: The interaction that invoked this command
         """
-
         from voice.commands.ResumeCommand import ResumeCommand
         ResumeCommand.resume(MusicManager.bot_voice_client)
 
@@ -263,7 +274,6 @@ class MusicManager:
         Skip the current song
         :param interaction: The interaction that invoked this command
         """
-
         if len(MusicManager.song_queue) <= 1 and not MusicManager.looping:
             await MusicManager.stop_callback(interaction)
             return
@@ -276,7 +286,6 @@ class MusicManager:
         Enables/Disables shuffling
         :param interaction: The interaction that invoked this command
         """
-
         MusicManager.shuffle = not MusicManager.shuffle
         MusicManager.song_embed_buttons["shuffle"].style = discord.ButtonStyle.green if MusicManager.shuffle else discord.ButtonStyle.red
         await interaction.response.edit_message(embed=MusicManager.song_embed,view=MusicManager.song_view)
@@ -286,7 +295,6 @@ class MusicManager:
         Enables/Disables looping
         :param interaction: The interaction that invoked this command
         """
-
         MusicManager.looping = not MusicManager.looping
         MusicManager.song_embed_buttons["loop"].style = discord.ButtonStyle.green if MusicManager.looping else discord.ButtonStyle.red
         await interaction.response.edit_message(embed=MusicManager.song_embed, view=MusicManager.song_view)
