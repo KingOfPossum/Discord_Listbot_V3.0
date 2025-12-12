@@ -22,6 +22,10 @@ class SongUpdater(commands.Cog):
 
     @tasks.loop(seconds=1,reconnect=True)
     async def update(self):
+        """
+        Updates the current song embed if there is one
+        and kicks bot from voice channel if he was inactive for too long.
+        """
         await self._update_song_embed()
         await self.check_for_inactivity()
 
@@ -36,13 +40,13 @@ class SongUpdater(commands.Cog):
         Updates the song embed. Updating the current playtime in the embed
         """
         if MusicManager.current_song and MusicManager.song_embed and MusicManager.song_message:
-            print(f"\nCurrent Song: {MusicManager.current_song.title}")
-            print(f"Song queue: {[song.title for song in MusicManager.song_queue]}")
-            print(f"Current song index: {MusicManager.current_song_index}")
-            print(f"Next song index: {MusicManager.next_song_index}")
-            print(f"Next song: {MusicManager.next_song_entry.title if MusicManager.next_song_entry else 'None'}")
-            print(f"Looping: {MusicManager.looping}")
-            print(f"Shuffle: {MusicManager.shuffle}\n")
+            #print(f"\nCurrent Song: {MusicManager.current_song.title}")
+            #print(f"Song queue: {[song.title for song in MusicManager.song_queue]}")
+            #print(f"Current song index: {MusicManager.current_song_index}")
+            #print(f"Next song index: {MusicManager.next_song_index}")
+            #print(f"Next song: {MusicManager.next_song_entry.title if MusicManager.next_song_entry else 'None'}")
+            #print(f"Looping: {MusicManager.looping}")
+            #print(f"Shuffle: {MusicManager.shuffle}\n")
 
             if MusicManager.current_play_status == PlayStatus.PLAYING:
                 MusicManager.current_song.current_playtime += 1
@@ -57,7 +61,6 @@ class SongUpdater(commands.Cog):
         Being to loong inactive results in the bot being kicked from the voice chat.
         :return:
         """
-        print(f"Inactivity check : Inactive for {MusicManager.inactive_time} seconds")
         if MusicManager.current_play_status == PlayStatus.PLAYING:
             MusicManager.reset_inactivity()
         else:

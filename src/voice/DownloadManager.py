@@ -7,6 +7,8 @@ from common.ConfigLoader import ConfigLoader
 from yt_dlp import DownloadError
 
 class DownloadManager:
+    """Class for managing the downloads of audio from YouTube"""
+
     executor = ThreadPoolExecutor(max_workers=4)
 
     youtube_options = {
