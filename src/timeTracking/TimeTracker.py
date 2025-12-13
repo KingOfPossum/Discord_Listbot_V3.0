@@ -1,6 +1,6 @@
 from common.TimeEntry import TimeEntry
 from common.UserManager import UserManager
-from database.TimeDatabase import TimeDatabase
+from database_.TimeDatabase import TimeDatabase
 from discord.ext import commands,tasks
 
 class TimeTracker(commands.Cog):

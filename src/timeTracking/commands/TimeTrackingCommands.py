@@ -1,4 +1,4 @@
-from database.DatabaseCollection import DatabaseCollection
+from database_.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from timeTracking.commands.TimeStatsCommand import TimeStatsCommand
 

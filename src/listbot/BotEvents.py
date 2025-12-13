@@ -5,7 +5,7 @@ from common.ChannelManager import ChannelManager
 from common.ConfigLoader import ConfigLoader
 from common.Replies import Replies
 from common.UserManager import UserManager
-from database.DatabaseCollection import DatabaseCollection
+from database_.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class BotEvents(commands.Cog):

@@ -6,7 +6,7 @@ from common.ConfigLoader import ConfigLoader
 from common.Emojis import Emojis
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.ListDatabase import ListDatabase
+from database_.ListDatabase import ListDatabase
 from discord.ext import commands
 
 class CompletedCommand(Command):

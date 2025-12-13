@@ -5,7 +5,7 @@ from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
-from database.ListDatabase import ListDatabase
+from database_.ListDatabase import ListDatabase
 
 class GameList:
     """

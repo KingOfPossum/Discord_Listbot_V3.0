@@ -1,4 +1,4 @@
-from database.DatabaseCollection import DatabaseCollection
+from database_.DatabaseCollection import DatabaseCollection
 from tokenSystem.commands.AddTokenCommand import AddTokenCommand
 from tokenSystem.commands.RemoveCoinCommand import RemoveCoinCommand
 from tokenSystem.commands.SetNeededCoinsCommand import SetNeededCoinsCommand

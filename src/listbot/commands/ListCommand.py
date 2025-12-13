@@ -3,7 +3,7 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.ListDatabase import ListDatabase
+from database_.ListDatabase import ListDatabase
 from discord.ext import commands
 from listbot.GameList import GameList
 

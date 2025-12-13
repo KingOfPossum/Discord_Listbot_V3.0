@@ -1,4 +1,4 @@
-from database.DatabaseCollection import DatabaseCollection
+from database_.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from listbot.commands.AddCommand import AddCommand
 from listbot.commands.CompletedCommand import CompletedCommand

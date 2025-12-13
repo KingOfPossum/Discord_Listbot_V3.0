@@ -4,7 +4,7 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.TokensDatabase import TokensDatabase
+from database_.TokensDatabase import TokensDatabase
 from discord.ext import commands
 
 class ViewTokensCommand(Command):

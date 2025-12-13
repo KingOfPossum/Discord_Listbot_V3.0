@@ -1,5 +1,5 @@
 from common.BacklogEntry import BacklogEntry
-from database.Database import Database
+from database_.Database import Database
 
 class BacklogDatabase(Database):
     """

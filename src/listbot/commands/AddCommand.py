@@ -5,9 +5,9 @@ from common.ConfigLoader import ConfigLoader
 from common.GameCreationModal import GameCreationModal
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.BacklogDatabase import BacklogDatabase
-from database.ListDatabase import ListDatabase
-from database.TokensDatabase import TokensDatabase
+from database_.BacklogDatabase import BacklogDatabase
+from database_.ListDatabase import ListDatabase
+from database_.TokensDatabase import TokensDatabase
 from discord.ext import commands
 
 class AddCommand(Command):

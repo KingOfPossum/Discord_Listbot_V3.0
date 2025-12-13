@@ -10,7 +10,7 @@ from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
 from common.Wrapper import Wrapper
-from database.ListDatabase import ListDatabase
+from database_.ListDatabase import ListDatabase
 from discord.ext import commands
 from Game import Game
 

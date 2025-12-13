@@ -3,7 +3,7 @@ from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
 from backlog.commands.GetRecommendationCommand import GetRecommendationCommand
 from backlog.commands.RecommendCommand import RecommendCommand
 from backlog.commands.ViewBacklogCommand import ViewBacklogCommand
-from database.DatabaseCollection import DatabaseCollection
+from database_.DatabaseCollection import DatabaseCollection
 
 class BacklogCommands:
     """

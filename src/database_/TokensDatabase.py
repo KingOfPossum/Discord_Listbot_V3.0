@@ -2,7 +2,7 @@ import discord
 
 from common.TokensEntry import TokensEntry
 from common.UserManager import UserManager
-from database.Database import Database
+from database_.Database import Database
 
 class TokensDatabase(Database):
     """
