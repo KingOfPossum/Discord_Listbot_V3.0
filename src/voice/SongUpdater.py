@@ -22,6 +22,10 @@ class SongUpdater(commands.Cog):
 
     @tasks.loop(seconds=1,reconnect=True)
     async def update(self):
+        """
+        Updates the current song embed if there is one
+        and kicks bot from voice channel if he was inactive for too long.
+        """
         await self._update_song_embed()
         await self.check_for_inactivity()
 
@@ -48,8 +52,13 @@ class SongUpdater(commands.Cog):
                 MusicManager.current_song.current_playtime += 1
                 MusicManager.song_embed.description = f"[{MusicManager.current_song.title}]({MusicManager.current_song.url})\n{VoiceUtils.convert_seconds_to_time(MusicManager.current_song.current_playtime)} - {VoiceUtils.convert_seconds_to_time(MusicManager.current_song.duration)}"
                 MusicManager.song_embed.set_thumbnail(url=MusicManager.current_song.thumbnail_url)
-                MusicManager.song_embed.set_field_at(0, name = f"Songs in Queue: {len(MusicManager.song_queue)}",value = f"Next Song: {MusicManager.next_song_entry.title if MusicManager.next_song_entry else ''}", inline=False)
-                await MusicManager.song_message.edit(embed=MusicManager.song_embed)
+                MusicManager.song_embed.set_field_at(0, name = f"Songs in Queue: {len(MusicManager.song_queue) - 1}" if len(MusicManager.song_queue) > 1 else "",value = f"Next Song: {MusicManager.next_song_entry.title}" if MusicManager.next_song_entry else "", inline=False)
+
+                if MusicManager.next_song_entry:
+                    MusicManager.song_embed_buttons["skip"].disabled = False if MusicManager.next_song_entry.downloaded else True
+                else:
+                    MusicManager.song_embed_buttons["skip"].disabled = True
+                await MusicManager.song_message.edit(embed=MusicManager.song_embed,view=MusicManager.song_view)
 
     async def check_for_inactivity(self):
         """
@@ -57,7 +66,6 @@ class SongUpdater(commands.Cog):
         Being to loong inactive results in the bot being kicked from the voice chat.
         :return:
         """
-        print(f"Inactivity check : Inactive for {MusicManager.inactive_time} seconds")
         if MusicManager.current_play_status == PlayStatus.PLAYING:
             MusicManager.reset_inactivity()
         else:

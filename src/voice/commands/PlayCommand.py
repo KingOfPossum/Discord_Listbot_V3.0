@@ -25,23 +25,27 @@ class PlayCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are not allowed to use this command.")
             return
 
+        # Try joining the channel of the user
         response = await JoinCommand.join(ctx.author.voice,ctx.voice_client)
 
+        # If bot is in another channel or an error occurred during joining return
         if not response == JoinResponse.JOINED and not response == JoinResponse.ALREADY_IN_CHANNEL:
             await MessageManager.send_error_message(ctx.channel,"Error while joining channel!")
             return
 
         url = BotUtils.get_message_content(ctx.message)
 
+        # User entered a playlist
         if 'list' in url:
             songs = DownloadManager.search_for_playlist(url)
             if MusicManager.song_queue is None or len(MusicManager.song_queue) == 0:
-                await MusicManager.play_song(ctx,songs[0])
                 for i in range(1,len(songs)):
                     if not songs[i].title in ["[Deleted video]","[Private video]"]:
                         MusicManager.song_queue.append(songs[i])
+                await MusicManager.play_song(ctx,songs[0])
             return
 
+        # User entered a video
         video = DownloadManager.search_for_video(url)
 
         await MusicManager.play_song(ctx,video)

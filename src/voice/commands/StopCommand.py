@@ -48,7 +48,11 @@ class StopCommand(Command):
         try:
             MusicManager.current_play_status = PlayStatus.NOTHING
             MusicManager.current_song = None
+            MusicManager.next_song_entry = None
+            MusicManager.current_song_index = 0
+            MusicManager.next_song_index = 0
             MusicManager.song_queue = []
+            MusicManager.current_ctx = None
             await MusicManager.delete_song_message()
             bot_client.stop()
             return StopResponse.STOPPED_SONG
