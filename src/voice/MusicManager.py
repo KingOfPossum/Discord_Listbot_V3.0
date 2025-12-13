@@ -137,7 +137,6 @@ class MusicManager:
         If shuffle: The next song is a random one. Otherwise the next song is simply the next in the queue
         After starting the next song, will try to preload the next song to improve performance
         """
-        print("FINISHED ASDIOJJJJJJJJJJJJJJJJJJ")
         if not MusicManager.song_queue or len(MusicManager.song_queue) <= 1:
             from voice.commands.StopCommand import StopCommand
             await StopCommand.stop(MusicManager.bot_voice_client)
@@ -160,7 +159,11 @@ class MusicManager:
                 MusicManager.current_song_index = 0
 
             next_song = MusicManager.song_queue[MusicManager.current_song_index]
-            MusicManager.next_song_entry = MusicManager.song_queue[MusicManager.next_song_index]
+
+            if len(MusicManager.song_queue) > 1:
+                MusicManager.next_song_entry = MusicManager.song_queue[MusicManager.next_song_index]
+            else:
+                MusicManager.next_song_entry = None
 
             MusicManager.current_song = None
             MusicManager.current_play_status = PlayStatus.NOTHING

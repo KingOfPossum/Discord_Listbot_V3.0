@@ -52,6 +52,7 @@ class StopCommand(Command):
             MusicManager.current_song_index = 0
             MusicManager.next_song_index = 0
             MusicManager.song_queue = []
+            MusicManager.current_ctx = None
             await MusicManager.delete_song_message()
             bot_client.stop()
             return StopResponse.STOPPED_SONG
