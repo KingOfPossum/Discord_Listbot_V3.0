@@ -5,7 +5,7 @@ from backlog.commands.BacklogCommands import BacklogCommands
 from common.BootLoop import BotLoop
 from common.ConfigLoader import ConfigLoader
 from common.Wrapper import Wrapper
-from database_.DatabaseCollection import DatabaseCollection
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from general.commands.GeneralCommands import GeneralCommands
 from listbot.BotEvents import BotEvents

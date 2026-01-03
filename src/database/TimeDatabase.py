@@ -1,5 +1,5 @@
 from common.TimeEntry import TimeEntry
-from database_.Database import Database
+from database.Database import Database
 
 class TimeDatabase(Database):
     """

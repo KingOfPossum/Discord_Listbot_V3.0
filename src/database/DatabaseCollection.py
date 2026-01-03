@@ -1,9 +1,9 @@
 import os
 
-from database_.BacklogDatabase import BacklogDatabase
-from database_.ListDatabase import ListDatabase
-from database_.TimeDatabase import TimeDatabase
-from database_.TokensDatabase import TokensDatabase
+from database.BacklogDatabase import BacklogDatabase
+from database.ListDatabase import ListDatabase
+from database.TimeDatabase import TimeDatabase
+from database.TokensDatabase import TokensDatabase
 
 class DatabaseCollection:
     """

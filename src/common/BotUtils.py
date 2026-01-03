@@ -3,7 +3,7 @@ import discord
 from common.ConfigLoader import ConfigLoader
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
-from database_.ListDatabase import ListDatabase
+from database.ListDatabase import ListDatabase
 
 class BotUtils:
     @staticmethod

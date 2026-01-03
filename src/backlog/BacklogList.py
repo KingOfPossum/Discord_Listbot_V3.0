@@ -3,7 +3,7 @@ import discord
 from common.BacklogEntry import BacklogEntry
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database_.BacklogDatabase import BacklogDatabase
+from database.BacklogDatabase import BacklogDatabase
 from discord import User
 
 class BacklogList:

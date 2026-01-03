@@ -6,7 +6,7 @@ from common.MessageManager import MessageManager
 from common.TimeEntry import TimeEntry
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
-from database_.TimeDatabase import TimeDatabase
+from database.TimeDatabase import TimeDatabase
 from discord.ext import commands
 
 class TimeStatsCommand(Command):

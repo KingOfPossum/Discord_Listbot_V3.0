@@ -7,9 +7,9 @@ from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.Wrapper import Wrapper
-from database_.BacklogDatabase import BacklogDatabase
-from database_.ListDatabase import ListDatabase
-from database_.TokensDatabase import TokensDatabase
+from database.BacklogDatabase import BacklogDatabase
+from database.ListDatabase import ListDatabase
+from database.TokensDatabase import TokensDatabase
 from Game import Game
 from listbot.BotEvents import BotEvents
 from listbot.commands.CompletedCommand import CompletedCommand

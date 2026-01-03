@@ -1,5 +1,5 @@
 from common.GameEntry import GameEntry
-from database_.Database import Database
+from database.Database import Database
 
 class ListDatabase(Database):
     """
