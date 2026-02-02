@@ -1,3 +1,5 @@
+from dataclasses import astuple
+
 from common.GameEntry import GameEntry
 from database.Database import Database
 
@@ -6,10 +8,24 @@ class ListDatabase(Database):
     A class to handle database operations for a list of games using SQLite3.
     """
     def __init__(self,folder_path: str):
+        schema = """
+        game_id INTEGER AUTOINCREMENT,
+        user_id INTEGER,
+        name TEXT NOT NULL,
+        date DATE NOT NULL,
+        console TEXT NOT NULL,
+        rating INT NOT NULL CHECK(rating BETWEEN 0 AND 100),
+        review TEXT,
+        replay INTEGER DEFAULT 0 CHECK(replay IN (0, 1)),
+        hundred_percent INTEGER DEFAULT 0 CHECK(hundred_percent IN (0, 1)),
+        PRIMARY KEY (game_id),
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
+        UNIQUE (user_id, name, date)
+        """
+
         super().__init__(folder_path=folder_path,
-                         database_name="list",
-                         table_name="games",
-                         params=[("name","TEXT"), ("user","TEXT"),("date","DATE"),("console","TEXT"),("rating","INT"),("review","TEXT"),("cover","TEXT"),("replay","INTEGER DEFAULT 0"),("hundred_percent","INTEGER DEFAULT 0")])
+                         table_name="games_list",
+                         schema=schema)
 
     def game_already_in_database(self,entry: GameEntry) -> bool:
         """
@@ -18,68 +34,84 @@ class ListDatabase(Database):
         :param entry: The GameEntry object to be checked.
         :return: True if the game entry is already in the database, False otherwise.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND date = ? AND user = ?"
-        data = self.sql_execute_fetchall(query, (entry.name, entry.date, entry.user))
+        query = f"SELECT * FROM {self.table_name} WHERE game_id = ?"
+        data = self.sql_execute_fetchall(query, (entry.game_id,))
         return len(data) > 0
 
-    def get_game_entry(self,name: str, user: str) -> GameEntry | None:
+    def get_game_entry(self,name: str, user_id: int) -> GameEntry | None:
         """
         Retrieves a game entry from the database based on the name and user.
         :param name: The name of the game.
-        :param user: The user who added the game.
+        :param user_id: The ID of the user who added the game.
         :return: A GameEntry object containing the details of the game.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND user = ?"
-        data = self.sql_execute_fetchall(query, (name, user))
+        query = f"SELECT * FROM {self.table_name} WHERE user_id = ? AND name = ?"
+        data = self.sql_execute_fetchall(query, (user_id, name))
 
-        if data:
-            row = data[0]
-            return GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4],review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8]))
+        if not data:
+            return None
 
-        return None
+        return GameEntry(*data[0])
 
-    def get_all_instances_of_game(self,name: str, user: str) -> list[GameEntry] | None:
+    def get_game_entry_by_id(self,game_id: int) -> GameEntry | None:
+        """
+        Retrieves a game entry from the database based on the unique game ID.
+        :param game_id: The unique ID of the game.
+        :return: The GameEntry object containing the details of the game, or None if not found.
+        """
+        query = f"SELECT * FROM {self.table_name} WHERE game_id = ?"
+        data = self.sql_execute_fetchall(query, (game_id,))
+
+        if not data:
+            return None
+
+        return GameEntry(*data[0])
+
+    def get_all_instances_of_game(self,name: str, user_id: int) -> list[GameEntry] | None:
         """
         Retrieves all instances of a game entry from the database based on the name and user sorted by the date they were added.
         :param name: Name of the game
-        :param user: Name of the user who added the game
+        :param user_id:The ID of the user who added the game
         :return: A list of GameEntry objects containing the details of all instances of the game added by the user sorted by date.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE name = ? AND user = ? ORDER BY date DESC"
-        data = self.sql_execute_fetchall(query, (name, user))
+        query = f"SELECT * FROM {self.table_name} WHERE user_id = ? AND name = ? ORDER BY date DESC"
+        data = self.sql_execute_fetchall(query, (user_id, name))
 
-        return [GameEntry(name=row[0],user=row[1],date=row[2],console=row[3],rating=row[4],review=row[5],replayed=bool(row[7]),hundred_percent=bool(row[8])) for row in data] if data else None
+        return [GameEntry(*row) for row in data] if data else None
 
-    def get_all_game_entries(self,user_name:str=None,year=None) -> list[GameEntry]:
+    def get_all_game_entries(self,user_id:int=None,year=None) -> list[GameEntry]:
         """
         Retrieves all game entries from the database.
-        :param user_name: The name of the user whose game entries are to be retrieved.
-        :param year: The year to filter the game entries. If None, retrieves all entries.
+        :param user_id: The ID of the user whose game entries are to be retrieved. If None retrieves all users' entries.
+        :param year: The year to filter the game entries. If None, retrieves the entries from all years.
         :return: A list of all GameEntry objects in the database.
         """
         year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
-        user_filter = f"user = '{user_name}'" if user_name else "1=1"
+        user_filter = f"user_id = '{user_id}'" if user_id else "1=1"
 
         query = f"SELECT * FROM {self.table_name} WHERE {year_filter} AND {user_filter}"
         data = self.sql_execute_fetchall(query)
 
-        return [GameEntry(name=row[0], user=row[1], date=row[2], console=row[3], rating=row[4], review=row[5], replayed=bool(row[7]), hundred_percent=bool(row[8])) for row in data]
+        return [GameEntry(*row) for row in data]
 
-    def put_game(self, entry: GameEntry,old_entry: GameEntry = None):
+    def put_game(self, entry: GameEntry):
         """
-        If entry is already in the database, it will update the entry.
-        Otherwise, it will insert the entry into the database.
-        :param entry: The GameEntry object to be added to the database.
-        :param old_entry : The old GameEntry object of a game that is being updated.
-        If this is None, the entry will be inserted as a new game.
+        Adds a game entry into the database.
+        If the game already exists, updates its information.
+        :param entry: The GameEntry object containing the details of the game to be added.
         """
-        if old_entry is not None and self.game_already_in_database(old_entry):
-            self.remove_entry(old_entry)
-
-        query = f"INSERT INTO {self.table_name} (name, user, date, console, rating, review, replay, hundred_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        params = (entry.name, entry.user, old_entry.date if old_entry else entry.date, entry.console, entry.rating, entry.review, int(entry.replayed), int(entry.hundred_percent))
-
-        self.sql_execute(query, params)
+        query = f"""
+            INSERT INTO {self.table_name} (user_id,name,date,console,rating,review,replay,hundred_percent)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (user_id, name, date)
+            DO UPDATE SET
+                console = excluded.console,
+                rating = excluded.rating,
+                review = excluded.review,
+                replay = excluded.replay,
+                hundred_percent = excluded.hundred_percent
+            """
+        self.sql_execute(query, astuple(entry)[1:])
 
     def remove_entry(self,entry: GameEntry):
         """

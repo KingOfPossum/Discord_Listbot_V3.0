@@ -1,38 +1,32 @@
 import sqlite3
 
 from abc import abstractmethod
-from common.TimeUtils import TimeUtils
 
 class Database:
     """A class to handle database operations using SQLite3."""
 
-    def __init__(self, folder_path: str,database_name: str,table_name: str, params: list[tuple]):
+    def __init__(self, folder_path: str,table_name: str, schema: str):
         """
         Initializes the database with the specified folder path, database name, and parameters.
         It will set the path for the database by concatenating the folder path, database name, and the current year.
         :param folder_path: Path to the databases' folder.
-        :param database_name: The name of the database to be created.
-        :param params: A list of tuples where each tuple contains the column name and its data type for the database table.
+        :param schema: The schema of the table to be created.
         """
         self.table_name = table_name
-        self._path = folder_path + database_name + ".db"
-        self._init_database(table_name,params)
+        self._path = folder_path + "database.db"
+        self._init_database(table_name,schema)
         self.print_database()
 
-    def _init_database(self,table_name: str,params: list[tuple]):
+    def _init_database(self,table_name: str,schema: str):
         """
         Initializes the database by creating a table with the specified name and parameters if it does not already exist.
         The parameters should be a list of tuples where each tuple contains the column name and its data type.
         :param table_name: The name of the table to be created.
-        :param params: The parameter for the table to be created, in the format [(column_name, data_type), ...].
+        :param schema: The schema of the table to be created.
         """
-        print("Initializing database at: " + self._path)
+        print(f"Initializing database {self.table_name}...")
 
-        paramList = []
-        for param in params:
-            paramList.append(f"{param[0]} {param[1]}")
-
-        create_table_command = f'CREATE TABLE IF NOT EXISTS {table_name} (' + ', '.join(paramList) + ')'
+        create_table_command = f'CREATE TABLE IF NOT EXISTS {table_name} ({schema})'
 
         self.sql_execute(create_table_command)
 

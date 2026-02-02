@@ -4,6 +4,7 @@ from database.BacklogDatabase import BacklogDatabase
 from database.ListDatabase import ListDatabase
 from database.TimeDatabase import TimeDatabase
 from database.TokensDatabase import TokensDatabase
+from database.UserDatabase import UserDatabase
 
 class DatabaseCollection:
     """
@@ -19,10 +20,17 @@ class DatabaseCollection:
         self.create_database_folder_if_not_exists(database_folder_path)
         self.__database_folder_path = database_folder_path
 
+        self.user_database: UserDatabase = None
         self.list_database: ListDatabase = None
         self.tokens_database: TokensDatabase = None
         self.time_database: TimeDatabase = None
         self.backlog_database: BacklogDatabase = None
+
+    def init_user_database(self):
+        """
+        Initializes the user database.
+        """
+        self.user_database: UserDatabase = UserDatabase(self.__database_folder_path)
 
     def init_list_database(self):
         """
