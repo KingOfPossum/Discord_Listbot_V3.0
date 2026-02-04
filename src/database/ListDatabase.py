@@ -34,18 +34,20 @@ class ListDatabase(Database):
         :param entry: The GameEntry object to be checked.
         :return: True if the game entry is already in the database, False otherwise.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE game_id = ?"
-        data = self.sql_execute_fetchall(query, (entry.game_id,))
+        query = f"SELECT * FROM {self.table_name} WHERE user_id = ? AND name = ? AND date = ?"
+        data = self.sql_execute_fetchall(query, (entry.user_id,entry.name,entry.date))
+
         return len(data) > 0
 
     def get_game_entry(self,name: str, user_id: int) -> GameEntry | None:
         """
         Retrieves a game entry from the database based on the name and user.
+        Will return the newest added entry if game exists multiple times.
         :param name: The name of the game.
         :param user_id: The ID of the user who added the game.
         :return: A GameEntry object containing the details of the game.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE user_id = ? AND name = ?"
+        query = f"SELECT * FROM {self.table_name} WHERE user_id = ? AND name = ? ORDER BY game_id DESC"
         data = self.sql_execute_fetchall(query, (user_id, name))
 
         if not data:
@@ -82,10 +84,12 @@ class ListDatabase(Database):
     def get_all_game_entries(self,user_id:int=None,year=None) -> list[GameEntry]:
         """
         Retrieves all game entries from the database.
+        Optionally filters for specific users or a specific year if userid/year is provided.
         :param user_id: The ID of the user whose game entries are to be retrieved. If None retrieves all users' entries.
         :param year: The year to filter the game entries. If None, retrieves the entries from all years.
         :return: A list of all GameEntry objects in the database.
         """
+        #query for year and user if year/user is given otherwise a query that is always true so that the real query still works
         year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
         user_filter = f"user_id = '{user_id}'" if user_id else "1=1"
 
@@ -118,39 +122,46 @@ class ListDatabase(Database):
         Removes a game entry from the database based on the name, user, and date.
         :param entry: The GameEntry object to be removed from the database.
         """
-        query = f"DELETE FROM {self.table_name} WHERE name = ? AND user = ? AND date = ?"
-        self.sql_execute(query, (entry.name, entry.user, entry.date))
+        query = f"DELETE FROM {self.table_name} WHERE name = ? AND user_id = ? AND date = ?"
+        self.sql_execute(query, (entry.name, entry.user_id, entry.date))
 
-    def get_years(self,user: str = None) -> list[str]:
+    def remove_entry_by_id(self,game_id: int):
+        """
+        Removes a game entry from the database based on its id.
+        :param game_id: The ID of the game entry to be removed.
+        """
+        query = f"DELETE FROM {self.table_name} WHERE game_id = ?"
+        self.sql_execute(query,(game_id,))
+
+    def get_years(self,user_id: int = None) -> list[str]:
         """
         Retrieves a list of distinct years in which the user has added games.
-        :param user: The name of the user whose game years are to be retrieved, if user is None consider all games added by all users in total.
+        :param user_id: The ID of the user whose game years are to be retrieved, if user is None consider all games added by all users in total resulting in retrieving all years that exist in the database.
         :return: A list of years as strings.
         """
-        if user:
-            query = f"SELECT DISTINCT STRFTIME('%Y',date) AS year FROM {self.table_name} WHERE user = ? ORDER BY year DESC"
-            data = self.sql_execute_fetchall(query, (user,))
-        else:
-            query = f"SELECT DISTINCT STRFTIME('%Y',date) AS year FROM {self.table_name} ORDER BY year DESC"
-            data = self.sql_execute_fetchall(query)
+        user_filter = f"user_id = '{user_id}'" if user_id is not None else "1=1"
+
+        query = f"SELECT DISTINCT STRFTIME('%Y',date) AS year FROM {self.table_name} WHERE {user_filter} ORDER BY year DESC"
+        data = self.sql_execute_fetchall(query)
 
         return [row[0] for row in data if row[0] is not None]
 
-    def does_user_have_entries(self,user: str) -> bool:
+    def does_user_have_entries(self,user_id: int) -> bool:
         """
         Checks if a user has any game entries in the database.
-        :param user: The user to check for
+        :param user_id: The ID of the user to check for
         :return: True if the user has at least one game entry, False otherwise.
         """
-        query = f"SELECT * FROM {self.table_name} WHERE user = ?"
-        data = self.sql_execute_fetchall(query, (user,))
+        query = f"SELECT * FROM {self.table_name} WHERE user_id = ?"
+        data = self.sql_execute_fetchall(query, (user_id,))
+
         return len(data) > 0
 
     def print_database(self):
         """Prints the contents of the database to the console."""
         print("-"*100 + "\nDatabase: " + self._path + "\n" + "-"*100)
 
-        data = self.sql_execute_fetchall("SELECT * FROM games")
+        data = self.sql_execute_fetchall(f"SELECT * FROM {self.table_name}")
 
         print("Database contains " + str(len(data)) + " entries:")
 

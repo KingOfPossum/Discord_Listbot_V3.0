@@ -54,14 +54,14 @@ class UserDatabase(Database):
         """
         query = f"""
         INSERT INTO {self.table_name} (user_id, user_name, display_name)
-        VALUES ({user.user_id}, {user.user_name}, {user.display_name})
+        VALUES (?,?,?)
         ON CONFLICT (user_id)
         DO UPDATE SET
             user_name = excluded.user_name,
             display_name = excluded.display_name
         """
 
-        self.sql_execute(query)
+        self.sql_execute(query,(user.user_id,user.user_name,user.display_name))
 
     def print_database(self):
         """

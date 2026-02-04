@@ -34,7 +34,7 @@ class BotEvents(commands.Cog):
         This will print a message to the console indicating that the bot is ready.
         """
         print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})\n")
-        UserManager.init(self.__bot)
+        UserManager.init(self.__bot,self.databases.user_database)
         await ChannelManager.init(self.__bot)
         self.databases.init_tokens_database()
 

@@ -1,5 +1,7 @@
-from discord import Member
 from common.ConfigLoader import ConfigLoader
+from common.UserEntry import UserEntry
+from database.UserDatabase import UserDatabase
+from discord import Member
 from discord.ext.commands import Bot
 
 class UserManager:
@@ -11,12 +13,14 @@ class UserManager:
     bot_replies_users: set[Member] = set()
 
     @staticmethod
-    def init(bot: Bot):
+    def init(bot: Bot, user_database: UserDatabase):
         """
         Initializes the UserManager by loading the accepted users from the configuration.
         if configuration None or empty, it will set accepted_users to an empty set.
         if configuration is "all", it will set accepted_users to all users in the bot's guilds.
+        Will also update the user_database to contain all accepted users.
         :param bot: The bot instance to initialize the UserManager with, used to determine all users which the bot can see.
+        :param user_database: The UserDatabase, needed to update all users into the database.
         """
         accepted_users_config = ConfigLoader.get_config().accepted_users
         UserManager.accepted_users = UserManager._get_users_from_config(accepted_users_config, bot)
@@ -24,11 +28,14 @@ class UserManager:
         bot_replies_users_config = ConfigLoader.get_config().bot_replies_users
         UserManager.bot_replies_users = UserManager._get_users_from_config(bot_replies_users_config, bot)
 
+        for user in UserManager.accepted_users:
+            user_database.add_user(UserEntry(*(user.id,user.name,user.display_name)))
+
         print(f"UserManager initialized with accepted users: {UserManager.accepted_users}")
         print(f"UserManager initialized with bot replies users: {UserManager.bot_replies_users}\n")
 
     @staticmethod
-    def _get_users_from_config(config_value, bot):
+    def _get_users_from_config(config_value: set[Member], bot: Bot):
         if config_value is None:
             return set()
         elif config_value == {"all"}:

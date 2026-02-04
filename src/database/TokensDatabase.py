@@ -10,7 +10,6 @@ class TokensDatabase(Database):
     """
     def __init__(self,folder_path: str):
         super().__init__(folder_path=folder_path,
-                         database_name="tokens",
                          table_name="tokens",
                          params=[("user","TEXT"), ("tokens","INT DEFAULT 0"),("coins","INT DEFAULT 0"),("needed_tokens","INT DEFAULT 3")])
 
