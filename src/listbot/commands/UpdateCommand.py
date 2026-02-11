@@ -36,6 +36,8 @@ class UpdateCommand(Command):
 
         game_name, game_entry = game
 
+        print(game_entry)
+
         async def update_button_callback(interaction: discord.Interaction):
             modal = GameCreationModal(list_database=self.database, token_database=None,game_entry=game_entry)
             await interaction.response.send_modal(modal)

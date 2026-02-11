@@ -7,9 +7,7 @@ class UserEntry:
     display_name: str
 
     def __str__(self) -> str:
-        return f"""
-                UserEntry:\n
-                    ID: {self.user_id}\n
-                    User Name: {self.user_name}\n
-                    Display Name: {self.display_name}
-                """
+        return f"UserEntry:\n" +\
+                f"  ID: {self.user_id}\n" +\
+                f"  User Name: {self.user_name}\n" +\
+                f"  Display Name: {self.display_name}\n"

@@ -34,7 +34,12 @@ class RecommendCommand(Command):
             await MessageManager.send_error_message(ctx.channel, f"User {args[-1]} is no valid user.")
             return
 
-        entry = BacklogEntry(game,UserManager.get_user_name(user),ctx.author.name)
+        # Accept both username and display name for the user
+        user_entry = UserManager.get_user_entry(user_name=user)
+        if not user_entry:
+            user_entry = UserManager.get_user_entry(display_name=user)
+
+        entry = BacklogEntry(game,user_entry.user_name,ctx.author.name)
         self.backlog_database.add_entry(entry)
 
         await MessageManager.send_message(ctx.channel, f"Recommended **{game}** to **{user}**.")

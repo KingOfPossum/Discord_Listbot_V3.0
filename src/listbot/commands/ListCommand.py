@@ -35,8 +35,12 @@ class ListCommand(Command):
                 await MessageManager.send_error_message(ctx.channel,"the Provided User is Not an Legal User")
                 return
 
-            user = UserManager.get_user_name(user)
-            game_list = GameList(self.database,ctx,user=user)
+            # Accept both username and display name for the user
+            user_entry = UserManager.get_user_entry(user_name=user)
+            if not user_entry:
+                user_entry = UserManager.get_user_entry(display_name=user)
+
+            game_list = GameList(self.database,ctx,user=user_entry.user_name)
 
         await game_list.send_list(ctx.guild)
 

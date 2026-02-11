@@ -36,7 +36,7 @@ class BotEvents(commands.Cog):
         print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})\n")
         UserManager.init(self.__bot,self.databases.user_database)
         await ChannelManager.init(self.__bot)
-        self.databases.init_tokens_database()
+        #self.databases.init_tokens_database()
 
     @commands.Cog.listener()
     async def on_message(self, message):

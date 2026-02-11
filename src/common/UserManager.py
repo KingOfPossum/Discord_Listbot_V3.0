@@ -11,6 +11,7 @@ class UserManager:
     """
     accepted_users: set[Member] = set()
     bot_replies_users: set[Member] = set()
+    user_database: UserDatabase = None
 
     @staticmethod
     def init(bot: Bot, user_database: UserDatabase):
@@ -28,6 +29,7 @@ class UserManager:
         bot_replies_users_config = ConfigLoader.get_config().bot_replies_users
         UserManager.bot_replies_users = UserManager._get_users_from_config(bot_replies_users_config, bot)
 
+        UserManager.user_database = user_database
         for user in UserManager.accepted_users:
             user_database.add_user(UserEntry(*(user.id,user.name,user.display_name)))
 
@@ -59,25 +61,20 @@ class UserManager:
         return False
 
     @staticmethod
-    def get_display_name(user_name: str) -> str | None:
+    def get_user_entry(user_id:int = None, user_name:str = None, display_name:str = None) -> UserEntry | None:
         """
-        Gets the display name of a user by their username.
-        :param user_name: The name of the user to get the display name for.
-        :return: The display name of the user, or None if the user is not found.
+        Gets a UserEntry object for a user based on their ID, username, or display name from the UserDatabase.
+        :param user_id: The ID of the user to get the UserEntry for.
+        :param user_name: The username of the user to get the UserEntry for.
+        :param display_name: The display name of the user to get the UserEntry for.
+        :return: A UserEntry object containing the user's information, or None if the user is not found.
         """
-        for member in UserManager.accepted_users:
-            if member.name == user_name or member.display_name == user_name:
-                return member.display_name
-        return None
-
-    @staticmethod
-    def get_user_name(display_name: str) -> str | None:
-        """
-        Gets the username of a user by their display name.
-        :param display_name: The display name of the user to get the username for.
-        :return: The username of the user, or None if the user is not found.
-        """
-        for member in UserManager.accepted_users:
-            if member.name == display_name or member.display_name == display_name:
-                return member.name
+        if user_id:
+            return UserManager.user_database.get_user_by_id(user_id)
+        if user_name:
+            ids = [member.id for member in UserManager.accepted_users if member.name == user_name]
+            return UserManager.get_user_entry(user_id = ids[0]) if len(ids) > 0 else None
+        if display_name:
+            ids = [member.id for member in UserManager.accepted_users if member.display_name == display_name]
+            return UserManager.get_user_entry(user_id = ids[0]) if len(ids) > 0 else None
         return None

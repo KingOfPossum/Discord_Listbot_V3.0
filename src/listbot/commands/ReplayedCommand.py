@@ -38,7 +38,7 @@ class ReplayedCommand(Command):
         new_game_entry.replayed = not old_game_entry.replayed
         print(f"Replayed status changed to: {new_game_entry.replayed}\n")
 
-        database.put_game(new_game_entry,old_game_entry)
+        database.put_game(new_game_entry)
 
         return new_game_entry
 

@@ -25,24 +25,24 @@ class BotUtils:
         return ""
 
     @staticmethod
-    async def game_exists(game_name: str,database: ListDatabase,user: str = None,ctx: discord.Interaction = None,interaction: discord.Interaction = None) -> tuple[str,GameEntry]:
+    async def game_exists(game_name: str,database: ListDatabase,user_id: int = None,ctx: discord.Interaction = None,interaction: discord.Interaction = None) -> tuple[str,GameEntry]:
         """
         Checks if a game exists in the database.
         :param ctx: The context in which the command was invoked
         :param interaction: The interaction object if the command was invoked through an interaction.
         :param game_name: The name of the game to check.
         :param database: The database instance to check for the game entry.
-        :param user: The username of the user who owns the game entry, if applicable.
+        :param user_id: The ID of the user who owns the game entry, if applicable.
         :return: Tuple containing the game name and the GameEntry object if it exists, otherwise None.
         """
         if ctx:
-            if user is None:
-                user = ctx.author.name
-            game_entry = database.get_game_entry(game_name, user)
+            if user_id is None:
+                user_id = ctx.author.id
+            game_entry = database.get_game_entry(game_name, user_id)
         elif interaction:
-            if user is None:
-                user = interaction.user.name
-            game_entry = database.get_game_entry(game_name, user)
+            if user_id is None:
+                user_id = interaction.user.id
+            game_entry = database.get_game_entry(game_name, user_id)
         else:
             raise ValueError("Either ctx or interaction must be provided")
 

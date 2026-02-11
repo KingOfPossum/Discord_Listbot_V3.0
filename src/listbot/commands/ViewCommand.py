@@ -72,9 +72,21 @@ class ViewCommand(Command):
             user = None
             game_name = " ".join(args)
 
-        instances = self.database.get_all_instances_of_game(game_name,user if user else ctx.author.name)
+        # Accept both username and display name to find the user
+        user_entry = UserManager.get_user_entry(user_name=user if user else ctx.author.name)
+        if not user_entry:
+            user_entry = UserManager.get_user_entry(display_name=user if user else ctx.author.display_name)
+
+        if not user_entry:
+            return
+
+        print(user_entry)
+
+        instances = self.database.get_all_instances_of_game(game_name,user_entry.user_id)
         if not instances:
             return
+
+        print(len(instances))
 
         game_entry_index = 0
         game_entry = instances[game_entry_index]

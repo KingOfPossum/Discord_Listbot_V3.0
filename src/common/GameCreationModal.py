@@ -60,21 +60,19 @@ class GameCreationModal(discord.ui.Modal):
         try:
             rating = int(self.children[2].value)
         except ValueError:
-            await interaction.response.defer()
             await MessageManager.send_error_message(interaction.channel,"please Provide a valid rating (0-100) as an number")
             return False
 
         if rating < 0 or rating > 100:
-            await interaction.response.defer()
             await MessageManager.send_error_message(interaction.channel,"please Provide a rating between 0 and 100")
             return False
         return True
 
-    def _to_game_entry(self, user:str):
+    def _to_game_entry(self, user_id:int):
         """
         Converts the modal input fields into a GameEntry object.
         This method will create a new GameEntry object with the values provided in the modal fields.
-        :param user: The username of the user who is creating the game entry.
+        :param user_id: The ID of the user who is creating the game entry.
         :return: The created GameEntry object with the provided values.
         """
         game_name = self.children[0].value
@@ -82,9 +80,11 @@ class GameCreationModal(discord.ui.Modal):
         console = self.children[1].value
         rating = int(self.children[2].value)
         review = self.children[3].value
+        replayed = False if not self.game_entry else self.game_entry.replayed
+        completed = False if not self.game_entry else self.game_entry.hundred_percent
 
-        return GameEntry(name=game_name, user=user, date=date, console=console, rating=rating,
-                               review=review, replayed=False, hundred_percent=False)
+        return GameEntry(game_id=-1,name=game_name, user_id=user_id, date=date, console=console, rating=rating,
+                               review=review, replayed=replayed, hundred_percent=completed)
 
     async def _edit_message(self, interaction:discord.Interaction, new_game_entry:GameEntry, user:discord.User, view:discord.ui.View):
         """
@@ -164,26 +164,26 @@ class GameCreationModal(discord.ui.Modal):
             if not await self._isvalid(interaction):
                 return
 
-            game_entry = self._to_game_entry(interaction.user.name)
-            self.list_database.put_game(game_entry, self.game_entry)
+            self.game_entry = self._to_game_entry(interaction.user.id)
+            self.list_database.put_game(self.game_entry)
 
             if self.backlog_database:
-                if self.backlog_database.get_entry(game_entry.name,game_entry.user):
-                    backlog_entry = BacklogEntry(game_entry.name,game_entry.user,None)
+                if self.backlog_database.get_entry(self.game_entry.name,self.game_entry.user):
+                    backlog_entry = BacklogEntry(self.game_entry.name,self.game_entry.user,None)
                     await BacklogRemoveCommand.remove_backlog_entry(backlog_entry,self.backlog_database,interaction.channel)
 
-            print(game_entry)
+            print(self.game_entry)
 
-            self.game = Game.from_igdb(Wrapper.wrapper, game_entry.name, game_entry.console)
+            self.game = Game.from_igdb(Wrapper.wrapper, self.game_entry.name, self.game_entry.console)
 
-            await EmojiCreator.create_console_emoji_if_not_exists(interaction.guild, game_entry.console)
+            await EmojiCreator.create_console_emoji_if_not_exists(interaction.guild, self.game_entry.console)
 
-            game_view_txt = ViewCommand.get_game_view_txt(game_entry,self.game)
-            embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
+            game_view_txt = ViewCommand.get_game_view_txt(self.game_entry,self.game)
+            embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * self.game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
             if self.game and self.game.cover:
                 embed.set_thumbnail(url=self.game.cover)
 
-            view = self._get_game_view(interaction,game_entry)
+            view = self._get_game_view(interaction,self.game_entry)
 
             await MessageManager.send_message(channel=interaction.channel,embed=embed,view=view)
         finally:

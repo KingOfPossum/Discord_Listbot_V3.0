@@ -36,7 +36,7 @@ class CompletedCommand(Command):
         new_game_entry.hundred_percent = not old_game_entry.hundred_percent
         print(f"Completion status changed to: {new_game_entry.hundred_percent}\n")
 
-        database.put_game(new_game_entry, old_game_entry)
+        database.put_game(new_game_entry)
 
         return new_game_entry
 

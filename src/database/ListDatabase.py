@@ -9,12 +9,12 @@ class ListDatabase(Database):
     """
     def __init__(self,folder_path: str):
         schema = """
-        game_id INTEGER AUTOINCREMENT,
+        game_id INTEGER,
         user_id INTEGER,
         name TEXT NOT NULL,
         date DATE NOT NULL,
         console TEXT NOT NULL,
-        rating INT NOT NULL CHECK(rating BETWEEN 0 AND 100),
+        rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 100),
         review TEXT,
         replay INTEGER DEFAULT 0 CHECK(replay IN (0, 1)),
         hundred_percent INTEGER DEFAULT 0 CHECK(hundred_percent IN (0, 1)),
