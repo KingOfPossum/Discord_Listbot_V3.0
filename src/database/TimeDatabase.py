@@ -1,3 +1,5 @@
+from dataclasses import astuple
+
 from common.TimeEntry import TimeEntry
 from database.Database import Database
 
@@ -6,73 +8,79 @@ class TimeDatabase(Database):
     A class to handle database operations for tracking time spent on various activities using SQLite3.
     """
     def __init__(self,folder_path: str):
-        super().__init__(folder_path=folder_path,
-                         database_name="time_tracking",
-                         table_name="time_entries",
-                         params=[("user","TEXT"), ("activity","TEXT"),("time_spent","INT")])
+        schema = """
+        user_id INTEGER,
+        activity TEXT NOT NULL,
+        time_spent INTEGER DEFAULT 0,
+        PRIMARY KEY (user_id, activity),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        """
 
-    def get_time_entry(self,user: str, activity: str) -> TimeEntry | None:
+        super().__init__(folder_path=folder_path,
+                         table_name="time_entries",
+                         schema=schema)
+
+    def get_time_entry(self,user_id: int, activity: str) -> TimeEntry | None:
         """
         Retrieves a time entry for a specific user and activity from the database.
-        :param user: The user whose time entry is to be retrieved.
+        :param user_id: The ID of the user whose time entry is to be retrieved.
         :param activity: The activity whose time entry is to be retrieved.
         :return: The TimeEntry object if there is one else None
         """
-        query = f"SELECT * FROM {self.table_name} WHERE user = ? and activity = ?"
-        params = (user,activity)
+        query = f"SELECT * FROM {self.table_name} WHERE user_id = ? and activity = ?"
+        params = (user_id,activity)
         data = self.sql_execute_fetchall(query,params)
         if data:
-            return TimeEntry(data[0][0],data[0][1],data[0][2])
+            return TimeEntry(*data[0])
         return None
 
-    def get_all_time_entries(self,user: str = None) -> list[TimeEntry]:
+    def get_all_time_entries(self,user_id: int = None) -> list[TimeEntry]:
         """
         Returns all time entries from the database.
         If a user is specified, only returns the time entries for that user.
-        :param user: The user whose time entries are to be retrieved. If None, retrieves all entries.
+        :param user_id: The ID of the user whose time entries are to be retrieved. If None, retrieves all entries.
         :return: A list of TimeEntry objects.
         """
-        if user is None:
+        if user_id is None:
             user_query = "1=1"
         else:
-            user_query = f"user = '{user}'"
+            user_query = f"user_id = '{user_id}'"
         query = f"SELECT * FROM {self.table_name} WHERE {user_query}"
         data = self.sql_execute_fetchall(query)
 
-        entries = [TimeEntry(row[0], row[1], row[2]) for row in data]
+        entries = [TimeEntry(*row) for row in data]
         return entries
 
     def put_entry(self,time_entry: TimeEntry):
         """
         Inserts or updates an TimeEntry object in the database.
-        If the user of the entry already has an entry for that activity in the database means the entry has to be updated with the new values.
-        Else a new entry will be created.
         :param time_entry: The TimeEntry object to be put into the database.
         """
-        old_entry = self.get_time_entry(time_entry.user,time_entry.activity)
-        if old_entry:
-           self.remove_entry(old_entry)
+        query = f"""
+                INSERT INTO {self.table_name}
+                VALUES(?,?,?)
+                ON CONFLICT(user_id,activity)
+                DO UPDATE SET
+                time_spent = excluded.time_spent
+                """
 
-        query = f"INSERT INTO {self.table_name} (user,activity,time_spent) VALUES (?,?,?)"
-        params = (time_entry.user,time_entry.activity,time_entry.time_spent)
-
-        self.sql_execute(query,params)
+        self.sql_execute(query,astuple(time_entry))
 
     def remove_entry(self,time_entry: TimeEntry):
         """
         Removes an entry from the database.
         :param time_entry: The TimeEntry object to be removed from the database
         """
-        query = f"DELETE FROM {self.table_name} WHERE user = ? AND activity = ?"
-        params = (time_entry.user,time_entry.activity)
+        query = f"DELETE FROM {self.table_name} WHERE user_id = ? AND activity = ?"
+        params = (time_entry.user_id,time_entry.activity)
         self.sql_execute(query,params)
 
-    def get_users(self) -> list[str]:
+    def get_users(self) -> list[int]:
         """
         Retrieves a list of all users who have time entries in the database.
-        :return: A list of usernames.
+        :return: A list of all user_ids.
         """
-        query = f"SELECT DISTINCT user FROM {self.table_name}"
+        query = f"SELECT DISTINCT user_id FROM {self.table_name}"
         data = self.sql_execute_fetchall(query)
 
         return [row[0] for row in data]
