@@ -25,7 +25,7 @@ class AddTokenCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        await self.database.add_token(ctx.author.name,ctx)
+        await self.database.add_token(ctx.author.id,ctx)
         await MessageManager.send_message(ctx.channel,"Added token!")
 
     def help(self) -> str:

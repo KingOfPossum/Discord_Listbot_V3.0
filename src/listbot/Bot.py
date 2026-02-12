@@ -50,7 +50,7 @@ class Bot(commands.Bot):
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
         self._databases.init_user_database()
         self._databases.init_list_database()
-        #self._databases.init_tokens_database()
+        self._databases.init_tokens_database()
         #self._databases.init_time_database()
         #self._databases.init_backlog_database()
 

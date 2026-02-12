@@ -80,13 +80,9 @@ class ViewCommand(Command):
         if not user_entry:
             return
 
-        print(user_entry)
-
         instances = self.database.get_all_instances_of_game(game_name,user_entry.user_id)
         if not instances:
             return
-
-        print(len(instances))
 
         game_entry_index = 0
         game_entry = instances[game_entry_index]

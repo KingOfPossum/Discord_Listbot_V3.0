@@ -129,7 +129,7 @@ class GameCreationModal(discord.ui.Modal):
                 await i.response.defer()
                 return
 
-            await self.token_database.add_token(i.user.name,interaction=i)
+            await self.token_database.add_token(i.user.id,interaction=i)
             await MessageManager.send_message(i.channel,"Added Token")
             self.added_token = True
 

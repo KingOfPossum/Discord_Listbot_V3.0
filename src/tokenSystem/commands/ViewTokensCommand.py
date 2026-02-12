@@ -24,7 +24,7 @@ class ViewTokensCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        entry = self.database.get_tokens_entry(ctx.author.name)
+        entry = self.database.get_tokens_entry(ctx.author.id)
         if not entry:
             await MessageManager.send_error_message(ctx.channel,"No entry in tokens database found!")
 

@@ -25,7 +25,7 @@ class RemoveCoinCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        entry: TokensEntry = self.database.remove_coin(ctx.author.name)
+        entry: TokensEntry = self.database.remove_coin(ctx.author.id)
         if entry:
             await MessageManager.send_message(ctx.channel,f"Removed a coin from your account. You now have {entry.coins} coins left.")
         else:

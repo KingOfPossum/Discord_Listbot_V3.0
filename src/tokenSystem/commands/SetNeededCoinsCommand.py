@@ -28,7 +28,7 @@ class SetNeededCoinsCommand(Command):
         needed_tokens_str = BotUtils.get_message_content(ctx.message)
         try:
             needed_tokens = int(needed_tokens_str)
-            self.database.set_needed_tokens(ctx.author.name,needed_tokens)
+            self.database.set_needed_tokens(ctx.author.id,needed_tokens)
             await MessageManager.send_message(ctx.channel,f"Needed Tokens set to {needed_tokens}")
         except ValueError:
             await MessageManager.send_error_message(ctx.channel,"Please Provide a Valid Number.")
