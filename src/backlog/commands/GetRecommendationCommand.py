@@ -24,10 +24,10 @@ class GetRecommendationCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        entries = self.backlog_database.get_all_entries(ctx.author.name)
+        entries = self.backlog_database.get_all_entries(ctx.author.id)
         random_index = random.randint(0, len(entries) - 1)
 
-        await MessageManager.send_message(ctx.channel, f"Your random game recommendation is: **{entries[random_index].name}**")
+        await MessageManager.send_message(ctx.channel, f"Your random game recommendation is: **{entries[random_index].game_name}**")
 
     def help(self) -> str:
         """

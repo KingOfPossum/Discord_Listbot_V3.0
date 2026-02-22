@@ -28,7 +28,7 @@ class BacklogRemoveCommand(Command):
             return
 
         game_name = BotUtils.get_message_content(ctx.message)
-        entry = BacklogEntry(game_name,ctx.author.name,None)
+        entry = BacklogEntry(game_name,ctx.author.id,None)
         await BacklogRemoveCommand.remove_backlog_entry(entry,self.backlog_database,ctx.channel)
 
     def help(self) -> str:
@@ -37,4 +37,4 @@ class BacklogRemoveCommand(Command):
     @staticmethod
     async def remove_backlog_entry(entry: BacklogEntry,backlog_database:BacklogDatabase,channel:discord.TextChannel):
         backlog_database.remove_entry(entry)
-        await MessageManager.send_message(channel,f"Removed {entry.name} from backlog")
+        await MessageManager.send_message(channel,f"Removed {entry.game_name} from backlog")

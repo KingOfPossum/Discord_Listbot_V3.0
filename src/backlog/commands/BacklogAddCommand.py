@@ -31,11 +31,11 @@ class BacklogAddCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"No game name provided")
             return
 
-        if self.backlog_database.get_entry(game_name,ctx.author.name):
+        if self.backlog_database.get_entry(game_name,ctx.author.id):
             await MessageManager.send_message(ctx.channel,f"Game {game_name} is already in backlog")
             return
 
-        self.backlog_database.add_entry(BacklogEntry(game_name,ctx.author.name,None))
+        self.backlog_database.add_entry(BacklogEntry(game_name,ctx.author.id,None))
         await MessageManager.send_message(ctx.channel,f"Added {game_name} to backlog")
 
     def help(self) -> str:

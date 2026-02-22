@@ -17,7 +17,7 @@ class BacklogList:
         self.backlog_database = backlog_database
         self.user = user
         self.page = 1
-        self.entries = sorted(self.backlog_database.get_all_entries(user.name),key=lambda entry: entry.name.lower())
+        self.entries = sorted(self.backlog_database.get_all_entries(user.id),key=lambda entry: entry.game_name.lower())
         self.view = discord.ui.View()
 
     def number_of_pages(self) -> int:
@@ -33,7 +33,8 @@ class BacklogList:
         :param entry: The BacklogEntry object to convert.
         :return: The string representation of the backlog entry.
         """
-        return f"**{entry.name}** (recommended by: *{entry.recommended_by}*)" if entry.recommended_by else f"**{entry.name}**"
+        recommended_by_user = UserManager.get_user_entry(user_id=entry.recommended_by_user)
+        return f"**{entry.game_name}**" +  (f"(recommended by: *{recommended_by_user.display_name}*)" if entry.recommended_by_user else "")
 
     def get_list_txt(self) -> str:
         """
@@ -92,13 +93,13 @@ class BacklogList:
         self.view.add_item(next_button)
 
         for user in UserManager.accepted_users:
-            if user.name not in self.backlog_database.users_with_backlog():
+            if user.name not in self.backlog_database.get_users():
                 continue
 
             user_button = discord.ui.Button(label=user.display_name,style=discord.ButtonStyle.gray)
 
             async def user_callback(interaction,member:User=user):
-                self.entries = sorted(self.backlog_database.get_all_entries(member.name),key = lambda entry: entry.name.lower())
+                self.entries = sorted(self.backlog_database.get_all_entries(member.id),key = lambda entry: entry.game_name.lower())
                 self.user = member
                 self.page = 1
 

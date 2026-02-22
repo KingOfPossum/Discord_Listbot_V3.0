@@ -39,7 +39,7 @@ class RecommendCommand(Command):
         if not user_entry:
             user_entry = UserManager.get_user_entry(display_name=user)
 
-        entry = BacklogEntry(game,user_entry.user_name,ctx.author.name)
+        entry = BacklogEntry(game,user_entry.user_id,ctx.author.id)
         self.backlog_database.add_entry(entry)
 
         await MessageManager.send_message(ctx.channel, f"Recommended **{game}** to **{user}**.")

@@ -17,7 +17,7 @@ class TimeDatabase(Database):
         """
 
         super().__init__(folder_path=folder_path,
-                         table_name="time_entries",
+                         table_name="timetracking",
                          schema=schema)
 
     def get_time_entry(self,user_id: int, activity: str) -> TimeEntry | None:

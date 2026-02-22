@@ -168,8 +168,8 @@ class GameCreationModal(discord.ui.Modal):
             self.list_database.put_game(self.game_entry)
 
             if self.backlog_database:
-                if self.backlog_database.get_entry(self.game_entry.name,self.game_entry.user):
-                    backlog_entry = BacklogEntry(self.game_entry.name,self.game_entry.user,None)
+                if self.backlog_database.get_entry(self.game_entry.name,self.game_entry.user_id):
+                    backlog_entry = BacklogEntry(self.game_entry.name,self.game_entry.user_id,None)
                     await BacklogRemoveCommand.remove_backlog_entry(backlog_entry,self.backlog_database,interaction.channel)
 
             print(self.game_entry)
