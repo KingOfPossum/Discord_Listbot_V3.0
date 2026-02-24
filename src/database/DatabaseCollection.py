@@ -1,6 +1,7 @@
 import os
 
 from database.BacklogDatabase import BacklogDatabase
+from database.IGDB_Databases.IgdbDatabaseCollection import IGDBDatabaseCollection
 from database.ListDatabase import ListDatabase
 from database.TimeDatabase import TimeDatabase
 from database.TokensDatabase import TokensDatabase
@@ -25,6 +26,7 @@ class DatabaseCollection:
         self.tokens_database: TokensDatabase = None
         self.time_database: TimeDatabase = None
         self.backlog_database: BacklogDatabase = None
+        self.igdb_databases: IGDBDatabaseCollection = None
 
     def init_user_database(self):
         """
@@ -55,6 +57,12 @@ class DatabaseCollection:
         Initializes the backlog database.
         """
         self.backlog_database: BacklogDatabase = BacklogDatabase(self.__database_folder_path)
+
+    def init_igdb_databases(self):
+        """
+        Initializes the IGDB databases.
+        """
+        self.igdb_databases: IGDBDatabaseCollection = IGDBDatabaseCollection(self.__database_folder_path)
 
     @staticmethod
     def create_database_folder_if_not_exists(database_folder_path: str):
