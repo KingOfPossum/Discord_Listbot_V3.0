@@ -20,7 +20,7 @@ class IGDBGamesDatabase(Database):
         Inserts a game entry into the database.
         :param igdb_entry: The IGDBGameEntry object containing the game information to be inserted into the database.
         """
-        query = f"INSERT INTO {self.table_name} VALUES (game_id,game_name,cover_url,summary) VALUES (?,?,?,?)"
+        query = f"INSERT INTO {self.table_name} (game_id,game_name,cover_url,summary) VALUES (?,?,?,?)"
         self.sql_execute(query,(igdb_entry.game_id,igdb_entry.game_name,igdb_entry.cover_url,igdb_entry.summary))
 
     def game_exists(self, game_id:int) -> bool:

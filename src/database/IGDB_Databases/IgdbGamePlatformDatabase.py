@@ -14,5 +14,14 @@ class IGDBGamePlatformDatabase(Database):
                          table_name="igdb_games_platforms",
                          schema=schema)
 
+    def add_game_platform(self, game_id: int, platform_id: int):
+        """
+        Adds a game-platform relationship to the database.
+        :param game_id: The ID of the game to be added to the database.
+        :param platform_id: The ID of the platform to be added to the database.
+        """
+        query = f"INSERT INTO {self.table_name} (game_id, platform_id) VALUES (?, ?)"
+        self.sql_execute(query, (game_id, platform_id))
+
     def print_database(self):
         pass
