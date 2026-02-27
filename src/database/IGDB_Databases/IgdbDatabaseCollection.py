@@ -21,7 +21,7 @@ class IGDBDatabaseCollection:
         as well as the game-genre and game-platform databases.
         :param igdb_entry: The IGDBGameEntry object representing the game to be added to the database collection.
         """
-        if self.game_exists(igdb_entry.game_id):
+        if self.game_exists_by_id(igdb_entry.game_id):
             return
 
         self.games_database.insert_game(igdb_entry)
@@ -40,13 +40,13 @@ class IGDBDatabaseCollection:
         for platform_id in platform_ids:
             self.game_platform_database.add_game_platform(igdb_entry.game_id, platform_id)
 
-    def get_entry(self,game_id: int):
+    def get_entry_by_id(self,game_id: int) -> IGDBGameEntry | None:
         """
         Gets a IGDBGameEntry object representing the game with the given game_id from the database collection.
         :param game_id: The ID of the game to get from the database collection.
         :return: The IGDBGameEntry object representing the game with the given game_id from the database collection, or None if the game does not exist in the database collection.
         """
-        if not self.game_exists(game_id):
+        if not self.game_exists_by_id(game_id):
             return None
 
         query = "SELECT * FROM igdb_games WHERE game_id = ?"
@@ -55,6 +55,18 @@ class IGDBDatabaseCollection:
         platforms = self.get_platforms(game_id)
 
         return IGDBGameEntry(result[0],result[1],result[2],result[3],genres,platforms)
+
+    def get_entry_by_name(self,game_name: str) -> IGDBGameEntry | None:
+        """
+        Gets a IGDBGameEntry object representing the game with the given game_name from the database collection.
+        :param game_name: The name of the game to get from the database collection.
+        :return: The IGDBGameEntry object representing the game with the given game_name from the database collection, or None if the game does not exist in the database collection.
+        """
+        game_id = self.game_exists_by_name(game_name)
+        if not game_id:
+            return None
+
+        return self.get_entry_by_id(game_id)
 
     def add_genre(self, genre_name: str) -> int:
         """
@@ -80,13 +92,21 @@ class IGDBDatabaseCollection:
 
         return self.platforms_database.add_platform(platform_name)
 
-    def game_exists(self, game_id: int) -> bool:
+    def game_exists_by_id(self, game_id: int) -> bool:
         """
         Checks if a game is already in the database collection by checking if the game ID exists in the games database.
         :param game_id: The ID of the game to check for in the database collection.
         :return: True if the game is already in the database collection, False otherwise.
         """
-        return self.games_database.game_exists(game_id)
+        return self.games_database.game_exists_by_id(game_id)
+
+    def game_exists_by_name(self, game_name: str) -> int | None:
+        """
+        Checks if a game is already in the database collection by checking if the game name exists in the games database.
+        :param game_name: The name of the game to check for in the database collection.
+        :return: The game_id of the game if it is already in the database collection, None otherwise.
+        """
+        return self.games_database.game_exists_by_name(game_name)
 
     def genre_exists(self, genre_name: str) -> int | None:
         """

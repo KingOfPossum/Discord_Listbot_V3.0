@@ -10,6 +10,7 @@ class ListDatabase(Database):
     def __init__(self,folder_path: str):
         schema = """
         game_id INTEGER,
+        igdb_game_id INTEGER,
         user_id INTEGER,
         name TEXT NOT NULL,
         date DATE NOT NULL,
@@ -19,6 +20,7 @@ class ListDatabase(Database):
         replay INTEGER DEFAULT 0 CHECK(replay IN (0, 1)),
         hundred_percent INTEGER DEFAULT 0 CHECK(hundred_percent IN (0, 1)),
         PRIMARY KEY (game_id),
+        FOREIGN KEY (igdb_game_id) REFERENCES igdb_games(game_id),
         FOREIGN KEY (user_id) REFERENCES users(user_id),
         UNIQUE (user_id, name, date)
         """
@@ -105,10 +107,11 @@ class ListDatabase(Database):
         :param entry: The GameEntry object containing the details of the game to be added.
         """
         query = f"""
-            INSERT INTO {self.table_name} (user_id,name,date,console,rating,review,replay,hundred_percent)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO {self.table_name} (igdb_game_id,user_id,name,date,console,rating,review,replay,hundred_percent)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (user_id, name, date)
             DO UPDATE SET
+                igdb_game_id = excluded.igdb_game_id,
                 console = excluded.console,
                 rating = excluded.rating,
                 review = excluded.review,

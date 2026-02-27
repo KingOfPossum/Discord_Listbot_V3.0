@@ -18,7 +18,6 @@ from voice.MusicManager import MusicManager
 from voice.SongUpdater import SongUpdater
 from voice.commands.VoiceCommands import VoiceCommands
 
-
 class Bot(commands.Bot):
     """
     A Discord bot that manages a list of games.
@@ -49,11 +48,11 @@ class Bot(commands.Bot):
 
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
         self._databases.init_user_database()
+        self._databases.init_igdb_databases()
         self._databases.init_list_database()
         self._databases.init_tokens_database()
         self._databases.init_time_database()
         self._databases.init_backlog_database()
-        self._databases.init_igdb_databases()
 
         self.music_manager = MusicManager(self.__config_data.music_folder_path)
 

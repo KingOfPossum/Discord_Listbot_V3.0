@@ -4,10 +4,12 @@ from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
 from common.BacklogEntry import BacklogEntry
 from common.EmojiCreator import EmojiCreator
 from common.GameEntry import GameEntry
+from common.IGDBGameEntry import IGDBGameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.Wrapper import Wrapper
 from database.BacklogDatabase import BacklogDatabase
+from database.DatabaseCollection import DatabaseCollection
 from database.ListDatabase import ListDatabase
 from database.TokensDatabase import TokensDatabase
 from Game import Game
@@ -32,8 +34,7 @@ class GameCreationModal(discord.ui.Modal):
         self.backlog_database = backlog_database
 
         self.game_entry = game_entry
-
-        self.game: Game | None = None
+        self.game: IGDBGameEntry | None = None
 
         self.added_token = False
 
@@ -75,6 +76,7 @@ class GameCreationModal(discord.ui.Modal):
         :param user_id: The ID of the user who is creating the game entry.
         :return: The created GameEntry object with the provided values.
         """
+        igdb_game_id = self.game_entry.igdb_game_id if self.game_entry else -1
         game_name = self.children[0].value
         date = self.game_entry.date if self.game_entry else TimeUtils.get_current_date_formated()
         console = self.children[1].value
@@ -83,7 +85,7 @@ class GameCreationModal(discord.ui.Modal):
         replayed = False if not self.game_entry else self.game_entry.replayed
         completed = False if not self.game_entry else self.game_entry.hundred_percent
 
-        return GameEntry(game_id=-1,name=game_name, user_id=user_id, date=date, console=console, rating=rating,
+        return GameEntry(game_id=-1,igdb_game_id=igdb_game_id,name=game_name, user_id=user_id, date=date, console=console, rating=rating,
                                review=review, replayed=replayed, hundred_percent=completed)
 
     async def _edit_message(self, interaction:discord.Interaction, new_game_entry:GameEntry, user:discord.User, view:discord.ui.View):
@@ -98,7 +100,7 @@ class GameCreationModal(discord.ui.Modal):
         changed_game_view_txt = ViewCommand.get_game_view_txt(new_game_entry,self.game)
         new_embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * new_game_entry.hundred_percent}**",
                                              description=changed_game_view_txt, user=user)
-        new_embed.set_thumbnail(url=self.game.cover)
+        new_embed.set_thumbnail(url=self.game.cover_url)
 
         if interaction.response.is_done():
             await interaction.followup.edit_message(embed=new_embed, view=view)
@@ -165,6 +167,19 @@ class GameCreationModal(discord.ui.Modal):
                 return
 
             self.game_entry = self._to_game_entry(interaction.user.id)
+
+            if self.game_entry.igdb_game_id != -1:
+                self.game = DatabaseCollection.igdb_databases.get_entry_by_id(self.game_entry.igdb_game_id)
+            else:
+                self.game = DatabaseCollection.igdb_databases.get_entry_by_name(self.game_entry.name)
+
+            if not self.game:
+                print("Game not found in database, fetching from IGDB...")
+                igdb_game = Game.from_igdb(Wrapper.wrapper, self.game_entry.name, self.game_entry.console)
+                self.game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
+                DatabaseCollection.igdb_databases.add_game(self.game)
+
+            self.game_entry.igdb_game_id = self.game.game_id
             self.list_database.put_game(self.game_entry)
 
             if self.backlog_database:
@@ -174,14 +189,12 @@ class GameCreationModal(discord.ui.Modal):
 
             print(self.game_entry)
 
-            self.game = Game.from_igdb(Wrapper.wrapper, self.game_entry.name, self.game_entry.console)
-
             await EmojiCreator.create_console_emoji_if_not_exists(interaction.guild, self.game_entry.console)
 
             game_view_txt = ViewCommand.get_game_view_txt(self.game_entry,self.game)
             embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * self.game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
-            if self.game and self.game.cover:
-                embed.set_thumbnail(url=self.game.cover)
+            if self.game and self.game.cover_url:
+                embed.set_thumbnail(url=self.game.cover_url)
 
             view = self._get_game_view(interaction,self.game_entry)
 

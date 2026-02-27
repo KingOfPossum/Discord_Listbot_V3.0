@@ -4,6 +4,13 @@ from dataclasses import dataclass
 class IGDBGameEntry:
     """
     A class containing the relevant information about a game retrieved from IGDB.
+    Attributes:
+        game_id: The ID of the game in IGDB.
+        game_name: The name of the game.
+        cover_url: The URL of the game's cover image.
+        summary: A brief summary of the game.
+        genres: A list of genres that the game belongs to.
+        platforms: A list of platforms that the game is available on.
     """
     game_id: int
     game_name: str

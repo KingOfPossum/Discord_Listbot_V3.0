@@ -23,7 +23,7 @@ class IGDBGamesDatabase(Database):
         query = f"INSERT INTO {self.table_name} (game_id,game_name,cover_url,summary) VALUES (?,?,?,?)"
         self.sql_execute(query,(igdb_entry.game_id,igdb_entry.game_name,igdb_entry.cover_url,igdb_entry.summary))
 
-    def game_exists(self, game_id:int) -> bool:
+    def game_exists_by_id(self, game_id:int) -> bool:
         """
         Checks if a game with the given game_id already exists in the database.
         :param game_id: The ID of the game to check for existence.
@@ -32,6 +32,16 @@ class IGDBGamesDatabase(Database):
         query = f"SELECT * FROM {self.table_name} WHERE game_id = ?"
         result = self.sql_execute_fetchall(query, (game_id,))
         return len(result) > 0
+
+    def game_exists_by_name(self, game_name: str) -> int | None:
+        """
+        Checks if a game with the given game_name already exists in the database.
+        :param game_name: The name of the game to check for existence.
+        :return: The game_id of the game if it exists in the database, None otherwise.
+        """
+        query = f"SELECT game_id FROM {self.table_name} WHERE game_name = ?"
+        result = self.sql_execute_fetchall(query, (game_name,))
+        return result[0][0] if len(result) > 0 else None
 
     def print_database(self):
         pass

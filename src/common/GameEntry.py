@@ -7,6 +7,7 @@ class GameEntry:
     This class is used to store information about a game, including its name, user, date, console, rating, genre, and review.
     """
     game_id: int
+    igdb_game_id: int
     user_id: int
     name: str
     date: str
@@ -19,6 +20,7 @@ class GameEntry:
     def __str__(self) -> str:
         return f"GameEntry:\n" \
                f"  ID: {self.game_id}\n" \
+               f"  IGDB Game ID: {self.igdb_game_id}\n" \
                f"  User ID: {self.user_id}\n" \
                f"  Name: {self.name}\n" \
                f"  Date: {self.date}\n" \
@@ -31,6 +33,7 @@ class GameEntry:
     def __copy__(self) -> "GameEntry":
         return GameEntry(
             game_id=self.game_id,
+            igdb_game_id=self.igdb_game_id,
             user_id=self.user_id,
             name=self.name,
             date=self.date,

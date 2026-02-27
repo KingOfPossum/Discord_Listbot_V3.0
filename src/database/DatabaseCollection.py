@@ -11,6 +11,8 @@ class DatabaseCollection:
     """
     A collection of databases.
     """
+    igdb_databases: IGDBDatabaseCollection = None
+
     def __init__(self,database_folder_path: str):
         """
         Initializes the DatabaseCollection with a specified folder path where the databases should be created.
@@ -26,7 +28,6 @@ class DatabaseCollection:
         self.tokens_database: TokensDatabase = None
         self.time_database: TimeDatabase = None
         self.backlog_database: BacklogDatabase = None
-        self.igdb_databases: IGDBDatabaseCollection = None
 
     def init_user_database(self):
         """
@@ -62,7 +63,7 @@ class DatabaseCollection:
         """
         Initializes the IGDB databases.
         """
-        self.igdb_databases: IGDBDatabaseCollection = IGDBDatabaseCollection(self.__database_folder_path)
+        DatabaseCollection.igdb_databases = IGDBDatabaseCollection(self.__database_folder_path)
 
     @staticmethod
     def create_database_folder_if_not_exists(database_folder_path: str):
