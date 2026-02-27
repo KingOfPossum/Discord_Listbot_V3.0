@@ -4,15 +4,13 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.TokensDatabase import TokensDatabase
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class AddTokenCommand(Command):
     """
     Command that will add a token to a user in the database.
     """
-    def __init__(self,database: TokensDatabase):
-        self.database = database
 
     @commands.command(name="addToken",aliases=["AddToken","addtoken","ADDTOKEN","add_token","Add_Token"])
     async def execute(self,ctx: discord.Interaction):
@@ -25,7 +23,7 @@ class AddTokenCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        await self.database.add_token(ctx.author.id,ctx)
+        await DatabaseCollection.tokens_database.add_token(ctx.author.id,ctx)
         await MessageManager.send_message(ctx.channel,"Added token!")
 
     def help(self) -> str:

@@ -1,19 +1,19 @@
 from common.TimeEntry import TimeEntry
 from common.UserManager import UserManager
-from database.TimeDatabase import TimeDatabase
 from discord.ext import commands,tasks
+
+from database.DatabaseCollection import DatabaseCollection
+
 
 class TimeTracker(commands.Cog):
     """Time Tracker Cog. This cog tracks the time spent on various activities."""
 
-    def __init__(self,bot: commands.Bot,time_database: TimeDatabase):
+    def __init__(self,bot: commands.Bot):
         """
         Initializes the TimeTracker cog with a bot instance.
         :param bot: The bot instance to which this cog will be added.
-        :param time_database: The TimeDatabase instance for storing and loading time tracking data.
         """
         self.bot = bot
-        self.time_database = time_database
         self.tracking_dict = None
 
     async def cog_load(self):
@@ -50,7 +50,7 @@ class TimeTracker(commands.Cog):
                 except KeyError:
                     self.tracking_dict[user.id]["activities"][user.activity.name] = 10
                 new_entry = TimeEntry(user.id,user.activity.name,self.tracking_dict[user.id]["activities"][user.activity.name])
-                self.time_database.put_entry(new_entry)
+                DatabaseCollection.time_database.put_entry(new_entry)
             self.tracking_dict[user.id]["current_activity"] = user.activity.name
 
     @track_time.before_loop
@@ -74,8 +74,8 @@ class TimeTracker(commands.Cog):
         }
         :return:
         """
-        entries = self.time_database.get_all_time_entries()
-        users = self.time_database.get_users()
+        entries = DatabaseCollection.time_database.get_all_time_entries()
+        users = DatabaseCollection.time_database.get_users()
 
         new_dict = {}
         for user_id in users:

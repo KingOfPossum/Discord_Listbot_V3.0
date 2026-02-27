@@ -4,15 +4,14 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.BacklogDatabase import BacklogDatabase
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
+
 
 class BacklogAddCommand(Command):
     """
     Command for adding games into the backlog.
     """
-    def __init__(self,backlog_database:BacklogDatabase):
-        self.backlog_database = backlog_database
 
     @commands.command(name="backlogAdd", aliases=["BacklogAdd","backlogadd","backlog_add","Backlog_Add","BACKLOGADD","BACKLOG_ADD","addBacklog","AddBacklog","ADDBACKLOG","add_backlog","Add_Backlog","ADD_BACKLOG"])
     async def execute(self, ctx):
@@ -31,11 +30,11 @@ class BacklogAddCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"No game name provided")
             return
 
-        if self.backlog_database.get_entry(game_name,ctx.author.id):
+        if DatabaseCollection.backlog_database.get_entry(game_name,ctx.author.id):
             await MessageManager.send_message(ctx.channel,f"Game {game_name} is already in backlog")
             return
 
-        self.backlog_database.add_entry(BacklogEntry(game_name,ctx.author.id,None))
+        DatabaseCollection.backlog_database.add_entry(BacklogEntry(game_name,ctx.author.id,None))
         await MessageManager.send_message(ctx.channel,f"Added {game_name} to backlog")
 
     def help(self) -> str:

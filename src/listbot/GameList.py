@@ -6,20 +6,19 @@ from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
-from database.ListDatabase import ListDatabase
+from database.DatabaseCollection import DatabaseCollection
 
 class GameList:
     """
     This class represents a list of games for a user.
     """
-    def __init__(self,database: ListDatabase,ctx: discord.Interaction,user: str = None):
+    def __init__(self,ctx: discord.Interaction,user: str = None):
         self.ctx = ctx
         self.user = user if user is not None else ctx.author.name
-        self.database = database
         self.page = 1
         self.max_entries_per_page = 5
-        self.games = self.database.get_all_game_entries(ctx.author.id,str(TimeUtils.get_current_year()))
-        self.years = self.database.get_years(self.user) # List of years in which the user has added games used for adding buttons to view specific years
+        self.games = DatabaseCollection.list_database.get_all_game_entries(ctx.author.id,str(TimeUtils.get_current_year()))
+        self.years = DatabaseCollection.list_database.get_years(self.user) # List of years in which the user has added games used for adding buttons to view specific years
 
     @staticmethod
     async def game_entry_to_list_entry(game_entry: GameEntry,guild) -> str:
@@ -135,7 +134,7 @@ class GameList:
             for year in self.years:
                 async def year_callback(interaction: discord.Interaction,current_year=year):
                     user_entry = UserManager.get_user_entry(user_name=self.user)
-                    self.games = self.database.get_all_game_entries(user_entry.user_id,year=current_year)
+                    self.games = DatabaseCollection.list_database.get_all_game_entries(user_entry.user_id,year=current_year)
                     self.page = 1
                     embed.description = await self.get_list_txt(guild)
 

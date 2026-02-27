@@ -1,7 +1,6 @@
-from dataclasses import astuple
-
 from common.TimeEntry import TimeEntry
 from database.Database import Database
+from dataclasses import astuple
 
 class TimeDatabase(Database):
     """

@@ -1,11 +1,9 @@
 import discord
-from discord.ext.commands import before_invoke
 
 from common.ChannelManager import ChannelManager
 from common.ConfigLoader import ConfigLoader
 from common.Replies import Replies
 from common.UserManager import UserManager
-from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class BotEvents(commands.Cog):
@@ -15,14 +13,13 @@ class BotEvents(commands.Cog):
     """
     _active_uses:int = 0 # Amount of interactions/commands that are currently active
 
-    def __init__(self,bot: commands.Bot, databases: DatabaseCollection):
+    def __init__(self,bot: commands.Bot):
         """
         Initializes the BotEvents cog.
         :param bot: The bot instance to which this cog will be added.
         """
         self.__bot = bot
         self.replies = Replies("../resources/replies.yaml")
-        self.databases = databases
 
         self.__bot.before_invoke(self._before_invoke)
         self.__bot.after_invoke(self._after_invoke)
@@ -34,7 +31,7 @@ class BotEvents(commands.Cog):
         This will print a message to the console indicating that the bot is ready.
         """
         print(f"Bot is ready! Logged in as {self.__bot.user.name} (ID: {self.__bot.user.id})\n")
-        UserManager.init(self.__bot,self.databases.user_database)
+        UserManager.init(self.__bot)
         await ChannelManager.init(self.__bot)
         #self.databases.init_tokens_database()
 

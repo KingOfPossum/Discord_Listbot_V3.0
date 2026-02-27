@@ -3,7 +3,6 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.ListDatabase import ListDatabase
 from discord.ext import commands
 from listbot.GameList import GameList
 
@@ -11,8 +10,6 @@ class ListCommand(Command):
     """
     Command that will list all games of a specific user from the database.
     """
-    def __init__(self,database: ListDatabase):
-        self.database = database
 
     @commands.command(name="list",aliases=["List","LIST","ls","LS","listGames","ListGames","LISTGAMES","list_games","List_Games","LIST_GAMES"])
     async def execute(self,ctx):
@@ -29,7 +26,7 @@ class ListCommand(Command):
 
         user = BotUtils.get_message_content(ctx.message)
         if user == "":
-            game_list = GameList(self.database,ctx)
+            game_list = GameList(ctx)
         else:
             if not UserManager.is_user_accepted(user):
                 await MessageManager.send_error_message(ctx.channel,"the Provided User is Not an Legal User")
@@ -40,7 +37,7 @@ class ListCommand(Command):
             if not user_entry:
                 user_entry = UserManager.get_user_entry(display_name=user)
 
-            game_list = GameList(self.database,ctx,user=user_entry.user_name)
+            game_list = GameList(ctx,user=user_entry.user_name)
 
         await game_list.send_list(ctx.guild)
 

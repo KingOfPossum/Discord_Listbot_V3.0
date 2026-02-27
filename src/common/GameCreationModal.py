@@ -8,10 +8,7 @@ from common.IGDBGameEntry import IGDBGameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.Wrapper import Wrapper
-from database.BacklogDatabase import BacklogDatabase
 from database.DatabaseCollection import DatabaseCollection
-from database.ListDatabase import ListDatabase
-from database.TokensDatabase import TokensDatabase
 from Game import Game
 from listbot.BotEvents import BotEvents
 from listbot.commands.CompletedCommand import CompletedCommand
@@ -24,15 +21,10 @@ class GameCreationModal(discord.ui.Modal):
     This modal will prompt the user to enter details about the game they want to add,
     including the name, console, rating, genre, and a review.
     """
-    def __init__(self,list_database: ListDatabase,token_database: TokensDatabase = None,backlog_database:BacklogDatabase = None, game_entry: GameEntry = None):
+    def __init__(self, game_entry: GameEntry = None):
         """
         Initializes the GameCreationModal with fields for game details.
-        @param database: The database instance where the new gameEntry will be stored.
         """
-        self.list_database = list_database
-        self.token_database = token_database
-        self.backlog_database = backlog_database
-
         self.game_entry = game_entry
         self.game: IGDBGameEntry | None = None
 
@@ -119,11 +111,11 @@ class GameCreationModal(discord.ui.Modal):
         add_token_button = discord.ui.Button(label="Add Token", style=discord.ButtonStyle.red)
 
         async def replayed_callback(i: discord.Interaction):
-            new_game_entry = await ReplayedCommand.change_replayed_status(game_name=game_entry.name,database=self.list_database,interaction=interaction)
+            new_game_entry = await ReplayedCommand.change_replayed_status(game_name=game_entry.name,interaction=interaction)
             await self._edit_message(i, new_game_entry, interaction.user, view)
 
         async def completed_callback(i: discord.Interaction):
-            new_game_entry = await CompletedCommand.change_completed_status(game_name=game_entry.name,database=self.list_database,interaction=interaction)
+            new_game_entry = await CompletedCommand.change_completed_status(game_name=game_entry.name,interaction=interaction)
             await self._edit_message(i, new_game_entry, interaction.user, view)
 
         async def add_token_callback(i: discord.Interaction):
@@ -131,7 +123,7 @@ class GameCreationModal(discord.ui.Modal):
                 await i.response.defer()
                 return
 
-            await self.token_database.add_token(i.user.id,interaction=i)
+            await DatabaseCollection.tokens_database.add_token(i.user.id,interaction=i)
             await MessageManager.send_message(i.channel,"Added Token")
             self.added_token = True
 
@@ -180,12 +172,12 @@ class GameCreationModal(discord.ui.Modal):
                 DatabaseCollection.igdb_databases.add_game(self.game)
 
             self.game_entry.igdb_game_id = self.game.game_id
-            self.list_database.put_game(self.game_entry)
+            DatabaseCollection.list_database.put_game(self.game_entry)
 
-            if self.backlog_database:
-                if self.backlog_database.get_entry(self.game_entry.name,self.game_entry.user_id):
+            if DatabaseCollection.backlog_database:
+                if DatabaseCollection.backlog_database.get_entry(self.game_entry.name,self.game_entry.user_id):
                     backlog_entry = BacklogEntry(self.game_entry.name,self.game_entry.user_id,None)
-                    await BacklogRemoveCommand.remove_backlog_entry(backlog_entry,self.backlog_database,interaction.channel)
+                    await BacklogRemoveCommand.remove_backlog_entry(backlog_entry,interaction.channel)
 
             print(self.game_entry)
 

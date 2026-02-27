@@ -1,11 +1,10 @@
-from dataclasses import astuple
-
 import discord
 
 from common.MessageManager import MessageManager
 from common.TokensEntry import TokensEntry
 from common.UserManager import UserManager
 from database.Database import Database
+from dataclasses import astuple
 
 class TokensDatabase(Database):
     """

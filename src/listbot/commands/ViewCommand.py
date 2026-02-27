@@ -10,19 +10,14 @@ from common.IGDBGameEntry import IGDBGameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
-from common.Wrapper import Wrapper
 from database.DatabaseCollection import DatabaseCollection
-from database.ListDatabase import ListDatabase
 from discord.ext import commands
-from Game import Game
 
 class ViewCommand(Command):
     """
     Command to view game details from a specific game
     Supports both own user and other users
     """
-    def __init__(self,database: ListDatabase):
-        self.database = database
 
     @staticmethod
     def get_game_view_txt(game_entry: GameEntry, game_data: IGDBGameEntry) -> str:
@@ -82,7 +77,7 @@ class ViewCommand(Command):
         if not user_entry:
             return
 
-        instances = self.database.get_all_instances_of_game(game_name,user_entry.user_id)
+        instances = DatabaseCollection.list_database.get_all_instances_of_game(game_name,user_entry.user_id)
         if not instances:
             return
 

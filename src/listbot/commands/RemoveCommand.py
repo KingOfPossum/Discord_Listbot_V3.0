@@ -3,15 +3,13 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.ListDatabase import ListDatabase
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class RemoveCommand(Command):
     """
     Command that will remove a game from the list.
     """
-    def __init__(self, database: ListDatabase):
-        self.database = database
 
     @commands.command(name="remove",aliases=["Remove","removeGame","RemoveGame","REMOVE","REMOVEGAME","r","delete","Delete","deleteGame","DeleteGame","DELETEGAME"])
     async def execute(self, ctx):
@@ -26,12 +24,12 @@ class RemoveCommand(Command):
             return
 
         game_name = BotUtils.get_message_content(ctx.message)
-        game = await BotUtils.game_exists(game_name,self.database,ctx=ctx)
+        game = await BotUtils.game_exists(game_name,ctx=ctx)
         if not game:
             return
 
         game_name, game_entry = game
-        self.database.remove_entry(game_entry)
+        DatabaseCollection.list_database.remove_entry(game_entry)
         await ctx.send(f"**Removed {game_name}**")
 
     def help(self) -> str:

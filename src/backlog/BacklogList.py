@@ -3,7 +3,7 @@ import discord
 from common.BacklogEntry import BacklogEntry
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.BacklogDatabase import BacklogDatabase
+from database.DatabaseCollection import DatabaseCollection
 from discord import User
 
 class BacklogList:
@@ -13,11 +13,10 @@ class BacklogList:
     """
     ENTRIES_PER_PAGE = 10
 
-    def __init__(self,backlog_database:BacklogDatabase,user:User):
-        self.backlog_database = backlog_database
+    def __init__(self,user:User):
         self.user = user
         self.page = 1
-        self.entries = sorted(self.backlog_database.get_all_entries(user.id),key=lambda entry: entry.game_name.lower())
+        self.entries = sorted(DatabaseCollection.backlog_database.get_all_entries(user.id),key=lambda entry: entry.game_name.lower())
         self.view = discord.ui.View()
 
     def number_of_pages(self) -> int:
@@ -93,13 +92,13 @@ class BacklogList:
         self.view.add_item(next_button)
 
         for user in UserManager.accepted_users:
-            if user.name not in self.backlog_database.get_users():
+            if user.name not in DatabaseCollection.backlog_database.get_users():
                 continue
 
             user_button = discord.ui.Button(label=user.display_name,style=discord.ButtonStyle.gray)
 
             async def user_callback(interaction,member:User=user):
-                self.entries = sorted(self.backlog_database.get_all_entries(member.id),key = lambda entry: entry.game_name.lower())
+                self.entries = sorted(DatabaseCollection.backlog_database.get_all_entries(member.id),key = lambda entry: entry.game_name.lower())
                 self.user = member
                 self.page = 1
 

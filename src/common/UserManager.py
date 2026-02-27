@@ -1,6 +1,5 @@
 from common.ConfigLoader import ConfigLoader
 from common.UserEntry import UserEntry
-from database.UserDatabase import UserDatabase
 from discord import Member
 from discord.ext.commands import Bot
 
@@ -11,17 +10,15 @@ class UserManager:
     """
     accepted_users: set[Member] = set()
     bot_replies_users: set[Member] = set()
-    user_database: UserDatabase = None
 
     @staticmethod
-    def init(bot: Bot, user_database: UserDatabase):
+    def init(bot: Bot):
         """
         Initializes the UserManager by loading the accepted users from the configuration.
         if configuration None or empty, it will set accepted_users to an empty set.
         if configuration is "all", it will set accepted_users to all users in the bot's guilds.
         Will also update the user_database to contain all accepted users.
         :param bot: The bot instance to initialize the UserManager with, used to determine all users which the bot can see.
-        :param user_database: The UserDatabase, needed to update all users into the database.
         """
         accepted_users_config = ConfigLoader.get_config().accepted_users
         UserManager.accepted_users = UserManager._get_users_from_config(accepted_users_config, bot)
@@ -29,9 +26,10 @@ class UserManager:
         bot_replies_users_config = ConfigLoader.get_config().bot_replies_users
         UserManager.bot_replies_users = UserManager._get_users_from_config(bot_replies_users_config, bot)
 
-        UserManager.user_database = user_database
+        from database.DatabaseCollection import DatabaseCollection
+        UserManager.user_database = DatabaseCollection.user_database
         for user in UserManager.accepted_users:
-            user_database.add_user(UserEntry(*(user.id,user.name,user.display_name)))
+            DatabaseCollection.user_database.add_user(UserEntry(*(user.id,user.name,user.display_name)))
 
         print(f"UserManager initialized with accepted users: {UserManager.accepted_users}")
         print(f"UserManager initialized with bot replies users: {UserManager.bot_replies_users}\n")
@@ -70,7 +68,8 @@ class UserManager:
         :return: A UserEntry object containing the user's information, or None if the user is not found.
         """
         if user_id:
-            return UserManager.user_database.get_user_by_id(user_id)
+            from database.DatabaseCollection import DatabaseCollection
+            return DatabaseCollection.user_database.get_user_by_id(user_id)
         if user_name:
             ids = [member.id for member in UserManager.accepted_users if member.name == user_name]
             return UserManager.get_user_entry(user_id = ids[0]) if len(ids) > 0 else None

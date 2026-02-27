@@ -12,6 +12,11 @@ class DatabaseCollection:
     A collection of databases.
     """
     igdb_databases: IGDBDatabaseCollection = None
+    user_database: UserDatabase = None
+    list_database: ListDatabase = None
+    tokens_database: TokensDatabase = None
+    time_database: TimeDatabase = None
+    backlog_database: BacklogDatabase = None
 
     def __init__(self,database_folder_path: str):
         """
@@ -23,46 +28,15 @@ class DatabaseCollection:
         self.create_database_folder_if_not_exists(database_folder_path)
         self.__database_folder_path = database_folder_path
 
-        self.user_database: UserDatabase = None
-        self.list_database: ListDatabase = None
-        self.tokens_database: TokensDatabase = None
-        self.time_database: TimeDatabase = None
-        self.backlog_database: BacklogDatabase = None
-
-    def init_user_database(self):
+    def init_databases(self):
         """
-        Initializes the user database.
+        Initializes all databases.
         """
-        self.user_database: UserDatabase = UserDatabase(self.__database_folder_path)
-
-    def init_list_database(self):
-        """
-        Initializes the list database.
-        """
-        self.list_database: ListDatabase = ListDatabase(self.__database_folder_path)
-
-    def init_tokens_database(self):
-        """
-        Initializes the tokens database.
-        """
-        self.tokens_database: TokensDatabase = TokensDatabase(self.__database_folder_path)
-
-    def init_time_database(self):
-        """
-        Initializes the time tracking database.
-        """
-        self.time_database: TimeDatabase = TimeDatabase(self.__database_folder_path)
-
-    def init_backlog_database(self):
-        """
-        Initializes the backlog database.
-        """
-        self.backlog_database: BacklogDatabase = BacklogDatabase(self.__database_folder_path)
-
-    def init_igdb_databases(self):
-        """
-        Initializes the IGDB databases.
-        """
+        DatabaseCollection.user_database = UserDatabase(self.__database_folder_path)
+        DatabaseCollection.list_database = ListDatabase(self.__database_folder_path)
+        DatabaseCollection.tokens_database = TokensDatabase(self.__database_folder_path)
+        DatabaseCollection.time_database = TimeDatabase(self.__database_folder_path)
+        DatabaseCollection.backlog_database = BacklogDatabase(self.__database_folder_path)
         DatabaseCollection.igdb_databases = IGDBDatabaseCollection(self.__database_folder_path)
 
     @staticmethod
