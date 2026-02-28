@@ -12,13 +12,14 @@ class GameList:
     """
     This class represents a list of games for a user.
     """
-    def __init__(self,ctx: discord.Interaction,user: str = None):
+    def __init__(self,ctx: discord.Interaction,user_id: int = None):
         self.ctx = ctx
-        self.user = user if user is not None else ctx.author.name
+        self.user_id = user_id if user_id is not None else ctx.author.id
+        self.user_entry = UserManager.get_user_entry(user_id=self.user_id)
         self.page = 1
         self.max_entries_per_page = 5
-        self.games = DatabaseCollection.list_database.get_all_game_entries(ctx.author.id,str(TimeUtils.get_current_year()))
-        self.years = DatabaseCollection.list_database.get_years(self.user) # List of years in which the user has added games used for adding buttons to view specific years
+        self.games = DatabaseCollection.list_database.get_all_game_entries(self.user_id,str(TimeUtils.get_current_year()))
+        self.years = DatabaseCollection.list_database.get_years(self.user_id) # List of years in which the user has added games used for adding buttons to view specific years
 
     @staticmethod
     async def game_entry_to_list_entry(game_entry: GameEntry,guild) -> str:
@@ -95,7 +96,7 @@ class GameList:
         if len(self.games) == 0:
             await MessageManager.send_error_message(self.ctx.channel,"you have No Games in your List")
 
-        embed_title = f"**{self.ctx.author.display_name}'games**"
+        embed_title = f"**{self.user_entry.display_name}'games**"
         embed_description = await self.get_list_txt(guild)
         embed = MessageManager.get_embed(title=embed_title,description=embed_description,user=self.ctx.author)
 
@@ -133,8 +134,7 @@ class GameList:
         if len(self.years) > 1:
             for year in self.years:
                 async def year_callback(interaction: discord.Interaction,current_year=year):
-                    user_entry = UserManager.get_user_entry(user_name=self.user)
-                    self.games = DatabaseCollection.list_database.get_all_game_entries(user_entry.user_id,year=current_year)
+                    self.games = DatabaseCollection.list_database.get_all_game_entries(self.user_entry.user_id,year=current_year)
                     self.page = 1
                     embed.description = await self.get_list_txt(guild)
 

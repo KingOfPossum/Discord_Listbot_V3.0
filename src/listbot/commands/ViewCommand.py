@@ -79,6 +79,7 @@ class ViewCommand(Command):
 
         instances = DatabaseCollection.list_database.get_all_instances_of_game(game_name,user_entry.user_id)
         if not instances:
+            await MessageManager.send_error_message(ctx.channel,"No game found with that name")
             return
 
         game_entry_index = 0

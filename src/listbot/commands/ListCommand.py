@@ -37,7 +37,7 @@ class ListCommand(Command):
             if not user_entry:
                 user_entry = UserManager.get_user_entry(display_name=user)
 
-            game_list = GameList(ctx,user=user_entry.user_name)
+            game_list = GameList(ctx,user_id=user_entry.user_id)
 
         await game_list.send_list(ctx.guild)
 
