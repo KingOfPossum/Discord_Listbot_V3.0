@@ -13,7 +13,6 @@ class DownloadManager:
 
     youtube_options = {
         'format': 'bestaudio/best',
-        'outtmpl': f'{ConfigLoader.get_config().music_folder_path}%(id)s.%(ext)s',
         'noplaylist': True,
         'quiet': True,
         'default_search': 'ytsearch',
@@ -43,6 +42,15 @@ class DownloadManager:
         "Deleted video",
         "This video is unavailable",
     }
+
+    @staticmethod
+    def init_options():
+        """
+        Initializes the options for yt_dlp based on the configuration.
+        Will set the output template to the music folder path specified in the configuration, with the video ID and extension as the filename.
+        Needs to be called after the configuration is loaded as either the folder or the config could not exist at that point.
+        """
+        DownloadManager.youtube_options['outtmpl'] = f'{ConfigLoader.get_config().music_folder_path}%(id)s.%(ext)s'
 
     @staticmethod
     def extract_video_id_from_url(url: str) -> str:

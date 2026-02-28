@@ -14,6 +14,7 @@ from listbot.commands.ListCommands import ListCommands
 from timeTracking.TimeTracker import TimeTracker
 from timeTracking.commands.TimeTrackingCommands import TimeTrackingCommands
 from tokenSystem.commands.TokenCommands import TokenCommands
+from voice.DownloadManager import DownloadManager
 from voice.MusicManager import MusicManager
 from voice.SongUpdater import SongUpdater
 from voice.commands.VoiceCommands import VoiceCommands
@@ -55,6 +56,8 @@ class Bot(commands.Bot):
         self.tokens_commands = TokenCommands()
         self.time_commands = TimeTrackingCommands()
         self.voice_commands = VoiceCommands()
+
+        DownloadManager.init_options()
 
     async def setup_hook(self):
         """A setup hook that is called when the bot is ready."""
