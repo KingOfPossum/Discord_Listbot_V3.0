@@ -88,9 +88,14 @@ The bot will also have a help command that will list all commands, the way to us
 - `%stop` : Will stop the currently played song
 
 ## Setup
-1. Clone the repository
-2. Install the dependencies by running `pip install -r requirements.txt`
-3. Create a Discord bot and get its api token
+1. Clone the repository and initialize the submodule:
+   ```bash
+   git clone https://github.com/KingOfPossum/Discord_Listbot_V3.0.git
+   git submodule update --init --recursive
+   ```
+2. Install all dependencies:\
+   ```pip install -r requirements.txt```
+3. Create a Discord bot and get its api token from the [Discord Developer Portal](https://discord.com/developers/applications)
 4. Invite the bot to your server with the following permissions:
     - Read Messages
     - Send Messages
