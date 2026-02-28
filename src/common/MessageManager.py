@@ -32,7 +32,9 @@ class MessageManager:
         :param view: An optional view to be added to the message.
         :return: The created message.
         """
-        kwargs = {"content": message}
+        kwargs = {}
+        if message:
+            kwargs["content"] = message
         if embed:
             kwargs["embed"] = embed
         if view:

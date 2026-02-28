@@ -90,9 +90,11 @@ class GameCreationModal(discord.ui.Modal):
         :param view: The view that contains the buttons for replayed and completed status.
         """
         changed_game_view_txt = ViewCommand.get_game_view_txt(new_game_entry,self.game)
-        new_embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * new_game_entry.hundred_percent}**",
+        new_embed = MessageManager.get_embed(f"**{self.children[0].value} {"(100%)" * new_game_entry.hundred_percent}**",
                                              description=changed_game_view_txt, user=user)
-        new_embed.set_thumbnail(url=self.game.cover_url)
+
+        if self.game:
+            new_embed.set_thumbnail(url=self.game.cover_url)
 
         if interaction.response.is_done():
             await interaction.followup.edit_message(embed=new_embed, view=view)
@@ -168,10 +170,14 @@ class GameCreationModal(discord.ui.Modal):
             if not self.game:
                 print("Game not found in database, fetching from IGDB...")
                 igdb_game = Game.from_igdb(Wrapper.wrapper, self.game_entry.name, self.game_entry.console)
-                self.game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
-                DatabaseCollection.igdb_databases.add_game(self.game)
+                if igdb_game:
+                    self.game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
+                    DatabaseCollection.igdb_databases.add_game(self.game)
 
-            self.game_entry.igdb_game_id = self.game.game_id
+            if self.game:
+                self.game_entry.igdb_game_id = self.game.game_id
+            else:
+                self.game_entry.igdb_game_id = None
             DatabaseCollection.list_database.put_game(self.game_entry)
 
             if DatabaseCollection.backlog_database:
@@ -184,7 +190,7 @@ class GameCreationModal(discord.ui.Modal):
             await EmojiCreator.create_console_emoji_if_not_exists(interaction.guild, self.game_entry.console)
 
             game_view_txt = ViewCommand.get_game_view_txt(self.game_entry,self.game)
-            embed = MessageManager.get_embed(f"**{self.children[0]} {"(100%)" * self.game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
+            embed = MessageManager.get_embed(f"**{self.children[0].value} {"(100%)" * self.game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
             if self.game and self.game.cover_url:
                 embed.set_thumbnail(url=self.game.cover_url)
 
