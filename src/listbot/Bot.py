@@ -18,21 +18,12 @@ from voice.MusicManager import MusicManager
 from voice.SongUpdater import SongUpdater
 from voice.commands.VoiceCommands import VoiceCommands
 
-
 class Bot(commands.Bot):
     """
     A Discord bot that manages a list of games.
     """
     _databases:DatabaseCollection = None
     command_prefix: str = None
-
-    @property
-    def databases(self) -> DatabaseCollection:
-        """
-        Returns the collection of databases used by the bot.
-        :return: the DatabaseCollection instance containing the bot's databases.
-        """
-        return self._databases
 
     def __init__(self):
         """
@@ -48,10 +39,7 @@ class Bot(commands.Bot):
         Wrapper.init()
 
         self._databases = DatabaseCollection(self.__config_data.database_folder_path)
-        self._databases.init_list_database()
-        self._databases.init_tokens_database()
-        self._databases.init_time_database()
-        self._databases.init_backlog_database()
+        self._databases.init_databases()
 
         self.music_manager = MusicManager(self.__config_data.music_folder_path)
 
@@ -61,11 +49,11 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=self.command_prefix, intents=self.__intents)
 
         self.remove_command('help')
-        self.backlog_commands = BacklogCommands(self._databases)
-        self.list_commands = ListCommands(self._databases)
+        self.backlog_commands = BacklogCommands()
+        self.list_commands = ListCommands()
         self.general_commands = GeneralCommands()
-        self.tokens_commands = TokenCommands(self._databases)
-        self.time_commands = TimeTrackingCommands(self._databases)
+        self.tokens_commands = TokenCommands()
+        self.time_commands = TimeTrackingCommands()
         self.voice_commands = VoiceCommands()
 
     async def setup_hook(self):
@@ -81,7 +69,7 @@ class Bot(commands.Bot):
 
     async def register_events(self):
         """Registers the bot events cog."""
-        await self.add_cog(BotEvents(self,self._databases))
+        await self.add_cog(BotEvents(self))
         print("Registered BotEvents cog.")
 
     async def register_commands(self):
@@ -98,7 +86,7 @@ class Bot(commands.Bot):
 
     async def register_tasks(self):
         """Registers the bot tasks."""
-        await self.add_cog(TimeTracker(self,self._databases.time_database))
+        await self.add_cog(TimeTracker(self))
         await self.add_cog(Updater(self))
         await self.add_cog(SongUpdater(self))
         print("Registered TimeTracker task.")

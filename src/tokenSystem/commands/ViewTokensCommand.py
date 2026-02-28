@@ -4,15 +4,13 @@ from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.TokensDatabase import TokensDatabase
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class ViewTokensCommand(Command):
     """
     Command to view infos about your tokens and coins.
     """
-    def __init__(self,database: TokensDatabase):
-        self.database = database
 
     @commands.command(name="viewTokens",aliases=["tokens","viewtokens","VIEWTOKENS","view_tokens","View_Tokens","VIEW_TOKENS"])
     async def execute(self,ctx:discord.Interaction):
@@ -24,7 +22,7 @@ class ViewTokensCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        entry = self.database.get_tokens_entry(ctx.author.name)
+        entry = DatabaseCollection.tokens_database.get_tokens_entry(ctx.author.id)
         if not entry:
             await MessageManager.send_error_message(ctx.channel,"No entry in tokens database found!")
 

@@ -6,7 +6,7 @@ from common.MessageManager import MessageManager
 from common.TimeEntry import TimeEntry
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
-from database.TimeDatabase import TimeDatabase
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class TimeStatsCommand(Command):
@@ -14,9 +14,6 @@ class TimeStatsCommand(Command):
     Command to get time tracking statistics.
     """
     ENTRIES_PER_PAGE = 5
-
-    def __init__(self, time_database: TimeDatabase):
-        self.time_database = time_database
 
     @commands.command(name="timeStats", aliases=["timestats", "TimeStats", "TIMESTATS", "ts", "TS"])
     async def execute(self, ctx):
@@ -29,7 +26,7 @@ class TimeStatsCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        entries = sorted(self.time_database.get_all_time_entries(user=ctx.author.name),key=lambda t: t.time_spent,reverse=True)
+        entries = sorted(DatabaseCollection.time_database.get_all_time_entries(user_id=ctx.author.id),key=lambda t: t.time_spent,reverse=True)
 
         if not entries or len(entries) == 0:
             await MessageManager.send_error_message(ctx.channel,"You have no time statistics yet.")
@@ -67,17 +64,20 @@ class TimeStatsCommand(Command):
         view.add_item(prev_button)
         view.add_item(next_button)
 
-        for user in self.time_database.get_users():
-            user_button = discord.ui.Button(label=UserManager.get_display_name(user), style=discord.ButtonStyle.gray)
+        for user in DatabaseCollection.time_database.get_users():
+            user_entry = UserManager.get_user_entry(user_id=user)
 
-            async def user_callback(interaction: discord.Interaction, current_user=user):
+            user_button = discord.ui.Button(label=user_entry.display_name, style=discord.ButtonStyle.gray)
+
+            async def user_callback(interaction: discord.Interaction, current_user=user_entry.user_name):
                 nonlocal current_page,entries,page_amount,selected_user
+                selected_user = UserManager.get_user_entry(user_name=current_user)
+
                 current_page = 1
-                entries = sorted(self.time_database.get_all_time_entries(user=current_user),key=lambda t: t.time_spent,reverse=True)
+                entries = sorted(DatabaseCollection.time_database.get_all_time_entries(user_id=selected_user.user_id),key=lambda t: t.time_spent,reverse=True)
                 page_amount = (len(entries) + self.ENTRIES_PER_PAGE - 1) // self.ENTRIES_PER_PAGE
 
-                selected_user = UserManager.get_display_name(current_user)
-                new_embed = self.get_time_stats_embed(selected_user,entries,current_page,page_amount)
+                new_embed = self.get_time_stats_embed(selected_user.user_name,entries,current_page,page_amount)
 
                 await interaction.response.edit_message(embed=new_embed, view=view)
 

@@ -1,19 +1,19 @@
 from common.TimeEntry import TimeEntry
 from common.UserManager import UserManager
-from database.TimeDatabase import TimeDatabase
 from discord.ext import commands,tasks
+
+from database.DatabaseCollection import DatabaseCollection
+
 
 class TimeTracker(commands.Cog):
     """Time Tracker Cog. This cog tracks the time spent on various activities."""
 
-    def __init__(self,bot: commands.Bot,time_database: TimeDatabase):
+    def __init__(self,bot: commands.Bot):
         """
         Initializes the TimeTracker cog with a bot instance.
         :param bot: The bot instance to which this cog will be added.
-        :param time_database: The TimeDatabase instance for storing and loading time tracking data.
         """
         self.bot = bot
-        self.time_database = time_database
         self.tracking_dict = None
 
     async def cog_load(self):
@@ -41,17 +41,17 @@ class TimeTracker(commands.Cog):
             if user.activity is None:
                 continue
 
-            if not user.name in self.tracking_dict.keys():
-                self.add_user_to_tracking_dict(user.name)
+            if not user.id in self.tracking_dict.keys():
+                self.add_user_to_tracking_dict(user.id)
 
-            if self.tracking_dict[user.name]["current_activity"] == user.activity.name:
+            if self.tracking_dict[user.id]["current_activity"] == user.activity.name:
                 try:
-                    self.tracking_dict[user.name]["activities"][user.activity.name] += 10
+                    self.tracking_dict[user.id]["activities"][user.activity.name] += 10
                 except KeyError:
-                    self.tracking_dict[user.name]["activities"][user.activity.name] = 10
-                new_entry = TimeEntry(user.name,user.activity.name,self.tracking_dict[user.name]["activities"][user.activity.name])
-                self.time_database.put_entry(new_entry)
-            self.tracking_dict[user.name]["current_activity"] = user.activity.name
+                    self.tracking_dict[user.id]["activities"][user.activity.name] = 10
+                new_entry = TimeEntry(user.id,user.activity.name,self.tracking_dict[user.id]["activities"][user.activity.name])
+                DatabaseCollection.time_database.put_entry(new_entry)
+            self.tracking_dict[user.id]["current_activity"] = user.activity.name
 
     @track_time.before_loop
     async def before_track_time(self):
@@ -74,21 +74,21 @@ class TimeTracker(commands.Cog):
         }
         :return:
         """
-        entries = self.time_database.get_all_time_entries()
-        users = self.time_database.get_users()
+        entries = DatabaseCollection.time_database.get_all_time_entries()
+        users = DatabaseCollection.time_database.get_users()
 
         new_dict = {}
-        for user in users:
-            new_dict[user] = {"current_activity": None, "activities": {}}
+        for user_id in users:
+            new_dict[user_id] = {"current_activity": None, "activities": {}}
 
         for entry in entries:
-            new_dict[entry.user]["activities"][entry.activity] = entry.time_spent
+            new_dict[entry.user_id]["activities"][entry.activity] = entry.time_spent
 
         self.tracking_dict = new_dict
 
-    def add_user_to_tracking_dict(self,user: str):
+    def add_user_to_tracking_dict(self,user_id: int):
         """
         Initializes the given user in the tracking dictionary.
-        :param user: The user to initialize in the tracking dictionary.
+        :param user_id: The ID of the user to initialize in the tracking dictionary.
         """
-        self.tracking_dict[user] = {"current_activity": None, "activities": {}}
+        self.tracking_dict[user_id] = {"current_activity": None, "activities": {}}

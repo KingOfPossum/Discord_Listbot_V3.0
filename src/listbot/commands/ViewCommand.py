@@ -6,24 +6,21 @@ from common.ConfigLoader import ConfigLoader
 from common.EmojiCreator import EmojiCreator
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
+from common.IGDBGameEntry import IGDBGameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
-from common.Wrapper import Wrapper
-from database.ListDatabase import ListDatabase
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
-from Game import Game
 
 class ViewCommand(Command):
     """
     Command to view game details from a specific game
     Supports both own user and other users
     """
-    def __init__(self,database: ListDatabase):
-        self.database = database
 
     @staticmethod
-    def get_game_view_txt(game_entry: GameEntry, game_data: Game) -> str:
+    def get_game_view_txt(game_entry: GameEntry, game_data: IGDBGameEntry) -> str:
         """
         Creates an embed for the game view command.
         Contains all information about the game entry.
@@ -35,17 +32,17 @@ class ViewCommand(Command):
 
         view_game_details = f"**Console:** {console_emoji}\n" \
                             f"**Rating:** {game_entry.rating}\n" \
-                            f"**Genre:** {", ".join([genre for genre in game_data.genres[0]] if game_data else "IDK")}\n" \
+                            f"**Genre:** {", ".join([genre for genre in game_data.genres] if game_data else "IDK")}\n" \
                             f"**Review:** {game_entry.review}\n\n" \
                             f"**Replay:** {[Emojis.CROSS_MARK, Emojis.CHECK_MARK][game_entry.replayed]}\n\n" \
                             f"Added on **{TimeUtils.convert_to_readable_form(game_entry.date)}**"
 
         return view_game_details
 
-    def get_game_embed(self,game_entry: GameEntry,game_infos: Game):
+    def get_game_embed(self,game_entry: GameEntry,game_infos: IGDBGameEntry):
         embed = MessageManager.get_embed(title=f"**{game_entry.name} {"(100%)" * game_entry.hundred_percent}**",
                                          description=self.get_game_view_txt(game_entry, game_infos))
-        embed.set_thumbnail(url=game_infos.cover)
+        embed.set_thumbnail(url=game_infos.cover_url)
         return embed
 
     @commands.command(name="view",aliases=["View","v","viewGame","ViewGame","VIEW","VIEWGAME","view_game","View_Game","VIEW_GAME","viewgame","Viewgame"])
@@ -72,13 +69,23 @@ class ViewCommand(Command):
             user = None
             game_name = " ".join(args)
 
-        instances = self.database.get_all_instances_of_game(game_name,user if user else ctx.author.name)
+        # Accept both username and display name to find the user
+        user_entry = UserManager.get_user_entry(user_name=user if user else ctx.author.name)
+        if not user_entry:
+            user_entry = UserManager.get_user_entry(display_name=user if user else ctx.author.display_name)
+
+        if not user_entry:
+            return
+
+        instances = DatabaseCollection.list_database.get_all_instances_of_game(game_name,user_entry.user_id)
         if not instances:
+            await MessageManager.send_error_message(ctx.channel,"No game found with that name")
             return
 
         game_entry_index = 0
         game_entry = instances[game_entry_index]
-        game_infos = Game.from_igdb(Wrapper.wrapper,game_name,game_entry.console)
+
+        game_infos = DatabaseCollection.igdb_databases.get_entry_by_id(game_entry.igdb_game_id)
 
         view = discord.ui.View()
 

@@ -1,19 +1,14 @@
-from discord.ext import commands
-
 from backlog.BacklogList import BacklogList
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.BacklogDatabase import BacklogDatabase
-
+from discord.ext import commands
 
 class ViewBacklogCommand(Command):
     """
     Command for viewing the backlog.
     """
-    def __init__(self,backlog_database: BacklogDatabase):
-        self.backlog_database = backlog_database
 
     @commands.command(name="viewBacklog",aliases=["ViewBacklog","VIEWBACKLOG","view_backlog","View_Backlog","VIEW_BACKLOG","backlog","Backlog","BACKLOG"])
     async def execute(self, ctx):
@@ -26,7 +21,7 @@ class ViewBacklogCommand(Command):
             await MessageManager.send_error_message(ctx.channel, "You are Not Allowed to use this command")
             return
 
-        backlog_list = BacklogList(self.backlog_database,ctx.author)
+        backlog_list = BacklogList(ctx.author)
         await backlog_list.send_list(ctx.channel)
 
     def help(self) -> str:

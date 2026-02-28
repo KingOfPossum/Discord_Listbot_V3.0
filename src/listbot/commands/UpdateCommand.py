@@ -6,15 +6,12 @@ from common.ConfigLoader import ConfigLoader
 from common.GameCreationModal import GameCreationModal
 from common.MessageManager import MessageManager
 from common.UserManager import UserManager
-from database.ListDatabase import ListDatabase
 from discord.ext import commands
 
 class UpdateCommand(Command):
     """
     Command to update an existing game in the list.
     """
-    def __init__(self,database: ListDatabase):
-        self.database = database
 
     @commands.command(name="update",aliases=["Update","UPDATE","u","updateGame","UpdateGame","UPDATEGAME","update_game","Update_Game","UPDATE_GAME"])
     async def execute(self, ctx):
@@ -30,14 +27,16 @@ class UpdateCommand(Command):
             return
 
         game_name = BotUtils.get_message_content(ctx.message)
-        game = await BotUtils.game_exists(game_name,self.database,ctx=ctx)
+        game = await BotUtils.game_exists(game_name,ctx=ctx)
         if game is None:
             return
 
         game_name, game_entry = game
 
+        print(game_entry)
+
         async def update_button_callback(interaction: discord.Interaction):
-            modal = GameCreationModal(list_database=self.database, token_database=None,game_entry=game_entry)
+            modal = GameCreationModal(game_entry=game_entry)
             await interaction.response.send_modal(modal)
 
         update_button = discord.ui.Button(label="Update Game",style=discord.ButtonStyle.blurple)

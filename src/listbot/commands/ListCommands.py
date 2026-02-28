@@ -1,4 +1,3 @@
-from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 from listbot.commands.AddCommand import AddCommand
 from listbot.commands.CompletedCommand import CompletedCommand
@@ -17,29 +16,20 @@ class ListCommands:
     Collection of commands related to managing the game list.
     This class registers these commands to the provided bot instance.
     """
-    def __init__(self,databases: DatabaseCollection):
-        """
-        Initializes the ListCommands cog.
-        """
-        self.databases = databases
 
     async def register(self, bot: commands.Bot):
         """
         Registers the commands in this cog with the provided bot.
         :param bot: The Discord bot instance to register commands with.
         """
-        list_database = self.databases.list_database
-        tokens_database = self.databases.tokens_database
-        backlog_database = self.databases.backlog_database
-
-        await bot.add_cog(AddCommand(list_database,tokens_database,backlog_database))
-        await bot.add_cog(UpdateCommand(list_database))
-        await bot.add_cog(RemoveCommand(list_database))
-        await bot.add_cog(ReplayedCommand(list_database))
-        await bot.add_cog(CompletedCommand(list_database))
-        await bot.add_cog(ViewCommand(list_database))
-        await bot.add_cog(ListCommand(list_database))
-        await bot.add_cog(StatsCommand(list_database))
+        await bot.add_cog(AddCommand())
+        await bot.add_cog(UpdateCommand())
+        await bot.add_cog(RemoveCommand())
+        await bot.add_cog(ReplayedCommand())
+        await bot.add_cog(CompletedCommand())
+        await bot.add_cog(ViewCommand())
+        await bot.add_cog(ListCommand())
+        await bot.add_cog(StatsCommand())
         await bot.add_cog(ConsolesCommand())
         await bot.add_cog(InfoCommand())
         await bot.add_cog(HelpCommand())

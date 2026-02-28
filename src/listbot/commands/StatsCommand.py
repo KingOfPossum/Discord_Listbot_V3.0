@@ -7,14 +7,14 @@ from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
-from database.ListDatabase import ListDatabase
 from discord import Embed
 from discord.ext import commands
 
+from database.DatabaseCollection import DatabaseCollection
+
+
 class StatsCommand(Command):
     """Command to view statistics about added games in the list and users."""
-    def __init__(self, list_database: ListDatabase):
-        self.list_database = list_database
 
     @commands.command(name="stats")
     async def execute(self, ctx):
@@ -77,7 +77,9 @@ class StatsCommand(Command):
 
         user_stats_view.add_item(back_button)
         for user in UserManager.accepted_users:
-            if self.list_database.does_user_have_entries(user.name):
+            user_entry = UserManager.get_user_entry(user_name=user.name)
+
+            if DatabaseCollection.list_database.does_user_have_entries(user_entry.user_id):
                 user_button = discord.ui.Button(label=user.display_name,style=discord.ButtonStyle.gray)
 
                 async def user_callback(interaction: discord.Interaction,current_user=user):
@@ -91,7 +93,7 @@ class StatsCommand(Command):
                 user_stats_view.add_item(user_button)
 
         year_buttons = {}
-        years = self.list_database.get_years()
+        years = DatabaseCollection.list_database.get_years()
         years.insert(0,None)
         for _year in years:
             year_button = discord.ui.Button(label=_year if _year is not None else "Total",style=discord.ButtonStyle.gray)
@@ -135,7 +137,8 @@ class StatsCommand(Command):
         :param year: The year to filter the statistics. If None, consider all years.
         :return: A tuple containing lists of statistics.
         """
-        game_entries = self.list_database.get_all_game_entries(user_name=user,year=year)
+        user_entry = UserManager.get_user_entry(user_name=user)
+        game_entries = DatabaseCollection.list_database.get_all_game_entries(user_id=user_entry.user_id if user_entry else None,year=year)
         print(game_entries)
 
         highest_rated_games = [(entry.name, entry.rating) for entry in
@@ -245,11 +248,11 @@ class StatsCommand(Command):
 
         for entry in game_entries:
             try:
-                game_counts[entry.user] += 1
+                game_counts[entry.user_id] += 1
             except KeyError:
-                game_counts[entry.user] = 1
+                game_counts[entry.user_id] = 1
 
-        return [(user, count) for user,count in sorted(game_counts.items(), key=lambda item: item[1], reverse=True)]
+        return [(UserManager.get_user_entry(user_id=user).display_name, count) for user,count in sorted(game_counts.items(), key=lambda item: item[1], reverse=True)]
 
     def get_months_counts(self,game_entries: list[GameEntry]) -> list[tuple[str,int]]:
         """

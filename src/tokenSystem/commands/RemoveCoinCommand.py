@@ -5,15 +5,13 @@ from common.ConfigLoader import ConfigLoader
 from common.MessageManager import MessageManager
 from common.TokensEntry import TokensEntry
 from common.UserManager import UserManager
-from database.TokensDatabase import TokensDatabase
+from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
 class RemoveCoinCommand(Command):
     """
     Command to remove a coin from a users account.
     """
-    def __init__(self,database: TokensDatabase):
-        self.database = database
 
     @commands.command(name="removeCoin",aliases=["RemoveCoin","REMOVECOIN","remove_coin","Remove_Coin","removecoin","REMOVE_COIN"])
     async def execute(self,ctx:discord.Interaction):
@@ -25,7 +23,7 @@ class RemoveCoinCommand(Command):
             await MessageManager.send_error_message(ctx.channel,"You are Not Allowed to use this command")
             return
 
-        entry: TokensEntry = self.database.remove_coin(ctx.author.name)
+        entry: TokensEntry = DatabaseCollection.tokens_database.remove_coin(ctx.author.id)
         if entry:
             await MessageManager.send_message(ctx.channel,f"Removed a coin from your account. You now have {entry.coins} coins left.")
         else:
