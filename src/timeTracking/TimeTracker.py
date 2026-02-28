@@ -32,8 +32,6 @@ class TimeTracker(commands.Cog):
         The tracking task that runs every 10 seconds.
         This will track the time spent on any activity.
         """
-        print("Tracking time...")
-
         if self.tracking_dict is None:
             self.load_tracking_dict()
 

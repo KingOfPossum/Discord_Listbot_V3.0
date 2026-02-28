@@ -90,9 +90,10 @@ class Bot(commands.Bot):
     async def register_tasks(self):
         """Registers the bot tasks."""
         await self.add_cog(TimeTracker(self))
-        await self.add_cog(Updater(self))
         await self.add_cog(SongUpdater(self))
-        print("Registered TimeTracker task.")
+
+        if ConfigLoader.get_config().automatic_updates:
+            await self.add_cog(Updater(self))
 
     def run_bot(self):
         """
