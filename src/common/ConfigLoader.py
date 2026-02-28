@@ -1,8 +1,6 @@
 import os
-from zoneinfo import available_timezones
-
-import yaml
 import re
+import yaml
 
 from common.Config import Config
 
@@ -66,6 +64,7 @@ class ConfigLoader:
                 file.write("  command_prefix: '%'\n")
                 file.write("  databases_folder_path: '../resources/databases/'\n")
                 file.write("  music_folder_path: '../resources/music/'\n")
+                file.write("  automatic_updates: False\n")
                 file.write("  create_emojis: True\n")
                 file.write("  bot_replies: True\n")
                 file.write("  bot_replies_to_links: False\n")
@@ -77,6 +76,7 @@ class ConfigLoader:
                 file.write("     - all\n")
                 file.write("  consoles:\n")
                 file.write("    test : test\n")
+                file.write("# IGDB configuration\n")
                 file.write("IGDB:\n")
                 file.write("  client_id:\n")
                 file.write("  client_secret:\n")
@@ -94,6 +94,7 @@ class ConfigLoader:
                           command_prefix=config_dict["bot"]["command_prefix"],
                           database_folder_path=config_dict["bot"]["databases_folder_path"],
                           music_folder_path=config_dict["bot"]["music_folder_path"],
+                          automatic_updates=config_dict["bot"]["automatic_updates"],
                           create_emojis=config_dict["bot"]["create_emojis"],
                           bot_replies=config_dict["bot"]["bot_replies"],
                           bot_replies_to_links=config_dict["bot"]["bot_replies_to_links"],
