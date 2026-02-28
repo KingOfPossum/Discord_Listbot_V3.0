@@ -88,22 +88,21 @@ The bot will also have a help command that will list all commands, the way to us
 - `%stop` : Will stop the currently played song
 
 ## Setup
-1. Clone the repository and initialize the submodule:
-   ```bash
-   git clone https://github.com/KingOfPossum/Discord_Listbot_V3.0.git
-   git submodule update --init --recursive
-   ```
-2. Install all dependencies:\
+1. Clone the repository:\
+   ```git clone https://github.com/KingOfPossum/Discord_Listbot_V3.0.git```
+2. Initialize the submodules:\
+   ```git submodule update --init --recursive```
+3. Install all dependencies:\
    ```pip install -r requirements.txt```
-3. Create a Discord bot and get its api token from the [Discord Developer Portal](https://discord.com/developers/applications)
-4. Invite the bot to your server with the following permissions:
+4. Create a Discord bot and get its api token from the [Discord Developer Portal](https://discord.com/developers/applications)
+5. Invite the bot to your server with the following permissions:
     - Read Messages
     - Send Messages
     - Manage Emojis and Stickers
     - Use External Emojis
     - View Channel
-5. Create an account on IGDB and get a client ID and client secret
-6. Run the bot by executing `python main.py` in your terminal. The first time this will fail, but it will create the `\resources` folder with all needed files like the databases and `config.yaml`
-7. Open the `config.yaml` file located in the `\resources` folder and fill in your Discord bot token, IGDB client ID and client secret
-8. (Optional) Change other settings in the `config.yaml` file to your liking
-9. Restart the bot and enjoy
+6. Create an account on IGDB and get a client ID and client secret
+7. Run the bot by executing `python main.py` in your terminal. The first time this will fail, but it will create the `\resources` folder with all needed files like the databases and `config.yaml`
+8. Open the `config.yaml` file located in the `\resources` folder and fill in your Discord bot token, IGDB client ID and client secret
+9. (Optional) Change other settings in the `config.yaml` file to your liking
+10. Restart the bot and enjoy
