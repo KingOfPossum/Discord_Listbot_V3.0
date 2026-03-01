@@ -161,7 +161,7 @@ class ListDatabase(Database):
 
         return len(data) > 0
 
-    def get_highest_rated_games(self,user_id: int = None,year:str = None, limit: int = 3) -> list[tuple[str,int]]:
+    def get_highest_rated_games(self,user_id: int = None,year:int = None, limit: int = 3) -> list[tuple[str,int]]:
         """
         Retrieves the highest rated games for a specific user, limited to a specified number of entries from a specific year.
         If no user_id is provided, retrieves the highest rated games across all users.
@@ -178,7 +178,7 @@ class ListDatabase(Database):
 
         return self.sql_execute_fetchall(query, (limit,))
 
-    def get_worst_rated_games(self,user_id: int = None,year:str = None,limit: int = 3) -> list[tuple[str,int]]:
+    def get_worst_rated_games(self,user_id: int = None,year:int = None,limit: int = 3) -> list[tuple[str,int]]:
         """
         Retrieves the worst rated games for a specific user, limited to a specified number of entries.
         If no user_id is provided, retrieves the worst rated games across all users.
@@ -194,7 +194,7 @@ class ListDatabase(Database):
 
         return self.sql_execute_fetchall(query, (limit,))
 
-    def get_user_game_counts(self,year:str = None,limit:int = 3) -> list[tuple[str,int]]:
+    def get_user_game_counts(self,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
         """
         Retrieves for all users the number of games they have added to the database.
         If a year is provided, only counts the games added in that year.
@@ -215,7 +215,7 @@ class ListDatabase(Database):
         print(result)
         return [(UserManager.get_user_entry(user_id=user_id).display_name,game_count) for user_id,game_count in result]
 
-    def get_months_counts(self,user_id:int = None,year:str = None,limit:int = 3) -> list[tuple[str,int]]:
+    def get_months_counts(self,user_id:int = None,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
         """
         Retrieves the number of games added to the database for each month of a specific year.
         If no year is provided, retrieves the counts for all months across all years.
@@ -240,7 +240,7 @@ class ListDatabase(Database):
         num_to_month = {"01": "January", "02": "February", "03": "March", "04": "April", "05": "May", "06": "June", "07": "July", "08": "August", "09": "September", "10": "October", "11": "November", "12": "December"}
         return [(num_to_month.get(month, "Unknown"), game_count) for month, game_count in result]
 
-    def get_console_counts(self,user_id:int = None,year:str = None,limit:int = 3) -> list[tuple[str,int]]:
+    def get_console_counts(self,user_id:int = None,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
         """
         Retrieves the number of games added to the database for each console in a specific year.
         If no year is provided, retrieves the counts for all consoles across all years.
@@ -262,7 +262,7 @@ class ListDatabase(Database):
                 """
         return self.sql_execute_fetchall(query,(limit,))
 
-    def get_genre_counts(self,user_id:int = None,year:str = None,limit:int = 3) -> list[tuple[str,int]]:
+    def get_genre_counts(self,user_id:int = None,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
         """
         Retrieves the number of games added to the database for each genre in a specific year for a specific user.
         If no year is provided, retrieves the counts for all genres across all years.

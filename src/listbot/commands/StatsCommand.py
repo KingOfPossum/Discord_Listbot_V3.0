@@ -152,7 +152,7 @@ class StatsCommand(Command):
                                       f"**Most Played Genre:**\n{self.convert_to_string(genre_counts)}")
         return embed
 
-    def get_consoles_stats_embed(self,year) -> Embed:
+    def get_consoles_stats_embed(self,year:int) -> Embed:
         """
         Creates the consoles stats embed which shows the top 10 most used consoles.
         :param year: The year for which the stats are shown.
@@ -166,7 +166,7 @@ class StatsCommand(Command):
 
         return embed
 
-    def get_ratings_stats_embed(self,year) -> Embed:
+    def get_ratings_stats_embed(self,year:int) -> Embed:
         """
         Creates the ratings stats embed which shows the top 10 highest rated games.
         :param year: The year for which the stats are shown.
@@ -180,7 +180,7 @@ class StatsCommand(Command):
 
         return embed
 
-    def get_months_stats_embed(self,year) -> Embed:
+    def get_months_stats_embed(self,year:int) -> Embed:
         """
         Creates the months stats embed which shows the top 10 most active months.
         :param year: The year for which the stats are shown.
