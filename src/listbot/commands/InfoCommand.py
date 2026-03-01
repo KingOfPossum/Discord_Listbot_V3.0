@@ -1,3 +1,5 @@
+import requests
+
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
@@ -23,7 +25,13 @@ class InfoCommand(Command):
         game_name = BotUtils.get_message_content(ctx.message)
         game = DatabaseCollection.igdb_databases.get_entry_by_name(game_name)
         if not game:
-            igdb_game = Game.from_igdb(Wrapper.wrapper,game_name)
+            try:
+                igdb_game = Game.from_igdb(Wrapper.wrapper,game_name)
+            except requests.exceptions.HTTPError as e:
+                print("Error fetching game from IGDB: ", e)
+                await MessageManager.send_error_message(ctx.channel,"Something went wrong :(")
+                return
+
             game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
             DatabaseCollection.igdb_databases.add_game(game)
 

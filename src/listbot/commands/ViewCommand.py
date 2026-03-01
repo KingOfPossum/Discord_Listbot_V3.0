@@ -1,5 +1,7 @@
 import discord
+import requests.exceptions
 
+from Game import Game
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
@@ -10,6 +12,7 @@ from common.IGDBGameEntry import IGDBGameEntry
 from common.MessageManager import MessageManager
 from common.TimeUtils import TimeUtils
 from common.UserManager import UserManager
+from common.Wrapper import Wrapper
 from database.DatabaseCollection import DatabaseCollection
 from discord.ext import commands
 
@@ -32,7 +35,7 @@ class ViewCommand(Command):
 
         view_game_details = f"**Console:** {console_emoji}\n" \
                             f"**Rating:** {game_entry.rating}\n" \
-                            f"**Genre:** {", ".join([genre for genre in game_data.genres] if game_data else "IDK")}\n" \
+                            f"**Genre:** {", ".join([genre for genre in game_data.genres]) if game_data else "IDK"}\n" \
                             f"**Review:** {game_entry.review}\n\n" \
                             f"**Replay:** {[Emojis.CROSS_MARK, Emojis.CHECK_MARK][game_entry.replayed]}\n\n" \
                             f"Added on **{TimeUtils.convert_to_readable_form(game_entry.date)}**"
@@ -42,7 +45,8 @@ class ViewCommand(Command):
     def get_game_embed(self,game_entry: GameEntry,game_infos: IGDBGameEntry):
         embed = MessageManager.get_embed(title=f"**{game_entry.name} {"(100%)" * game_entry.hundred_percent}**",
                                          description=self.get_game_view_txt(game_entry, game_infos))
-        embed.set_thumbnail(url=game_infos.cover_url)
+        if game_infos:
+            embed.set_thumbnail(url=game_infos.cover_url)
         return embed
 
     @commands.command(name="view",aliases=["View","v","viewGame","ViewGame","VIEW","VIEWGAME","view_game","View_Game","VIEW_GAME","viewgame","Viewgame"])
@@ -85,7 +89,22 @@ class ViewCommand(Command):
         game_entry_index = 0
         game_entry = instances[game_entry_index]
 
-        game_infos = DatabaseCollection.igdb_databases.get_entry_by_id(game_entry.igdb_game_id)
+        game_infos = None
+        if game_entry.igdb_game_id:
+            game_infos = DatabaseCollection.igdb_databases.get_entry_by_id(game_entry.igdb_game_id)
+
+        if not game_infos:
+            try:
+                igdb_game = Game.from_igdb(Wrapper.wrapper, game_entry.name, game_entry.console)
+            except requests.exceptions.HTTPError as e:
+                print("Error fetching game from IGDB: ", e)
+                igdb_game = None
+
+            if igdb_game:
+                game_infos = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
+                DatabaseCollection.igdb_databases.add_game(game_infos)
+                game_entry.igdb_game_id = game_infos.game_id
+                DatabaseCollection.list_database.put_game(game_entry)
 
         view = discord.ui.View()
 

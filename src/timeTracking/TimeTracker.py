@@ -1,9 +1,7 @@
 from common.TimeEntry import TimeEntry
 from common.UserManager import UserManager
-from discord.ext import commands,tasks
-
 from database.DatabaseCollection import DatabaseCollection
-
+from discord.ext import commands,tasks
 
 class TimeTracker(commands.Cog):
     """Time Tracker Cog. This cog tracks the time spent on various activities."""

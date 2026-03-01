@@ -101,7 +101,7 @@ The bot will also have a help command that will list all commands, the way to us
     - Manage Emojis and Stickers
     - Use External Emojis
     - View Channel
-6. Create an account on IGDB and get a client ID and client secret
+6. (Optional) Create an account on IGDB and get a client ID and client secret if you want to use the IGDB features of the bot. You can do this on the [IGDB website](https://www.igdb.com/)
 7. Run the bot by executing `python main.py` in your terminal. The first time this will fail, but it will create the `\resources` folder with all needed files like the databases and `config.yaml`
 8. Open the `config.yaml` file located in the `\resources` folder and fill in your Discord bot token, IGDB client ID and client secret
 9. (Optional) Change other settings in the `config.yaml` file to your liking
