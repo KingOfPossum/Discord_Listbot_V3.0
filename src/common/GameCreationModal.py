@@ -177,7 +177,7 @@ class GameCreationModal(discord.ui.Modal):
                     igdb_game = None
 
                 if igdb_game:
-                    self.game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
+                    self.game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],TimeUtils.timestamp_to_date(min(igdb_game.release_dates[0])),igdb_game.genres[0],igdb_game.platforms)
                     DatabaseCollection.igdb_databases.add_game(self.game)
 
             if self.game:

@@ -101,7 +101,7 @@ class ViewCommand(Command):
                 igdb_game = None
 
             if igdb_game:
-                game_infos = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
+                game_infos = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],TimeUtils.timestamp_to_date(min(igdb_game.release_dates[0])),igdb_game.genres[0],igdb_game.platforms)
                 DatabaseCollection.igdb_databases.add_game(game_infos)
                 game_entry.igdb_game_id = game_infos.game_id
                 DatabaseCollection.list_database.put_game(game_entry)
