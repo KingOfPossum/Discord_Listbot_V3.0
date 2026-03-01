@@ -1,4 +1,5 @@
 import discord
+import requests.exceptions
 
 from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
 from common.BacklogEntry import BacklogEntry
@@ -169,9 +170,14 @@ class GameCreationModal(discord.ui.Modal):
 
             if not self.game:
                 print("Game not found in database, fetching from IGDB...")
-                igdb_game = Game.from_igdb(Wrapper.wrapper, self.game_entry.name, self.game_entry.console)
+                try:
+                    igdb_game = Game.from_igdb(Wrapper.wrapper, self.game_entry.name, self.game_entry.console)
+                except requests.exceptions.HTTPError as e:
+                    print("Error fetching game from IGDB: ", e)
+                    igdb_game = None
+
                 if igdb_game:
-                    self.game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
+                    self.game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],TimeUtils.timestamp_to_date(min(igdb_game.release_dates[0])),igdb_game.genres[0],igdb_game.platforms)
                     DatabaseCollection.igdb_databases.add_game(self.game)
 
             if self.game:

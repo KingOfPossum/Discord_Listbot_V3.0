@@ -16,6 +16,7 @@ class IGDBGameEntry:
     game_name: str
     cover_url: str
     summary: str
+    release_date: str
     genres: list[str]
     platforms: list[str]
 
@@ -25,5 +26,6 @@ class IGDBGameEntry:
                f"   Game Name: {self.game_name}\n" \
                f"   Cover URL: {self.cover_url}\n" \
                f"   Summary: {self.summary}\n" \
+               f"   Release Date: {self.release_date}\n" \
                f"   Genres: {', '.join(self.genres)}\n" \
                f"   Platforms: {', '.join(self.platforms)}"

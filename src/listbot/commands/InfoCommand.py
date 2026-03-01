@@ -1,3 +1,5 @@
+import requests
+
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
@@ -23,12 +25,22 @@ class InfoCommand(Command):
         game_name = BotUtils.get_message_content(ctx.message)
         game = DatabaseCollection.igdb_databases.get_entry_by_name(game_name)
         if not game:
-            igdb_game = Game.from_igdb(Wrapper.wrapper,game_name)
-            game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],igdb_game.genres[0],igdb_game.platforms)
+            try:
+                igdb_game = Game.from_igdb(Wrapper.wrapper,game_name)
+
+                if not igdb_game:
+                    await MessageManager.send_error_message(ctx.channel,"No game found with that name :(")
+                    return
+
+            except requests.exceptions.HTTPError as e:
+                print("Error fetching game from IGDB: ", e)
+                await MessageManager.send_error_message(ctx.channel,"Something went wrong :(")
+                return
+
+            game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],TimeUtils.timestamp_to_date(min(igdb_game.release_dates[0])),igdb_game.genres[0],igdb_game.platforms)
             DatabaseCollection.igdb_databases.add_game(game)
 
-        #embed = MessageManager.get_embed(title=f"**{game_name}**",description=f"**Description:**\n{game.summary}\n**Genres:**\n{", ".join(game.genres)}\n**Platforms:**\n{", ".join(game.platforms)}\n**Release Date:**\n{TimeUtils.timestamp_to_date(min(game.release_dates))}")
-        embed = MessageManager.get_embed(title=f"**{game_name}**",description=f"**Description:**\n{game.summary}\n**Genres:**\n{", ".join(game.genres)}\n**Platforms:**\n{", ".join(game.platforms)}")
+        embed = MessageManager.get_embed(title=f"**{game_name}**",description=f"**Description:**\n{game.summary}\n**Genres:**\n{", ".join(game.genres)}\n**Platforms:**\n{", ".join(game.platforms)}\n**Release Date:**\n{game.release_date}")
         embed.set_thumbnail(url=game.cover_url)
         await MessageManager.send_message(ctx.channel,embed=embed)
 

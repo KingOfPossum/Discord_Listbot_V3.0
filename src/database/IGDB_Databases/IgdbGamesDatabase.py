@@ -7,7 +7,8 @@ class IGDBGamesDatabase(Database):
         game_id INTEGER,
         game_name TEXT NOT NULL,
         cover_url TEXT,
-        summary TEXT,        
+        summary TEXT,
+        release_date DATE,        
         PRIMARY KEY (game_id)
         """
 
@@ -20,8 +21,8 @@ class IGDBGamesDatabase(Database):
         Inserts a game entry into the database.
         :param igdb_entry: The IGDBGameEntry object containing the game information to be inserted into the database.
         """
-        query = f"INSERT INTO {self.table_name} (game_id,game_name,cover_url,summary) VALUES (?,?,?,?)"
-        self.sql_execute(query,(igdb_entry.game_id,igdb_entry.game_name,igdb_entry.cover_url,igdb_entry.summary))
+        query = f"INSERT INTO {self.table_name} (game_id,game_name,cover_url,summary,release_date) VALUES (?,?,?,?,?)"
+        self.sql_execute(query,(igdb_entry.game_id,igdb_entry.game_name,igdb_entry.cover_url,igdb_entry.summary,igdb_entry.release_date))
 
     def game_exists_by_id(self, game_id:int) -> bool:
         """

@@ -54,7 +54,7 @@ class IGDBDatabaseCollection:
         genres = self.get_genres(game_id)
         platforms = self.get_platforms(game_id)
 
-        return IGDBGameEntry(result[0],result[1],result[2],result[3],genres,platforms)
+        return IGDBGameEntry(result[0],result[1],result[2],result[3],result[4],genres,platforms)
 
     def get_entry_by_name(self,game_name: str) -> IGDBGameEntry | None:
         """
