@@ -1,6 +1,7 @@
 from dataclasses import astuple
 
 from common.GameEntry import GameEntry
+from common.UserManager import UserManager
 from database.Database import Database
 
 class ListDatabase(Database):
@@ -83,7 +84,7 @@ class ListDatabase(Database):
 
         return [GameEntry(*row) for row in data] if data else None
 
-    def get_all_game_entries(self,user_id:int=None,year=None) -> list[GameEntry]:
+    def get_all_game_entries(self,user_id:int=None,year:str=None) -> list[GameEntry]:
         """
         Retrieves all game entries from the database.
         Optionally filters for specific users or a specific year if userid/year is provided.
@@ -159,6 +160,133 @@ class ListDatabase(Database):
         data = self.sql_execute_fetchall(query, (user_id,))
 
         return len(data) > 0
+
+    def get_highest_rated_games(self,user_id: int = None,year:int = None, limit: int = 3) -> list[tuple[str,int]]:
+        """
+        Retrieves the highest rated games for a specific user, limited to a specified number of entries from a specific year.
+        If no user_id is provided, retrieves the highest rated games across all users.
+        If no year is provided, retrieves the highest rated games from all years.
+        :param user_id: The ID of the user whose highest rated games are to be retrieved.
+        :param year: The year to filter the game entries.
+        :param limit: The number of games to retrieve, default is 3.
+        :return: A list of Tuples containing the name and rating of the highest rated games for the specified user.
+        """
+        user_filter = f"user_id = '{user_id}'" if user_id else "1=1"
+        year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
+
+        query = f"SELECT name,rating FROM {self.table_name} WHERE {user_filter} AND {year_filter} ORDER BY rating DESC LIMIT ?"
+
+        return self.sql_execute_fetchall(query, (limit,))
+
+    def get_worst_rated_games(self,user_id: int = None,year:int = None,limit: int = 3) -> list[tuple[str,int]]:
+        """
+        Retrieves the worst rated games for a specific user, limited to a specified number of entries.
+        If no user_id is provided, retrieves the worst rated games across all users.
+        :param user_id: The ID of the user whose worst rated games are to be retrieved.
+        :param year: The year to filter the game entries.
+        :param limit: The number of games to retrieve, default is 3.
+        :return: A list of Tuples containing the name and rating of the worst rated games for the specified user.
+        """
+        user_filter = f"user_id = '{user_id}'" if user_id else "1=1"
+        year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
+
+        query = f"SELECT name,rating FROM {self.table_name} WHERE {user_filter} AND {year_filter} ORDER BY rating LIMIT ?"
+
+        return self.sql_execute_fetchall(query, (limit,))
+
+    def get_user_game_counts(self,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
+        """
+        Retrieves for all users the number of games they have added to the database.
+        If a year is provided, only counts the games added in that year.
+        :param year: The year to filter the game entries.
+        :param limit: The number of games to retrieve, default is 3.
+        :return: A list of tuples containing the user ID and the corresponding count of games added by that user, sorted by count in descending order.
+        """
+        year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
+        query = f"""
+                SELECT user_id, COUNT(*) as game_count
+                FROM {self.table_name}
+                WHERE {year_filter}
+                GROUP BY user_id
+                ORDER BY game_count DESC
+                LIMIT ?
+                """
+        result = self.sql_execute_fetchall(query, (limit,))
+        print(result)
+        return [(UserManager.get_user_entry(user_id=user_id).display_name,game_count) for user_id,game_count in result]
+
+    def get_months_counts(self,user_id:int = None,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
+        """
+        Retrieves the number of games added to the database for each month of a specific year.
+        If no year is provided, retrieves the counts for all months across all years.
+        :param user_id: The ID of the user whose counts are to be retrieved.
+        :param year: The year to filter the game entries.
+        :param limit: The number of games to retrieve, default is 3.
+        :return: A list of tuples containing the month and the corresponding count of games added in that month, sorted by the number of games.
+        """
+        user_filter = f"user_id = '{user_id}'" if user_id else "1=1"
+        year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
+
+        query = f"""
+                SELECT STRFTIME('%m', date) AS month, COUNT(*) as game_count
+                FROM {self.table_name}
+                WHERE {year_filter} AND {user_filter}
+                GROUP BY month
+                ORDER BY game_count DESC
+                LIMIT ?
+                """
+        result = self.sql_execute_fetchall(query,(limit,))
+
+        num_to_month = {"01": "January", "02": "February", "03": "March", "04": "April", "05": "May", "06": "June", "07": "July", "08": "August", "09": "September", "10": "October", "11": "November", "12": "December"}
+        return [(num_to_month.get(month, "Unknown"), game_count) for month, game_count in result]
+
+    def get_console_counts(self,user_id:int = None,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
+        """
+        Retrieves the number of games added to the database for each console in a specific year.
+        If no year is provided, retrieves the counts for all consoles across all years.
+        :param user_id: The ID of the user.
+        :param year: The year to filter the game entries.
+        :param limit: The number of consoles to retrieve, default is 3.
+        :return: A list of tuples containing the console and the corresponding count of games added for that console, sorted by the number of games.
+        """
+        user_filter = f"user_id = '{user_id}'" if user_id else "1=1"
+        year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
+
+        query = f"""
+                SELECT console, COUNT(*) as game_count
+                FROM {self.table_name}
+                WHERE {year_filter} AND {user_filter}
+                GROUP BY console
+                ORDER BY game_count DESC
+                LIMIT ?
+                """
+        return self.sql_execute_fetchall(query,(limit,))
+
+    def get_genre_counts(self,user_id:int = None,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
+        """
+        Retrieves the number of games added to the database for each genre in a specific year for a specific user.
+        If no year is provided, retrieves the counts for all genres across all years.
+        If no user_id is provided, retrieves the counts for all users.
+        :param user_id: The ID of the user to retrieve the genre counts for.
+        :param year: The year to filter the game entries.
+        :param limit: The number of genres to retrieve, default is 3.
+        :return: A list of tuples containing the genre and the corresponding count of games added for that genre, sorted by the number of games.
+        """
+        user_filter = f"user_id = '{user_id}'" if user_id else "1=1"
+        year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
+
+        query = f"""
+                SELECT genre_name, COUNT(*) as games_count
+                FROM {self.table_name} games
+                JOIN igdb_games igdb ON games.igdb_game_id = igdb.game_id
+                JOIN igdb_games_genres games_genres ON igdb.game_id = games_genres.game_id
+                JOIN igdb_genres genres ON games_genres.genre_id = genres.genre_id
+                WHERE {year_filter} AND {user_filter}
+                GROUP BY genre_name
+                ORDER BY games_count DESC
+                LIMIT ?
+                """
+        return self.sql_execute_fetchall(query, (limit,))
 
     def print_database(self):
         """Prints the contents of the database to the console."""
