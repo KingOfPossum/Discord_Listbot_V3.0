@@ -27,6 +27,11 @@ class InfoCommand(Command):
         if not game:
             try:
                 igdb_game = Game.from_igdb(Wrapper.wrapper,game_name)
+
+                if not igdb_game:
+                    await MessageManager.send_error_message(ctx.channel,"No game found with that name :(")
+                    return
+
             except requests.exceptions.HTTPError as e:
                 print("Error fetching game from IGDB: ", e)
                 await MessageManager.send_error_message(ctx.channel,"Something went wrong :(")
