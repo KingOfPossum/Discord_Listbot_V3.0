@@ -25,16 +25,10 @@ class InfoCommand(Command):
         game_name = BotUtils.get_message_content(ctx.message)
         game = DatabaseCollection.igdb_databases.get_entry_by_name(game_name)
         if not game:
-            try:
-                igdb_game = Game.from_igdb(Wrapper.wrapper,game_name)
+            igdb_game = Game.from_igdb(Wrapper.wrapper,game_name)
 
-                if not igdb_game:
-                    await MessageManager.send_error_message(ctx.channel,"No game found with that name :(")
-                    return
-
-            except requests.exceptions.HTTPError as e:
-                print("Error fetching game from IGDB: ", e)
-                await MessageManager.send_error_message(ctx.channel,"Something went wrong :(")
+            if not igdb_game:
+                await MessageManager.send_error_message(ctx.channel,"No game found with that name :(")
                 return
 
             game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],TimeUtils.timestamp_to_date(min(igdb_game.release_dates[0])),igdb_game.genres[0],igdb_game.platforms)

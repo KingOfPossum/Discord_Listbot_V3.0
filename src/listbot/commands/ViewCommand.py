@@ -94,11 +94,7 @@ class ViewCommand(Command):
             game_infos = DatabaseCollection.igdb_databases.get_entry_by_id(game_entry.igdb_game_id)
 
         if not game_infos:
-            try:
-                igdb_game = Game.from_igdb(Wrapper.wrapper, game_entry.name, game_entry.console)
-            except requests.exceptions.HTTPError as e:
-                print("Error fetching game from IGDB: ", e)
-                igdb_game = None
+            igdb_game = Game.from_igdb(Wrapper.wrapper, game_entry.name, game_entry.console)
 
             if igdb_game:
                 game_infos = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],TimeUtils.timestamp_to_date(min(igdb_game.release_dates[0])),igdb_game.genres[0],igdb_game.platforms)
