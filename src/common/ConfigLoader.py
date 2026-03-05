@@ -60,7 +60,7 @@ class ConfigLoader:
                 file.write("\n")
                 file.write("# Discord bot configuration\n")
                 file.write("bot:\n")
-                file.write("  api_key:\n")
+                file.write("  api_key: ''\n")
                 file.write("  command_prefix: '%'\n")
                 file.write("  databases_folder_path: '../resources/databases/'\n")
                 file.write("  music_folder_path: '../resources/music/'\n")
@@ -78,8 +78,8 @@ class ConfigLoader:
                 file.write("    test : test\n")
                 file.write("# IGDB configuration\n")
                 file.write("IGDB:\n")
-                file.write("  client_id:\n")
-                file.write("  client_secret:\n")
+                file.write("  client_id: ''\n")
+                file.write("  client_secret: ''\n")
 
     @staticmethod
     def load() -> Config:

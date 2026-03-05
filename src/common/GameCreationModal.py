@@ -170,11 +170,7 @@ class GameCreationModal(discord.ui.Modal):
 
             if not self.game:
                 print("Game not found in database, fetching from IGDB...")
-                try:
-                    igdb_game = Game.from_igdb(Wrapper.wrapper, self.game_entry.name, self.game_entry.console)
-                except requests.exceptions.HTTPError as e:
-                    print("Error fetching game from IGDB: ", e)
-                    igdb_game = None
+                igdb_game = Game.from_igdb(Wrapper.wrapper, self.game_entry.name, self.game_entry.console)
 
                 if igdb_game:
                     self.game = IGDBGameEntry(igdb_game.id,igdb_game.name,igdb_game.cover,igdb_game.summary[0],TimeUtils.timestamp_to_date(min(igdb_game.release_dates[0])),igdb_game.genres[0],igdb_game.platforms)
