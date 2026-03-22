@@ -37,6 +37,7 @@ In order to run the bot you will need to have some libraries installed. These ar
 - `requests` : For making requests to the IGDB API
 - `pynacl` : Needed for using Discords voice utilities
 - `yt-dlp` : Used for playing audio from YouTube
+- `davey` : Needed for using Discords voice utilities
 
 ## Bot Commands
 The bot will listen to all commands that start with a specific prefix. The default one is `%` but you can change it into whatever you want in the `config.yaml` file that is located in the `\resources` folder.

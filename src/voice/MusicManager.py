@@ -134,16 +134,16 @@ class MusicManager:
         Plays the next song in the song_queue.
         If the song_queue is empty then bot is finished playing and the song message will be deleted.
         If looping: We append the last played song to the end of the queue
-        If shuffle: The next song is a random one. Otherwise the next song is simply the next in the queue
+        If shuffle: The next song is a random one. Otherwise, the next song is simply the next in the queue
         After starting the next song, will try to preload the next song to improve performance
         """
-        if not MusicManager.song_queue or len(MusicManager.song_queue) <= 1:
+        if not MusicManager.song_queue or (len(MusicManager.song_queue) <= 1 and not MusicManager.looping):
             from voice.commands.StopCommand import StopCommand
             await StopCommand.stop(MusicManager.bot_voice_client)
             return
 
         MusicManager.song_queue.pop(MusicManager.current_song_index)
-        if len(MusicManager.song_queue) > 0:
+        if len(MusicManager.song_queue) > 0 or (len(MusicManager.song_queue) == 0 and MusicManager.looping):
             if MusicManager.looping:
                 if MusicManager.current_song:
                     MusicManager.song_queue.append(MusicManager.current_song)
