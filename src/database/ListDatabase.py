@@ -1,5 +1,4 @@
 from dataclasses import astuple
-
 from common.GameEntry import GameEntry
 from common.UserManager import UserManager
 from database.Database import Database
@@ -27,7 +26,7 @@ class ListDatabase(Database):
         """
 
         super().__init__(folder_path=folder_path,
-                         table_name="games_list",
+                         table_name="games",
                          schema=schema)
 
     def game_already_in_database(self,entry: GameEntry) -> bool:
@@ -212,7 +211,7 @@ class ListDatabase(Database):
                 LIMIT ?
                 """
         result = self.sql_execute_fetchall(query, (limit,))
-        print(result)
+
         return [(UserManager.get_user_entry(user_id=user_id).display_name,game_count) for user_id,game_count in result]
 
     def get_months_counts(self,user_id:int = None,year:int = None,limit:int = 3) -> list[tuple[str,int]]:
@@ -272,15 +271,17 @@ class ListDatabase(Database):
         :param limit: The number of genres to retrieve, default is 3.
         :return: A list of tuples containing the genre and the corresponding count of games added for that genre, sorted by the number of games.
         """
+        from database.DatabaseCollection import DatabaseCollection
+
         user_filter = f"user_id = '{user_id}'" if user_id else "1=1"
         year_filter = f"STRFTIME('%Y',date) = '{year}'" if year else "1=1"
 
         query = f"""
                 SELECT genre_name, COUNT(*) as games_count
                 FROM {self.table_name} games
-                JOIN igdb_games igdb ON games.igdb_game_id = igdb.game_id
-                JOIN igdb_games_genres games_genres ON igdb.game_id = games_genres.game_id
-                JOIN igdb_genres genres ON games_genres.genre_id = genres.genre_id
+                JOIN {DatabaseCollection.igdb_databases.games_database.table_name} igdb ON games.igdb_game_id = igdb.game_id
+                JOIN {DatabaseCollection.igdb_databases.game_genre_database.table_name} games_genres ON igdb.game_id = games_genres.game_id
+                JOIN {DatabaseCollection.igdb_databases.genres_database.table_name} genres ON games_genres.genre_id = genres.genre_id
                 WHERE {year_filter} AND {user_filter}
                 GROUP BY genre_name
                 ORDER BY games_count DESC

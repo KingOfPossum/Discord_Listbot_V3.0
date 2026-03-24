@@ -38,11 +38,9 @@ class Database:
         :param query: The SQL query to be executed.
         :param params: The parameters to be used in the SQL query. Default is an empty tuple.
         """
-        connection = sqlite3.connect(self._path)
-        cursor = connection.cursor()
-        cursor.execute(query, params)
-        connection.commit()
-        connection.close()
+        with sqlite3.connect(self._path) as connection:
+            cursor = connection.cursor()
+            cursor.execute(query, params)
 
     def sql_execute_fetchall(self, query: str, params: tuple = ()) -> list:
         """
@@ -53,11 +51,10 @@ class Database:
         :param params: The parameters to be used in the SQL query. Default is an empty tuple.
         :return: The data fetched from the database as a list of tuples.
         """
-        connection = sqlite3.connect(self._path)
-        cursor = connection.cursor()
-        cursor.execute(query, params)
-        data = cursor.fetchall()
-        connection.close()
+        with sqlite3.connect(self._path) as connection:
+            cursor = connection.cursor()
+            cursor.execute(query, params)
+            data = cursor.fetchall()
 
         return data
 
