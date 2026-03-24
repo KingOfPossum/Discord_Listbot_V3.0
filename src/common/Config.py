@@ -18,6 +18,7 @@ class Config:
     bot_replies_channels: set[str]
     accepted_users: set[str]
     consoles: dict[str, str]
+    max_music_folder_size: int
     igdb_client_id: str
     igdb_client_secret: str
 
@@ -35,4 +36,5 @@ class Config:
                 f"  Bot Replies Channels: {self.bot_replies_channels}\n" \
                 f"  Accepted Users: {self.accepted_users}\n" \
                 f"  Consoles: {self.consoles}\n" \
+                f"  Max Music Folder Size: {self.max_music_folder_size}\n" \
                 + "-" * 100 + "\n"

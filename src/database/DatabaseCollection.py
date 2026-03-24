@@ -3,6 +3,7 @@ import os
 from database.BacklogDatabase import BacklogDatabase
 from database.IGDB_Databases.IgdbDatabaseCollection import IGDBDatabaseCollection
 from database.ListDatabase import ListDatabase
+from database.SongDatabase import SongDatabase
 from database.TimeDatabase import TimeDatabase
 from database.TokensDatabase import TokensDatabase
 from database.UserDatabase import UserDatabase
@@ -17,6 +18,7 @@ class DatabaseCollection:
     tokens_database: TokensDatabase = None
     time_database: TimeDatabase = None
     backlog_database: BacklogDatabase = None
+    song_database: SongDatabase = None
 
     def __init__(self,database_folder_path: str):
         """
@@ -38,6 +40,7 @@ class DatabaseCollection:
         DatabaseCollection.time_database = TimeDatabase(self.__database_folder_path)
         DatabaseCollection.backlog_database = BacklogDatabase(self.__database_folder_path)
         DatabaseCollection.igdb_databases = IGDBDatabaseCollection(self.__database_folder_path)
+        DatabaseCollection.song_database = SongDatabase(self.__database_folder_path)
 
     @staticmethod
     def create_database_folder_if_not_exists(database_folder_path: str):
