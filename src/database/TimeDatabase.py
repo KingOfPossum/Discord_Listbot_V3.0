@@ -12,7 +12,7 @@ class TimeDatabase(Database):
         activity TEXT NOT NULL,
         time_spent INTEGER DEFAULT 0,
         PRIMARY KEY (user_id, activity),
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
         """
 
         super().__init__(folder_path=folder_path,

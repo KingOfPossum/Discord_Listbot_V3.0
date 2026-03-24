@@ -5,7 +5,8 @@ class IGDBPlatformsDatabase(Database):
         schema = """
         platform_id INTEGER,
         platform_name TEXT NOT NULL,
-        PRIMARY KEY (platform_id)
+        PRIMARY KEY (platform_id),
+        UNIQUE(platform_name)
         """
 
         super().__init__(folder_path=folder_path,
