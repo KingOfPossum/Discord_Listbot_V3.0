@@ -76,6 +76,8 @@ class ConfigLoader:
                 file.write("     - all\n")
                 file.write("  consoles:\n")
                 file.write("    test : test\n")
+                file.write("  # Some songs will be deleted if the music folder is larger than this\n")
+                file.write("  max_music_folder_size: 1000000000\n")
                 file.write("# IGDB configuration\n")
                 file.write("IGDB:\n")
                 file.write("  client_id: ''\n")
@@ -102,6 +104,7 @@ class ConfigLoader:
                           bot_replies_channels=set(config_dict["bot"]["bot_replies_channels"]) if config_dict["bot"]["bot_replies_channels"] else set(),
                           accepted_users=set(config_dict["bot"]["accepted_users"]) if config_dict["bot"]["accepted_users"] else set(),
                           consoles=config_dict["bot"]["consoles"],
+                          max_music_folder_size=config_dict["bot"]["max_music_folder_size"],
                           igdb_client_id=config_dict["IGDB"]["client_id"],
                           igdb_client_secret=config_dict["IGDB"]["client_secret"])
 
