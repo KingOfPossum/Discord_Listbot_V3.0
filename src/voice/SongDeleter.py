@@ -42,7 +42,6 @@ def check_if_song_database_is_correct():
     for root,dirs,files in os.walk(music_folder_path):
         for file in files:
             file = file[:-4]
-            print(file)
 
             if file in songs_in_database:
                 songs_in_database.remove(file)
