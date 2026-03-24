@@ -1,4 +1,4 @@
-from Database import Database
+from database.Database import Database
 
 class SongDatabase(Database):
     """
@@ -15,14 +15,29 @@ class SongDatabase(Database):
                          schema=schema)
 
     def add_song(self,song_id: str, last_played_time: int):
-        query = f"INSERT INTO {self.table_name} VALEUS (?,?)"
+        """
+        Add a song to the database.
+        :param song_id: The ID of the song
+        :param last_played_time: The last time the song was played
+        """
+        query = f"INSERT INTO {self.table_name} VALUES (?,?)"
         self.sql_execute(query,(song_id,last_played_time))
 
     def remove_song(self,song_id: str):
+        """
+        Remove a song from the database.
+        :param song_id: The ID of the song
+        """
         query = f"DELETE FROM {self.table_name} WHERE song_id = ?"
         self.sql_execute(query,(song_id,))
 
     def update_last_played_time(self,song_id: str, new_last_played_time: int):
+        """
+        Updates the last time the song was played.
+        :param song_id: The ID of the song
+        :param new_last_played_time:
+        :return:
+        """
         query = f"""
                 UPDATE {self.table_name}
                 SET last_played_time = ?
@@ -30,7 +45,11 @@ class SongDatabase(Database):
                 """
         self.sql_execute(query,(new_last_played_time,song_id))
 
-    def get_least_recently_played_song(self):
+    def get_least_recently_played_song(self) -> str:
+        """
+        Get the song that was played the least recently.
+        :return: The song ID of the least recently played song
+        """
         query = f"""
                 SELECT song_id
                 FROM {self.table_name}
@@ -38,7 +57,16 @@ class SongDatabase(Database):
                 LIMIT 1
                 """
         result = self.sql_execute_fetchall(query)
-        return result[0] if result else None
+        return result[0][0] if result else None
+
+    def get_all_songs(self) -> list[str]:
+        """
+        Get all songs from the database.
+        :return: A list of all song IDs in the database
+        """
+        query = f"SELECT song_id FROM {self.table_name}"
+        result = self.sql_execute_fetchall(query)
+        return result
 
     def print_database(self):
         pass

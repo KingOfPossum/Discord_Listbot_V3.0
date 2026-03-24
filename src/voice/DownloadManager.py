@@ -1,10 +1,16 @@
 import asyncio
 import re
+import time
+
 import yt_dlp
 
 from concurrent.futures import ThreadPoolExecutor
 from common.ConfigLoader import ConfigLoader
 from yt_dlp import DownloadError
+
+from database.DatabaseCollection import DatabaseCollection
+from voice import SongDeleter
+
 
 class DownloadManager:
     """Class for managing the downloads of audio from YouTube"""
@@ -129,9 +135,14 @@ class DownloadManager:
                 future = asyncio.get_running_loop().run_in_executor(DownloadManager.executor, lambda:ydl.download([url]))
                 await future
 
+                song_id = url[32:]
+                DatabaseCollection.song_database.add_song(song_id,int(time.time()))
+                SongDeleter.check_for_delete()
+
                 return True
         except DownloadError as e:
             print(f"Error downloading audio from URL {url}: {e}")
             return False
-        except Exception:
+        except Exception as e:
+            print(e)
             return False

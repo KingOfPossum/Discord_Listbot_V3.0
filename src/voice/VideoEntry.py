@@ -1,10 +1,13 @@
 import asyncio
 import dataclasses
 import os
+import time
 
 from common.BootLoop import BotLoop
 from common.ConfigLoader import ConfigLoader
 from discord import VoiceClient, FFmpegPCMAudio
+
+from database.DatabaseCollection import DatabaseCollection
 from voice.DownloadManager import DownloadManager
 from voice.enums.PlayResponse import PlayResponse
 from voice.enums.PlayStatus import PlayStatus
@@ -62,6 +65,9 @@ class VideoEntry:
         self.current_playtime = 0
         source = FFmpegPCMAudio(self.file_path)
         bot_voice.play(source,after=lambda _: asyncio.run_coroutine_threadsafe(MusicManager.next_song(),BotLoop.loop))
+
+        DatabaseCollection.song_database.update_last_played_time(self.video_id,int(time.time()))
+
         return PlayResponse.SUCCESS
 
     async def download(self):

@@ -76,7 +76,7 @@ class ConfigLoader:
                 file.write("     - all\n")
                 file.write("  consoles:\n")
                 file.write("    test : test\n")
-                file.write("  # Some songs will be deleted if the music folder is larger than this\n")
+                file.write("  # Some songs will be deleted if the music folder is larger than this(In Bytes)\n")
                 file.write("  max_music_folder_size: 1000000000\n")
                 file.write("# IGDB configuration\n")
                 file.write("IGDB:\n")
