@@ -35,6 +35,9 @@ class StatsCommand(Command):
         async def months_callback(interaction: discord.Interaction):
             await interaction.response.edit_message(embed=self.get_months_stats_embed(year),view=standard_view)
 
+        async def genres_callback(interaction: discord.Interaction):
+            await interaction.response.edit_message(embed=self.get_genres_stats_embed(year),view=standard_view)
+
         async def users_callback(interaction: discord.Interaction):
             await interaction.response.edit_message(embed=embed,view=user_stats_view)
 
@@ -52,6 +55,9 @@ class StatsCommand(Command):
         months_button = discord.ui.Button(label="Months",style=discord.ButtonStyle.green)
         months_button.callback = months_callback
 
+        genres_button = discord.ui.Button(label="Genres",style=discord.ButtonStyle.green)
+        genres_button.callback = genres_callback
+
         user_stats_button = discord.ui.Button(label="Users",style=discord.ButtonStyle.blurple)
         user_stats_button.callback = users_callback
 
@@ -59,6 +65,7 @@ class StatsCommand(Command):
         standard_view.add_item(consoles_button)
         standard_view.add_item(ratings_button)
         standard_view.add_item(months_button)
+        standard_view.add_item(genres_button)
         standard_view.add_item(user_stats_button)
 
         user_stats_view = discord.ui.View()
@@ -191,6 +198,20 @@ class StatsCommand(Command):
 
         months_txt = "\n".join([f"- {entry[0]} : {entry[1]}" for entry in months_counts])
         embed.add_field(name="", value=months_txt)
+
+        return embed
+
+    def get_genres_stats_embed(self,year:int) -> Embed:
+        """
+        Creates the genres stats embed which shows the top 10 most active genres.
+        :param year: The year for which the stats are shown.
+        :return: The genres stats embed.
+        """
+        embed = discord.Embed(title=f"Most Played Genres ({year if year else "Total"})", color=0x00ff00)
+        genres_counts = DatabaseCollection.list_database.get_genre_counts(year=year,limit=10)
+
+        genres_txt = "\n".join([f"- {entry[0]} : {entry[1]}" for entry in genres_counts])
+        embed.add_field(name="", value=genres_txt)
 
         return embed
 
