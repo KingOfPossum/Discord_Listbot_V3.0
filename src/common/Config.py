@@ -11,13 +11,11 @@ class Config:
     database_folder_path: str
     music_folder_path: str
     automatic_updates: bool
-    create_emojis: bool
     bot_replies: bool
     bot_replies_to_links: bool
     bot_replies_users: set[str]
     bot_replies_channels: set[str]
     accepted_users: set[str]
-    consoles: dict[str, str]
     max_music_folder_size: int
     igdb_client_id: str
     igdb_client_secret: str
@@ -29,12 +27,10 @@ class Config:
                 f"  Database Folder Path: {self.database_folder_path}\n" \
                 f"  Music Folder Path: {self.music_folder_path}\n" \
                 f"  Automatic Updates: {self.automatic_updates}\n" \
-                f"  Create Emojis: {self.create_emojis}\n" \
                 f"  Bot Replies: {self.bot_replies}\n" \
                 f"  Bot Replies to Links: {self.bot_replies_to_links}\n" \
                 f"  Bot Replies Users: {self.bot_replies_users}\n" \
                 f"  Bot Replies Channels: {self.bot_replies_channels}\n" \
                 f"  Accepted Users: {self.accepted_users}\n" \
-                f"  Consoles: {self.consoles}\n" \
                 f"  Max Music Folder Size: {self.max_music_folder_size}\n" \
                 + "-" * 100 + "\n"

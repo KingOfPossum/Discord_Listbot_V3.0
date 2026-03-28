@@ -1,11 +1,9 @@
 import discord
-import requests.exceptions
 
 from Game import Game
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
-from common.EmojiCreator import EmojiCreator
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.IGDBGameEntry import IGDBGameEntry
@@ -31,9 +29,7 @@ class ViewCommand(Command):
         :param game_entry: The GameEntry containing the game details.
         :return : A formatted string with the game details.
         """
-        console_emoji = Emojis.get_console_emoji(game_entry.console)
-
-        view_game_details = f"**Console:** {console_emoji}\n" \
+        view_game_details = f"**Console:** {game_entry.console}\n" \
                             f"**Rating:** {game_entry.rating}\n" \
                             f"**Genre:** {", ".join([genre for genre in game_data.genres]) if game_data else "IDK"}\n" \
                             f"**Review:** {game_entry.review}\n\n" \
@@ -126,7 +122,6 @@ class ViewCommand(Command):
             view.add_item(left_button)
             view.add_item(right_button)
 
-        await EmojiCreator.create_console_emoji_if_not_exists(ctx.guild, game_entry.console)
         await MessageManager.send_message(ctx.channel,embed=self.get_game_embed(game_entry,game_infos),view=view)
 
     def help(self) -> str:

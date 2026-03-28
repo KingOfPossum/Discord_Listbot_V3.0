@@ -1,9 +1,7 @@
 import discord
-import requests.exceptions
 
 from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
 from common.BacklogEntry import BacklogEntry
-from common.EmojiCreator import EmojiCreator
 from common.GameEntry import GameEntry
 from common.IGDBGameEntry import IGDBGameEntry
 from common.MessageManager import MessageManager
@@ -188,8 +186,6 @@ class GameCreationModal(discord.ui.Modal):
                     await BacklogRemoveCommand.remove_backlog_entry(backlog_entry,interaction.channel)
 
             print(self.game_entry)
-
-            await EmojiCreator.create_console_emoji_if_not_exists(interaction.guild, self.game_entry.console)
 
             game_view_txt = ViewCommand.get_game_view_txt(self.game_entry,self.game)
             embed = MessageManager.get_embed(f"**{self.children[0].value} {"(100%)" * self.game_entry.hundred_percent}**",description=game_view_txt,user=interaction.user)
