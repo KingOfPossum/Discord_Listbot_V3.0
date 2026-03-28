@@ -1,6 +1,5 @@
 import discord
 
-from common.EmojiCreator import EmojiCreator
 from common.Emojis import Emojis
 from common.GameEntry import GameEntry
 from common.MessageManager import MessageManager
@@ -30,12 +29,10 @@ class GameList:
         :param game_entry:
         :return: The string representation for the list
         """
-        await EmojiCreator.create_console_emoji_if_not_exists(guild,game_entry.console)
-
         game_name = f"**{game_entry.name}**"
         replay_txt = "**(REPLAY)**" if game_entry.replayed else ""
         completion_txt = "**(100%)**" if game_entry.hundred_percent else ""
-        console_txt = f"({Emojis.get_console_emoji(game_entry.console)})"
+        console_txt = f"({game_entry.console})"
         rating_txt = f"Rating: **{game_entry.rating}**"
         date_txt = f"added on **{TimeUtils.convert_to_readable_form(game_entry.date)}**"
         review_txt = Emojis.REVIEW if len(game_entry.review) > 0 else ""

@@ -65,7 +65,6 @@ class ConfigLoader:
                 file.write("  databases_folder_path: '../resources/databases/'\n")
                 file.write("  music_folder_path: '../resources/music/'\n")
                 file.write("  automatic_updates: False\n")
-                file.write("  create_emojis: True\n")
                 file.write("  bot_replies: True\n")
                 file.write("  bot_replies_to_links: False\n")
                 file.write("  bot_replies_users:\n")
@@ -74,8 +73,6 @@ class ConfigLoader:
                 file.write("     - all\n")
                 file.write("  accepted_users:\n")
                 file.write("     - all\n")
-                file.write("  consoles:\n")
-                file.write("    test : test\n")
                 file.write("  # Some songs will be deleted if the music folder is larger than this(In Bytes)\n")
                 file.write("  max_music_folder_size: 1000000000\n")
                 file.write("# IGDB configuration\n")
@@ -97,13 +94,11 @@ class ConfigLoader:
                           database_folder_path=config_dict["bot"]["databases_folder_path"],
                           music_folder_path=config_dict["bot"]["music_folder_path"],
                           automatic_updates=config_dict["bot"]["automatic_updates"],
-                          create_emojis=config_dict["bot"]["create_emojis"],
                           bot_replies=config_dict["bot"]["bot_replies"],
                           bot_replies_to_links=config_dict["bot"]["bot_replies_to_links"],
                           bot_replies_users=set(config_dict["bot"]["bot_replies_users"]) if config_dict["bot"]["bot_replies_users"] else set(),
                           bot_replies_channels=set(config_dict["bot"]["bot_replies_channels"]) if config_dict["bot"]["bot_replies_channels"] else set(),
                           accepted_users=set(config_dict["bot"]["accepted_users"]) if config_dict["bot"]["accepted_users"] else set(),
-                          consoles=config_dict["bot"]["consoles"],
                           max_music_folder_size=config_dict["bot"]["max_music_folder_size"],
                           igdb_client_id=config_dict["IGDB"]["client_id"],
                           igdb_client_secret=config_dict["IGDB"]["client_secret"])

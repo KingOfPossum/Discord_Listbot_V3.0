@@ -1,5 +1,3 @@
-from common.ConfigLoader import ConfigLoader
-
 class Emojis:
     """
     A class to hold emoji constants.
@@ -17,19 +15,3 @@ class Emojis:
     SHUFFLE = "🔀"
     LOOP = "🔁"
     SKIP = "⏭️"
-
-    @staticmethod
-    def consoles() -> dict:
-        return ConfigLoader.get_config().consoles
-
-    @staticmethod
-    def get_console_emoji(console_name:str):
-        """
-        Returns the emoji for the specified console.
-        If the console does not exist, it returns the console name itself.
-        :param console_name: The name of the console.
-        :return: The emoji for the console or the console name if not found.
-        """
-        if console_name in Emojis.consoles():
-            return Emojis.consoles()[console_name]
-        return console_name
