@@ -1,6 +1,7 @@
 import discord
 
 from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
+from common import MetacriticSearcher
 from common.BacklogEntry import BacklogEntry
 from common.GameEntry import GameEntry
 from common.IGDBGameEntry import IGDBGameEntry
@@ -72,12 +73,17 @@ class GameCreationModal(discord.ui.Modal):
         date = self.game_entry.date if self.game_entry else TimeUtils.get_current_date_formated()
         console = self.children[1].value
         rating = int(self.children[2].value)
+
+        metascore = DatabaseCollection.list_database.get_metascore(game_name)
+        if not metascore:
+            metascore = MetacriticSearcher.get_metacritic_score(game_name)
+
         review = self.children[3].value
         replayed = False if not self.game_entry else self.game_entry.replayed
         completed = False if not self.game_entry else self.game_entry.hundred_percent
 
         return GameEntry(game_id=-1,igdb_game_id=igdb_game_id,name=game_name, user_id=user_id, date=date, console=console, rating=rating,
-                               review=review, replayed=replayed, hundred_percent=completed)
+                               metascore=metascore,review=review, replayed=replayed, hundred_percent=completed)
 
     async def _edit_message(self, interaction:discord.Interaction, new_game_entry:GameEntry, user:discord.User, view:discord.ui.View):
         """
