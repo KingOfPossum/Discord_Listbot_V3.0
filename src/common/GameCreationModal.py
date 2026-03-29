@@ -1,7 +1,8 @@
 import discord
 
 from backlog.commands.BacklogRemoveCommand import BacklogRemoveCommand
-from common import MetacriticSearcher
+from common.ImageCreator import ImageCreator
+from common.MetacriticSearcher import MetacriticSearcher
 from common.BacklogEntry import BacklogEntry
 from common.GameEntry import GameEntry
 from common.IGDBGameEntry import IGDBGameEntry
@@ -200,6 +201,12 @@ class GameCreationModal(discord.ui.Modal):
 
             view = self._get_game_view(interaction,self.game_entry)
 
-            await MessageManager.send_message(channel=interaction.channel,embed=embed,view=view)
+            if self.game_entry.metascore:
+                ImageCreator.create_metascore_image(self.game_entry.metascore)
+                embed.set_image(url="attachment://metascore.png")
+                file = discord.File("../resources/metascore.png", filename="metascore.png")
+                await MessageManager.send_message(channel=interaction.channel,embed=embed,view=view,file=file)
+            else:
+                await MessageManager.send_message(channel=interaction.channel, embed=embed, view=view)
         finally:
             BotEvents.end_action("GameCreationModal")

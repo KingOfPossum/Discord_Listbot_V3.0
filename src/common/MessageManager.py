@@ -21,15 +21,17 @@ class MessageManager:
         return embed
 
     @staticmethod
-    async def send_message(channel: discord.TextChannel,message: str = "", embed: discord.Embed = None, view: discord.ui.View = None) -> discord.Message:
+    async def send_message(channel: discord.TextChannel,message: str = "", embed: discord.Embed = None, view: discord.ui.View = None, file: discord.File = None) -> discord.Message:
         """
         Sends a message to a Text Channel
         If an embed is provided, it will be sent with the message.
         If an view is provided, it will be added to the message.
+        If an file is provided, it will be sent with the file.
         :param channel: The channel where the message will be sent.
         :param message: The message to be sent.
         :param embed: An optional embed to be sent with the message.
         :param view: An optional view to be added to the message.
+        :param file: An optional file to be sent with the message.
         :return: The created message.
         """
         kwargs = {}
@@ -39,6 +41,8 @@ class MessageManager:
             kwargs["embed"] = embed
         if view:
             kwargs["view"] = view
+        if file:
+            kwargs["file"] = file
 
         return await channel.send(**kwargs)
 
