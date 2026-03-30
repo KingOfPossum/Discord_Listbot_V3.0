@@ -66,7 +66,7 @@ class BotEvents(commands.Cog):
         :param action: The name of the action for better logging
         """
         cls._active_uses += 1
-        print(f"Started Action ({action})! Currently active uses: {str(cls._active_uses)}")
+        #print(f"Started Action ({action})! Currently active uses: {str(cls._active_uses)}")
 
     @classmethod
     def end_action(cls,action:str = ""):
@@ -76,7 +76,7 @@ class BotEvents(commands.Cog):
         :return:
         """
         cls._active_uses -= 1
-        print(f"Ended Action ({action})! Currently active uses: {str(cls._active_uses)}")
+        #print(f"Ended Action ({action})! Currently active uses: {str(cls._active_uses)}")
 
     async def _before_invoke(self,ctx: commands.Context):
         """

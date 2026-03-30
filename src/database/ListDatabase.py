@@ -16,6 +16,7 @@ class ListDatabase(Database):
         date DATE NOT NULL,
         console TEXT NOT NULL,
         rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 100),
+        metascore INTEGER CHECK(metascore BETWEEN 0 AND 100),
         review TEXT,
         replay INTEGER DEFAULT 0 CHECK(replay IN (0, 1)),
         hundred_percent INTEGER DEFAULT 0 CHECK(hundred_percent IN (0, 1)),
@@ -107,13 +108,14 @@ class ListDatabase(Database):
         :param entry: The GameEntry object containing the details of the game to be added.
         """
         query = f"""
-            INSERT INTO {self.table_name} (igdb_game_id,user_id,name,date,console,rating,review,replay,hundred_percent)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO {self.table_name} (igdb_game_id,user_id,name,date,console,rating,metascore,review,replay,hundred_percent)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (user_id, name, date)
             DO UPDATE SET
                 igdb_game_id = excluded.igdb_game_id,
                 console = excluded.console,
                 rating = excluded.rating,
+                metascore = excluded.rating,
                 review = excluded.review,
                 replay = excluded.replay,
                 hundred_percent = excluded.hundred_percent
@@ -159,6 +161,21 @@ class ListDatabase(Database):
         data = self.sql_execute_fetchall(query, (user_id,))
 
         return len(data) > 0
+
+    def get_metascore(self,game_name) -> int | None:
+        """
+        Retrieves the metascore of the specified game name.
+        :param game_name: The title of the game
+        :return: The metascore of the specified game or None
+        """
+        query = f"SELECT metascore FROM {self.table_name} WHERE name = ?"
+        data = self.sql_execute_fetchall(query, (game_name,))
+
+        for row in data:
+            if row[0] is not None:
+                return row[0]
+
+        return None
 
     def get_highest_rated_games(self,user_id: int = None,year:int = None, limit: int = 3) -> list[tuple[str,int]]:
         """

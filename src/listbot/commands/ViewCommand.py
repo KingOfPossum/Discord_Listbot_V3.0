@@ -1,6 +1,7 @@
 import discord
 
 from Game import Game
+from common.ImageCreator import ImageCreator
 from common.BotUtils import BotUtils
 from common.Command import Command
 from common.ConfigLoader import ConfigLoader
@@ -43,6 +44,9 @@ class ViewCommand(Command):
                                          description=self.get_game_view_txt(game_entry, game_infos))
         if game_infos:
             embed.set_thumbnail(url=game_infos.cover_url)
+        if game_entry.metascore:
+            ImageCreator.create_metascore_image(game_entry.metascore)
+            embed.set_image(url="attachment://metascore.png")
         return embed
 
     @commands.command(name="view",aliases=["View","v","viewGame","ViewGame","VIEW","VIEWGAME","view_game","View_Game","VIEW_GAME","viewgame","Viewgame"])
@@ -122,7 +126,11 @@ class ViewCommand(Command):
             view.add_item(left_button)
             view.add_item(right_button)
 
-        await MessageManager.send_message(ctx.channel,embed=self.get_game_embed(game_entry,game_infos),view=view)
+        if game_entry.metascore:
+            file = discord.File("../resources/metascore.png", filename="metascore.png")
+            await MessageManager.send_message(ctx.channel,embed=self.get_game_embed(game_entry,game_infos),view=view,file=file)
+        else:
+            await MessageManager.send_message(ctx.channel, embed=self.get_game_embed(game_entry, game_infos), view=view)
 
     def help(self) -> str:
         return f"- `{ConfigLoader.get_config().command_prefix}view` `gameName` - View the details of a game your list.\n" \

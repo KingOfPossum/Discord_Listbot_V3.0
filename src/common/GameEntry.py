@@ -13,6 +13,7 @@ class GameEntry:
     date: str
     console: str
     rating: int
+    metascore: int
     review: str
     replayed: bool = False
     hundred_percent: bool = False
@@ -26,6 +27,7 @@ class GameEntry:
                f"  Date: {self.date}\n" \
                f"  Console: {self.console}\n" \
                f"  Rating: {self.rating}\n" \
+               f"  Metascore: {self.metascore}\n" \
                f"  Review: {self.review}\n" \
                f"  Replayed: {self.replayed}\n" \
                f"  Hundred Percent: {self.hundred_percent}"
@@ -39,6 +41,7 @@ class GameEntry:
             date=self.date,
             console=self.console,
             rating=self.rating,
+            metascore=self.metascore,
             review=self.review,
             replayed=self.replayed,
             hundred_percent=self.hundred_percent
