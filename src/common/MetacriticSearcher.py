@@ -28,7 +28,10 @@ class MetacriticSearcher:
 
         # Get the metacritic score from the page
         regex = re.compile(r'"ratingValue":\d+')
-        val = regex.search(response.text).group()
+        val = regex.search(response.text)
+        if not val:
+            return None
+        val = val.group()
         regex = re.compile(r'\d+')
         return int(regex.search(val).group())
 
